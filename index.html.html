@@ -1,1118 +1,844 @@
 <!DOCTYPE html>
-<html lang="zh-TW" class="dark">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台灣生物多樣性探險記 - 生態危機與氣候動態版 v2.2</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Tone.js Sound Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.42/Tone.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>市集銷售實時紀錄系統 Market Sales Tracker</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter & Noto Sans TC -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        emerald: { 850: '#064e3b', 950: '#022c22' },
-                        slate: { 850: '#111827', 950: '#030712' }
-                    },
-                    fontFamily: {
-                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
-                    }
-                }
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+            },
+            earth: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              700: '#b45309',
+              800: '#78350f',
             }
+          },
+          fontFamily: {
+            sans: ['Noto Sans TC', 'Inter', 'sans-serif'],
+          }
         }
-    </script>
+      }
+    }
+  </script>
 
-    <style>
-        body {
-            background-color: #030712;
-            color: #f3f4f6;
-            font-family: 'Noto Sans TC', sans-serif;
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.08) 0px, transparent 40%),
-                radial-gradient(at 90% 90%, rgba(14, 165, 233, 0.08) 0px, transparent 40%),
-                radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.95) 0px, rgba(3, 7, 18, 1) 100%);
-            background-attachment: fixed;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(52, 211, 153, 0.3); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(52, 211, 153, 0.6); }
-
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .glass-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .glass-card:hover { border-color: rgba(52, 211, 153, 0.4); }
-
-        @keyframes pulse-radar {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-        }
-        .pulse-radar { animation: pulse-radar 3s infinite ease-in-out; }
-    </style>
+  <style>
+    /* Custom scrollbar for transaction history */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar selection:bg-emerald-500 selection:text-white">
+<body class="bg-stone-50 text-stone-800 font-sans min-h-screen flex flex-col justify-between selection:bg-emerald-100 selection:text-emerald-800">
 
-    <!-- Header Stats Nav Bar -->
-    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80 px-4 py-3 shadow-2xl">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-            
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-500/20">
-                    <i class="fa-solid fa-tree"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-base sm:text-lg font-black tracking-wide bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-                            台灣生物多樣性探險記
-                        </h1>
-                        <span id="player-level-badge" class="bg-indigo-950 text-indigo-300 border border-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
-                            Lv.1 實習保育員
-                        </span>
-                    </div>
-                    <p class="text-[10px] sm:text-[11px] text-slate-400">Taiwan Biodiversity Expedition v2.2 (Crisis & Climate Edition)</p>
-                </div>
-            </div>
-
-            <!-- Environment Status & Resources -->
-            <div class="flex items-center gap-2 sm:gap-3 text-xs flex-wrap">
-                <!-- Weather & Time Widget -->
-                <div class="glass-card px-3 py-1.5 rounded-xl flex items-center gap-2 border border-cyan-500/30 text-cyan-300">
-                    <span id="header-time-icon">☀️</span>
-                    <span id="header-time-text" class="font-bold">白晝</span>
-                    <span class="text-slate-500">|</span>
-                    <span id="header-weather-icon">🍃</span>
-                    <span id="header-weather-text" class="font-bold">晴朗微風</span>
-                </div>
-
-                <div class="glass-card px-3 py-1.5 rounded-xl flex items-center gap-2 border border-amber-500/30">
-                    <i class="fa-solid fa-coins text-amber-400"></i>
-                    <span class="text-slate-400 hidden sm:inline">生態點數:</span>
-                    <span id="header-eco-points" class="font-bold text-amber-300">200</span>
-                </div>
-
-                <div class="glass-card px-3 py-1.5 rounded-xl flex items-center gap-2 border border-emerald-500/30">
-                    <i class="fa-solid fa-award text-emerald-400"></i>
-                    <span class="text-slate-400 hidden sm:inline">保育聲望:</span>
-                    <span id="header-reputation" class="font-bold text-emerald-300">0</span>
-                </div>
-
-                <!-- Nav Buttons -->
-                <button id="nav-shop-btn" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-md">
-                    <i class="fa-solid fa-store"></i> 補給商店
-                </button>
-
-                <button id="nav-guide-btn" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-md">
-                    <i class="fa-solid fa-book-bookmark"></i> 圖鑑 <span id="header-guide-count" class="bg-black/40 px-1.5 py-0.5 rounded text-[10px] text-emerald-200">0/100</span>
-                </button>
-
-                <button id="nav-island-btn" class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-md">
-                    <i class="fa-solid fa-island-tropical text-amber-300"></i> 生態島 <span id="header-island-count" class="bg-black/40 px-1.5 py-0.5 rounded text-[10px] text-cyan-200">0 物種</span>
-                </button>
-
-                <button id="nav-reset-btn" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-semibold px-2.5 py-1.5 rounded-xl transition flex items-center gap-1 border border-rose-800/60" title="重置遊戲">
-                    <i class="fa-solid fa-rotate-right"></i>
-                </button>
-            </div>
+  <!-- Main Navigation & Header -->
+  <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-amber-500 text-stone-900 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-inner">
+          <i class="fa-solid font-bold fa-store"></i>
         </div>
-    </header>
-
-    <!-- Main Content Layout -->
-    <main class="max-w-7xl w-full mx-auto p-3 sm:p-4 md:p-6 grow grid grid-cols-1 lg:grid-cols-12 gap-5">
-
-        <!-- LEFT COLUMN: Climate Biome & Squad (4 Cols) -->
-        <section class="lg:col-span-4 flex flex-col gap-5">
-            
-            <!-- Location & Climate Zone Selector -->
-            <div class="glass-panel rounded-2xl p-4 sm:p-5 shadow-xl border border-emerald-900/40">
-                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
-                    <h2 class="text-sm sm:text-base font-bold text-emerald-400 flex items-center gap-2">
-                        <i class="fa-solid fa-map-location-dot"></i> 1. 氣候生態帶與探險地
-                    </h2>
-                    <span id="zone-tag-display" class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-800 font-medium">
-                        氣候帶分類
-                    </span>
-                </div>
-
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">
-                            <i class="fa-solid fa-cloud-sun-rain text-cyan-400 mr-1"></i>步驟 1：選擇氣候生態帶
-                        </label>
-                        <select id="climate-zone-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition">
-                            <option value="zone_coastal">🌊 A. 濱海與水域濕地帶 (0~50m)</option>
-                            <option value="zone_lowland" selected>🍃 B. 低海拔淺山與客家丘陵帶 (50~500m)</option>
-                            <option value="zone_midland">🌲 C. 中海拔暖溫帶與霧林帶 (500~2000m)</option>
-                            <option value="zone_alpine">🏔️ D. 高山寒溫帶與冷杉箭竹帶 (2000~3952m)</option>
-                            <option value="zone_island">🏝️ E. 離島特殊微型生態系 (0~250m)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">
-                            <i class="fa-solid fa-location-crosshairs text-emerald-400 mr-1"></i>步驟 2：選擇具體探險地點
-                        </label>
-                        <select id="spot-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition"></select>
-                    </div>
-                </div>
-
-                <!-- Habitat Info Card -->
-                <div id="spot-info-card" class="mt-4 p-3.5 bg-slate-950/90 rounded-xl border border-slate-800 text-xs space-y-2.5">
-                    <div class="flex justify-between items-center border-b border-slate-800/80 pb-2">
-                        <span id="spot-name-display" class="font-bold text-teal-300 text-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-location-dot text-teal-400"></i> 新竹橫山騎龍古道
-                        </span>
-                        <span id="spot-elevation" class="text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded text-[10px]">海拔: 200~450m</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">
-                            <span class="text-slate-400 block text-[10px]">年均溫與氣候：</span>
-                            <span id="spot-temp-weather" class="font-bold text-cyan-300">21.5°C · 暖溫帶季風</span>
-                        </div>
-                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">
-                            <span class="text-slate-400 block text-[10px]">行政區域：</span>
-                            <span id="spot-county-town" class="font-bold text-emerald-300">新竹縣 橫山鄉</span>
-                        </div>
-                    </div>
-
-                    <p id="spot-desc-display" class="text-slate-300 leading-relaxed text-[11px] bg-slate-900/50 p-2 rounded-lg border border-slate-800">
-                        豐沛溪流與次生林交織，為石虎、白鼻心與螢火蟲繁衍之淺山關鍵廊道。
-                    </p>
-
-                    <div class="pt-2 border-t border-slate-800/80">
-                        <div class="flex justify-between items-center text-[10px] text-slate-400 mb-1">
-                            <span><i class="fa-solid fa-radar text-emerald-400"></i> 當前探險地探索率</span>
-                            <span id="spot-progress-val" class="text-emerald-400 font-bold">0%</span>
-                        </div>
-                        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                            <div id="spot-progress-bar" class="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 h-2 rounded-full transition-all duration-500" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Companion Squad Setup -->
-            <div class="glass-panel rounded-2xl p-4 sm:p-5 shadow-xl border border-teal-900/40 flex-grow flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
-                        <h2 class="text-sm sm:text-base font-bold text-teal-400 flex items-center gap-2">
-                            <i class="fa-solid fa-paw"></i> 2. 隨行隊伍 (<span id="team-count">0</span>/<span id="max-team-count">3</span>)
-                        </h2>
-                        <button id="open-pet-modal-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-teal-300 px-2.5 py-1 rounded-lg border border-slate-700 transition flex items-center gap-1">
-                            <i class="fa-solid fa-users-gear"></i> 設定隊伍
-                        </button>
-                    </div>
-
-                    <div id="active-squad-container" class="grid grid-cols-3 gap-2.5 mb-3"></div>
-
-                    <div class="bg-slate-950/80 rounded-xl p-3 border border-slate-800/80">
-                        <div class="text-xs font-semibold text-amber-300 mb-2 flex items-center justify-between">
-                            <span><i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> 三維標籤動態組合技</span>
-                        </div>
-                        <div id="active-synergies-container" class="space-y-1.5 text-xs"></div>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- RIGHT COLUMN: Exploration Trace, Crisis & Capture Area (8 Cols) -->
-        <section class="lg:col-span-8 flex flex-col gap-5">
-            
-            <div class="glass-panel rounded-2xl p-5 shadow-xl border border-slate-800 relative overflow-hidden min-h-[440px] flex flex-col justify-between">
-                <div class="absolute inset-0 opacity-15 pointer-events-none bg-gradient-to-b from-emerald-900/40 via-transparent to-slate-950"></div>
-
-                <!-- ECO CRISIS ALERT BANNER (NEW) -->
-                <div id="crisis-alert-banner" class="hidden relative z-20 mb-3 bg-rose-950/90 border border-rose-600/80 rounded-xl p-3 shadow-lg flex flex-wrap items-center justify-between gap-3 animate-pulse">
-                    <div class="flex items-center gap-2.5">
-                        <i id="crisis-icon" class="fa-solid fa-triangle-exclamation text-rose-400 text-xl"></i>
-                        <div>
-                            <h4 id="crisis-title" class="text-xs sm:text-sm font-bold text-rose-200">⚠️ 生態警報：當地爆發外來種入侵危機！</h4>
-                            <p id="crisis-desc" class="text-[11px] text-rose-300">區域內出現大量綠鬣蜥或小花蔓澤蘭蔓延，正在破壞棲地平衡。</p>
-                        </div>
-                    </div>
-                    <button id="btn-resolve-crisis" class="px-4 py-2 bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 text-white font-bold text-xs rounded-xl shadow transition cursor-pointer flex items-center gap-1.5">
-                        <i class="fa-solid fa-shield-halved"></i> 派遣隨行隊伍清除危機
-                    </button>
-                </div>
-
-                <div class="relative z-10 flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-3">
-                    <div>
-                        <span id="stage-zone-badge" class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">🍃 低海拔淺山與客家丘陵帶</span>
-                        <h3 class="text-base sm:text-xl font-black text-white flex items-center gap-2">
-                            <i class="fa-solid fa-compass text-emerald-400"></i>
-                            <span id="stage-location-title">新竹縣 橫山鄉 · 橫山騎龍古道</span>
-                        </h3>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 text-xs">
-                        <span class="bg-indigo-950/90 text-indigo-300 border border-indigo-800 px-3 py-1 rounded-full flex items-center gap-1.5 font-medium">
-                            <i class="fa-solid fa-bolt text-indigo-400"></i> 體力: <span id="stamina-val">100</span> / 100
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Stage Interaction Screen -->
-                <div id="stage-display-area" class="relative z-10 my-4 flex flex-col items-center justify-center min-h-[260px] text-center">
-                    
-                    <!-- IDLE RADAR STATE -->
-                    <div id="radar-state" class="flex flex-col items-center gap-3">
-                        <div class="relative w-28 h-28 rounded-full bg-slate-900/90 border-2 border-emerald-500/40 flex items-center justify-center pulse-radar">
-                            <i class="fa-solid fa-compass-drafting text-4xl text-emerald-400 animate-spin" style="animation-duration: 12s;"></i>
-                            <div class="absolute inset-2 border border-emerald-400/20 rounded-full"></div>
-                        </div>
-                        <p class="text-xs sm:text-sm font-bold text-slate-200">選取探險策略發起搜查，追蹤野外痕跡線索</p>
-                        <p class="text-[11px] text-slate-400 max-w-md">結合當前天候與日夜狀態，夜間與雨後更能發掘稀有特有生物與應對外來危機！</p>
-                    </div>
-
-                    <!-- TRACE TRACKING PHASE -->
-                    <div id="trace-card" class="hidden w-full max-w-lg bg-slate-900/95 rounded-2xl border border-amber-500/50 p-5 shadow-2xl">
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
-                            <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-                                <i class="fa-solid fa-magnifying-glass-location"></i> 發現野外生態痕跡 (Trace Analysis)
-                            </span>
-                            <span id="trace-type-badge" class="bg-amber-950 text-amber-300 border border-amber-800 text-[10px] px-2 py-0.5 rounded">特徵爪痕與食痕</span>
-                        </div>
-                        <div class="text-left space-y-2">
-                            <p id="trace-desc" class="text-xs text-slate-200 leading-relaxed">前方泥地上發現清楚特徵腳印與未啃食完畢的果實殘骸。</p>
-                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] text-teal-300 space-y-1">
-                                <div class="flex justify-between">
-                                    <span>推測出沒物種:</span>
-                                    <span id="trace-species-name-hint" class="font-bold text-amber-400">石虎 (擬定目標)</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>天候與時段加成:</span>
-                                    <span id="trace-match-hint" class="font-bold text-emerald-400">日夜與天候吻合 (機率加成)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Branching Action Choices After Trace Discovery -->
-                        <div class="mt-4 pt-3 border-t border-slate-800 text-left">
-                            <p class="text-[11px] text-slate-400 mb-2 font-medium">請選擇您的追蹤與應對策略：</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                <button onclick="window.resolveTraceAction('observe')" class="p-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold rounded-xl border border-slate-700 transition text-center cursor-pointer">
-                                    <i class="fa-solid fa-binoculars block mb-1 text-base"></i> 冷靜觀察紀錄
-                                </button>
-                                <button onclick="window.resolveTraceAction('sneak')" class="p-2 bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-semibold rounded-xl border border-slate-700 transition text-center cursor-pointer">
-                                    <i class="fa-solid fa-paw block mb-1 text-base"></i> 靜音潛行靠近
-                                </button>
-                                <button onclick="window.resolveTraceAction('rush')" class="p-2 bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold rounded-xl border border-slate-700 transition text-center cursor-pointer">
-                                    <i class="fa-solid fa-bolt block mb-1 text-base"></i> 迅速包夾圍捕
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ENCOUNTER & CAPTURE CARD -->
-                    <div id="encounter-card" class="hidden w-full max-w-xl bg-slate-900/95 rounded-2xl border border-emerald-500/60 p-5 shadow-2xl">
-                        <div class="flex items-start justify-between gap-4 border-b border-slate-800 pb-3 mb-3">
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-4xl shadow-inner relative overflow-hidden" id="encounter-icon-box">
-                                <span id="encounter-icon">🐆</span>
-                            </div>
-                            <div class="flex-grow text-left">
-                                <div class="flex items-center justify-between gap-2 flex-wrap">
-                                    <h4 id="encounter-name" class="text-lg sm:text-xl font-bold text-white">石虎</h4>
-                                    <span id="encounter-rarity" class="bg-amber-950 text-amber-300 border border-amber-800 text-[10px] px-2 py-0.5 rounded font-bold">歷史極危 (I級)</span>
-                                </div>
-                                <p id="encounter-scientific" class="text-[11px] italic text-slate-400 mt-0.5">Prionailurus bengalensis</p>
-                                <div class="mt-2 text-xs text-slate-300 space-y-1">
-                                    <div class="flex items-center gap-2 text-[11px]">
-                                        <span class="text-slate-400">食物鏈位階:</span>
-                                        <span id="encounter-trophic" class="text-amber-300 font-bold">高階掠食者 (Lv.4)</span>
-                                    </div>
-                                    <div id="encounter-traits" class="flex flex-wrap gap-1 pt-1"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/80 mb-4 text-left space-y-2">
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="text-slate-400 font-semibold">真實捕抓成功率計算</span>
-                                <span id="capture-success-rate" class="text-emerald-400 font-bold bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">基礎成功率: 25%</span>
-                            </div>
-                            <p id="capture-strategy-hint" class="text-[11px] text-slate-300">請善用商店道具或隨行隊伍組合技來克服野外警戒心。</p>
-                            <div class="flex items-center gap-2 pt-1 text-[11px] text-amber-300">
-                                <span>持有道具庫：</span>
-                                <span>誘餌(x<span id="inv-bait-cnt">0</span>)</span> | 
-                                <span>誘捕籠(x<span id="inv-cage-cnt">0</span>)</span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <button id="btn-action-use-item" class="px-3 py-2 bg-amber-950/80 hover:bg-amber-900 text-amber-200 text-xs font-semibold rounded-xl border border-amber-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-box-archive text-amber-400"></i> 使用道具輔助
-                            </button>
-                            <button id="btn-action-observe" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-600 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-camera text-cyan-400"></i> 生態攝影紀錄
-                            </button>
-                            <button id="btn-action-capture" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-1.5 border border-emerald-400/40 cursor-pointer">
-                                <i class="fa-solid fa-hand-holding-heart text-emerald-200"></i> 進行生態捕抓
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Bottom Bar -->
-                <div class="relative z-10 border-t border-slate-800/80 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <label class="text-xs text-slate-400 font-medium whitespace-nowrap">探索策略:</label>
-                        <select id="strategy-select" class="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500 w-full sm:w-auto">
-                            <option value="balanced">🌲 標準巡查 (均衡搜尋)</option>
-                            <option value="bait">🥜 食物引誘 (草食/昆蟲痕跡機率↑)</option>
-                            <option value="stealth">🐾 靜音潛行 (特有種/掠食者痕跡機率↑)</option>
-                        </select>
-                    </div>
-
-                    <button id="btn-start-expedition" class="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-compass text-base"></i>
-                        <span>發起區域探險 (Start Expedition)</span>
-                    </button>
-                </div>
-
-            </div>
-
-            <!-- Console Log Panel -->
-            <div class="glass-panel rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-44">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-                    <span class="text-xs font-bold text-slate-300 flex items-center gap-2">
-                        <i class="fa-solid fa-terminal text-emerald-400"></i> 探險日誌與生態紀錄
-                    </span>
-                    <button id="btn-clear-log" class="text-[11px] text-slate-500 hover:text-slate-300 transition cursor-pointer">清空日誌</button>
-                </div>
-                <div id="console-log-list" class="flex-grow overflow-y-auto custom-scrollbar space-y-1.5 pr-2 text-xs font-mono"></div>
-            </div>
-
-        </section>
-
-    </main>
-
-    <footer class="glass-panel border-t border-slate-800/80 py-3 px-4 text-center text-xs text-slate-500">
-        <p>台灣生物多樣性探險記 Taiwan Biodiversity Expedition &copy; 2026. 危機與氣候動態版 v2.2。</p>
-    </footer>
-
-    <!-- MODAL: SHOP -->
-    <div id="modal-shop" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 hidden">
-        <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-store text-amber-400 text-xl"></i>
-                    <div>
-                        <h3 class="text-base font-bold text-white">生態補給商店</h3>
-                        <p class="text-xs text-slate-400">使用生態點數購買能量飲料、誘餌與專業捕抓裝備。</p>
-                    </div>
-                </div>
-                <button id="btn-close-shop" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-lg font-bold text-white"><i class="fa-solid fa-bolt text-indigo-400 mr-2"></i>能量飲料</span>
-                            <span class="text-xs bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800">50 點</span>
-                        </div>
-                        <p class="text-xs text-slate-400">立即補充 30 點探險體力。</p>
-                    </div>
-                    <div class="mt-4 flex items-center justify-between pt-3 border-t border-slate-800">
-                        <span class="text-[11px] text-slate-500">擁有數: <span id="shop-drink-cnt">0</span></span>
-                        <button onclick="window.buyItem('energyDrink', 50)" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg cursor-pointer">購買</button>
-                    </div>
-                </div>
-                <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-lg font-bold text-white"><i class="fa-solid fa-cookie-bite text-amber-400 mr-2"></i>食物網誘餌</span>
-                            <span class="text-xs bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800">30 點</span>
-                        </div>
-                        <p class="text-xs text-slate-400">捕捉生物時使用，成功率大幅增加。</p>
-                    </div>
-                    <div class="mt-4 flex items-center justify-between pt-3 border-t border-slate-800">
-                        <span class="text-[11px] text-slate-500">擁有數: <span id="shop-bait-cnt">0</span></span>
-                        <button onclick="window.buyItem('bait', 30)" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg cursor-pointer">購買</button>
-                    </div>
-                </div>
-                <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-lg font-bold text-white"><i class="fa-solid fa-box-archive text-emerald-400 mr-2"></i>專業誘捕籠</span>
-                            <span class="text-xs bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800">80 點</span>
-                        </div>
-                        <p class="text-xs text-slate-400">野外捕捉時放置，直接確保成功捕抓。</p>
-                    </div>
-                    <div class="mt-4 flex items-center justify-between pt-3 border-t border-slate-800">
-                        <span class="text-[11px] text-slate-500">擁有數: <span id="shop-cage-cnt">0</span></span>
-                        <button onclick="window.buyItem('cage', 80)" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg cursor-pointer">購買</button>
-                    </div>
-                </div>
-                <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-lg font-bold text-white"><i class="fa-solid fa-camera-retro text-cyan-400 mr-2"></i>高倍望遠鏡</span>
-                            <span class="text-xs bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800">120 點</span>
-                        </div>
-                        <p class="text-xs text-slate-400">被動裝備：提升痕跡追蹤與稀有種機率。</p>
-                    </div>
-                    <div class="mt-4 flex items-center justify-between pt-3 border-t border-slate-800">
-                        <span class="text-[11px] text-slate-500">擁有狀態: <span id="shop-lens-status" class="text-slate-400">未持有</span></span>
-                        <button onclick="window.buyItem('lens', 120)" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg cursor-pointer">購買解鎖</button>
-                    </div>
-                </div>
-            </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight">市集銷售隨手記</h1>
+          <p class="text-xs text-emerald-200 flex items-center gap-1">
+            <span id="sync-status-indicator" class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+            <span id="sync-status-text">雲端同步中</span>
+          </p>
         </div>
-    </div>
+      </div>
 
-    <!-- MODAL: FIELD GUIDE -->
-    <div id="modal-field-guide" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 hidden">
-        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl w-full max-w-6xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-700 flex items-center justify-center text-emerald-400 text-xl"><i class="fa-solid fa-book-bookmark"></i></div>
-                    <div>
-                        <h3 class="text-base sm:text-lg font-bold text-white">臺灣物種生物圖鑑 (100 全物種資料庫)</h3>
-                        <p class="text-xs text-slate-400">涵蓋 100 種臺灣原生植物、草食、掠食者與分解者。</p>
-                    </div>
-                </div>
-                <button id="btn-close-guide" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+      <!-- Navigation Tabs -->
+      <nav class="flex bg-emerald-900/60 p-1 rounded-xl text-sm font-medium">
+        <button id="tab-btn-sales" onclick="switchTab('sales')" class="px-3 py-1.5 rounded-lg transition-all duration-200 bg-white text-emerald-900 shadow">
+          <i class="fa-solid fa-calculator mr-1"></i>銷售主頁
+        </button>
+        <button id="tab-btn-history" onclick="switchTab('history')" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-emerald-100 hover:text-white">
+          <i class="fa-solid fa-chart-line mr-1"></i>歷史與統計
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Dynamic Summary Header Banner (Sticky Below Nav) -->
+  <div class="bg-amber-50 border-b border-amber-200/80 px-4 py-3 shadow-sm">
+    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-baseline space-x-2">
+        <span class="text-sm font-medium text-stone-600">本日累積銷售總額:</span>
+        <span id="grand-total" class="text-3xl font-extrabold text-emerald-700">NT$ 0</span>
+      </div>
+      <div class="flex items-center space-x-4 text-sm text-stone-600">
+        <div>總售出件數: <span id="grand-count" class="font-bold text-stone-800">0</span> 包/件</div>
+        <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg text-sm shadow transition flex items-center gap-1">
+          <i class="fa-solid fa-plus"></i> 新增品項
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
+
+    <!-- TAB 1: SALES MAIN PAGE -->
+    <section id="tab-sales" class="space-y-6">
+
+      <!-- Quick Add New Product Bar -->
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200">
+        <h2 class="text-sm font-semibold text-stone-700 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-cart-plus text-emerald-600"></i> 快速新增銷售商品
+        </h2>
+        <form id="add-product-form" onsubmit="handleCreateProduct(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+          <div class="sm:col-span-6">
+            <input type="text" id="new-product-name" placeholder="商品名稱 (例: 芭蕉乾, 有機草莓)" required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
+          </div>
+          <div class="sm:col-span-4">
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-stone-400 text-sm">NT$</span>
+              <input type="number" id="new-product-price" min="0" step="1" placeholder="單價" required
+                class="w-full pl-11 pr-3 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
             </div>
-            <div class="p-3 border-b border-slate-800 bg-slate-900/50 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div class="flex items-center gap-1.5 flex-wrap" id="guide-filter-tabs">
-                    <button data-filter="all" class="guide-tab-btn active px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium cursor-pointer">全部 (100)</button>
-                    <button data-filter="unlocked" class="guide-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">已發現解鎖</button>
-                    <button data-filter="captured" class="guide-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">已捕獲棲息</button>
-                    <button data-filter="endemic" class="guide-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">臺灣特有種</button>
-                </div>
-                <div class="flex items-center gap-3">
-                    <input type="text" id="guide-search-input" placeholder="搜尋物種名稱..." class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 w-44 sm:w-56" />
-                    <div class="text-slate-400 whitespace-nowrap">總解鎖率: <span id="guide-completion-rate" class="text-emerald-400 font-bold">0%</span></div>
-                </div>
-            </div>
-            <div id="guide-grid-container" class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5"></div>
+          </div>
+          <div class="sm:col-span-2">
+            <button type="submit" class="w-full h-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-1">
+              <i class="fa-solid fa-plus"></i> 新增
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Products Grid -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-bold text-stone-800 flex items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked text-amber-600"></i> 目前展售商品列表
+          </h2>
+          <span class="text-xs text-stone-500">點擊 ＋ / － 按鈕即可直接即時紀錄並同步雲端</span>
         </div>
-    </div>
 
-    <!-- MODAL: ECO-ISLAND -->
-    <div id="modal-eco-island" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 hidden">
-        <div class="bg-slate-900 border border-teal-500/30 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-teal-950 border border-teal-700 flex items-center justify-center text-teal-300 text-xl"><i class="fa-solid fa-island-tropical"></i></div>
-                    <div>
-                        <h3 class="text-base sm:text-lg font-bold text-white">玩家私人生態島與鄉鎮復育基地</h3>
-                        <p class="text-xs text-slate-400">食物鏈平衡自動產生點數；野放生物可提升 20 鄉鎮生態健康度。</p>
-                    </div>
-                </div>
-                <button id="btn-close-island" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow space-y-5">
-                <div class="glass-card p-4 rounded-xl border border-teal-500/30 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="space-y-1">
-                        <span class="text-xs text-slate-400">食物網平衡度</span>
-                        <div class="text-xl font-bold text-teal-300 flex items-center gap-2"><i class="fa-solid fa-heart-pulse text-emerald-400"></i><span id="island-health-score">100% (完美平衡)</span></div>
-                    </div>
-                    <div class="space-y-1">
-                        <span class="text-xs text-slate-400">點數產出速率</span>
-                        <div class="text-xl font-bold text-amber-300 flex items-center gap-2"><i class="fa-solid fa-coins text-amber-400"></i><span id="island-point-rate">+15 點 / 10秒</span></div>
-                    </div>
-                    <div class="space-y-1">
-                        <span class="text-xs text-slate-400">棲息物種總數</span>
-                        <div class="text-xl font-bold text-cyan-300 flex items-center gap-2"><i class="fa-solid fa-paw text-cyan-400"></i><span id="island-total-population">0 物種</span></div>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold text-slate-300 mb-3 flex items-center gap-2"><i class="fa-solid fa-list-check text-emerald-400"></i> 棲息物種管理與鄉鎮野放復育</h4>
-                    <div id="island-species-list" class="space-y-2.5"></div>
-                </div>
-            </div>
+        <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamic product cards will be rendered here -->
+          <div class="col-span-full py-12 text-center text-stone-400 bg-white rounded-2xl border border-dashed border-stone-300">
+            <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600 mb-2"></i>
+            <p>載入商品資料中...</p>
+          </div>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <!-- MODAL: PET SQUAD -->
-    <div id="modal-pet-management" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 hidden">
-        <div class="bg-slate-900 border border-teal-500/30 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-users-gear text-teal-400 text-xl"></i><h3 class="text-base font-bold text-white">配置隨行探險隊伍 (上限 <span id="modal-max-squad">3</span> 隻)</h3></div>
-                <button id="btn-close-pet-modal" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-4 overflow-y-auto custom-scrollbar flex-grow space-y-3">
-                <p class="text-xs text-slate-400">選擇已捕獲並棲息於生態島的生物加入隨行隊伍，觸發三維標籤自動組合技並應對外來入侵危機：</p>
-                <div id="captured-pets-selection-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
-            </div>
-            <div class="p-3 border-t border-slate-800 bg-slate-950/80 flex justify-end">
-                <button id="btn-save-squad" class="px-5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl cursor-pointer">確定保存隊伍配置</button>
-            </div>
+    <!-- TAB 2: HISTORY & ANALYTICS -->
+    <section id="tab-history" class="space-y-6 hidden">
+      
+      <!-- Action Toolbar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl shadow-sm border border-stone-200">
+        <div>
+          <h2 class="text-base font-bold text-stone-800">銷售紀錄統計與備份</h2>
+          <p class="text-xs text-stone-500">檢視所有銷售數據、匯出報表或開立新市集 Session</p>
         </div>
+        <div class="flex items-center gap-2">
+          <button onclick="exportCSV()" class="bg-stone-700 hover:bg-stone-800 text-white text-xs font-medium px-3.5 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv text-emerald-400"></i> 匯出 CSV 報表
+          </button>
+          <button onclick="confirmResetSession()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-medium px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-right"></i> 清空重置當前數據
+          </button>
+        </div>
+      </div>
+
+      <!-- Item Sales Summary Table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+          <h3 class="font-bold text-stone-800 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-emerald-600"></i> 各商品銷售總計
+          </h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-stone-50 text-stone-500 border-b border-stone-100">
+              <tr>
+                <th class="px-5 py-3 font-medium">商品名稱</th>
+                <th class="px-5 py-3 font-medium">單價</th>
+                <th class="px-5 py-3 font-medium">已售出數量</th>
+                <th class="px-5 py-3 font-medium text-right">銷售小計</th>
+              </tr>
+            </thead>
+            <tbody id="summary-table-body" class="divide-y divide-stone-100 text-stone-700">
+              <!-- Summary rows inserted dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Transaction Log -->
+      <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+          <h3 class="font-bold text-stone-800 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> 實時點數異動日誌 (Recent Transactions)
+          </h3>
+          <span class="text-xs text-stone-400">最近 50 筆異動</span>
+        </div>
+        <div class="max-h-80 overflow-y-auto divide-y divide-stone-100" id="transaction-log-list">
+          <!-- Logs will be populated dynamically -->
+          <div class="p-6 text-center text-stone-400 text-xs">暫無紀錄</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-stone-200 py-4 text-center text-xs text-stone-400">
+    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <p>市集銷售紀錄系統 &copy; 2026 - 支援 GitHub Pages 雲端即時備份</p>
+      <p class="flex items-center gap-1 text-stone-500">
+        <i class="fa-solid fa-cloud text-emerald-600"></i> 狀態: <span id="firebase-status">雲端同步模式</span>
+      </p>
     </div>
+  </footer>
 
-    <!-- MODAL: SPECIES DETAIL -->
-    <div id="modal-species-detail" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 hidden">
-        <div id="species-detail-card-content" class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"></div>
+  <!-- Modal for Editing Product -->
+  <div id="edit-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-100 space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-stone-800">修改商品資訊</h3>
+        <button onclick="closeEditModal()" class="text-stone-400 hover:text-stone-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="edit-product-form" onsubmit="handleSaveEdit(event)" class="space-y-4">
+        <input type="hidden" id="edit-product-id">
+        <div>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">商品名稱</label>
+          <input type="text" id="edit-product-name" required class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">單價 (NT$)</label>
+          <input type="number" id="edit-product-price" min="0" step="1" required class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">當前銷售數量</label>
+          <input type="number" id="edit-product-count" min="0" step="1" required class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-stone-100 text-stone-600 text-xs font-medium rounded-xl hover:bg-stone-200">取消</button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl hover:bg-emerald-700 shadow">儲存更新</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- JAVASCRIPT ENGINE (v2.2) -->
-    <script>
-        const CLIMATE_ZONES = [
-            { id: "zone_coastal", name: "🌊 A. 濱海與水域濕地帶 (0~50m)", desc: "受黑潮與潮汐滋養，熱帶海岸林、紅樹林與濕地物種繁衍重鎮。" },
-            { id: "zone_lowland", name: "🍃 B. 低海拔淺山與客家丘陵帶 (50~500m)", desc: "次生林與農藝交界廊道，石虎、白鼻心與兩棲昆蟲天堂。" },
-            { id: "zone_midland", name: "🌲 C. 中海拔暖溫帶與霧林帶 (500~2000m)", desc: "終年雲霧繚繞，紅檜、扁柏巨木群與豐富中海拔山鳥棲地。" },
-            { id: "zone_alpine", name: "🏔️ D. 高山寒溫帶與冷杉箭竹帶 (2000~3952m)", desc: "極度寒冷與高輻射環境，冰河孑遺物種與高山特有草本生息地。" },
-            { id: "zone_island", name: "🏝️ E. 離島特殊微型生態系 (0~250m)", desc: "黑潮溫暖滋養，海島演化出高密度特有亞種與陸蟹生態系。" }
-        ];
+  <!-- Custom Alert/Confirm Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
 
-        const TAIWAN_EXPLORATION_SPOTS = [
-            { id: "spot_kenting_coastal", zoneId: "zone_coastal", name: "墾丁香蕉灣海岸林", county: "屏東縣", town: "恆春鎮", elevation: "0~50m", tempWeather: "25.2°C · 熱帶季風", microHabitat: "隆起珊瑚礁與熱帶海岸林", traits: ["海岸林", "熱帶", "陸蟹"], desc: "台灣最完整熱帶海岸林，為陸蟹與熱帶昆蟲棲息重鎮。" },
-            { id: "spot_qigu_lagoon", zoneId: "zone_coastal", name: "七股鹽田潟湖濕地", county: "台南市", town: "七股區", elevation: "0~10m", tempWeather: "24.1°C · 亞熱帶平原", microHabitat: "沙洲、潟湖與泥灘", traits: ["潟湖", "過境鳥", "紅樹林"], desc: "國際級重要濕地，黑面琵鷺與底棲生物天堂。" },
-            { id: "spot_shuanglianpi", zoneId: "zone_coastal", name: "宜蘭雙連埤水草濕地", county: "宜蘭縣", town: "員山鄉", elevation: "470m", tempWeather: "19.5°C · 潮濕多雨", microHabitat: "天然浮島與水生植物", traits: ["天然浮島", "水生植物", "兩棲"], desc: "保存極其完整的低海拔天然水草濕地。" },
-            { id: "spot_emei_lake", zoneId: "zone_coastal", name: "峨眉湖水岸濕地", county: "新竹縣", town: "峨眉鄉", elevation: "150m", tempWeather: "22.0°C · 溫暖潮濕", microHabitat: "靜水埤塘與灌木", traits: ["埤塘", "兩棲類", "低海拔"], desc: "著名埤塘濕地，湖畔灌木繁茂，兩棲與水鳥天堂。" },
+  <!-- Firebase Integration Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, query, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-            { id: "spot_qilong_trail", zoneId: "zone_lowland", name: "橫山騎龍古道", county: "新竹縣", town: "橫山鄉", elevation: "200~450m", tempWeather: "21.5°C · 暖溫帶淺山", microHabitat: "次生林、竹林與溪谷", traits: ["淺山", "溪流", "夜行熱點"], desc: "豐沛溪流與次生林交織，為淺山哺乳類關鍵廊道。" },
-            { id: "spot_sanyi_hills", zoneId: "zone_lowland", name: "三義淺山石虎廊道", county: "苗栗縣", town: "三義鄉", elevation: "300~500m", tempWeather: "21.0°C · 丘陵季風", microHabitat: "農藝交錯林與丘陵", traits: ["石虎廊道", "次生林", "丘陵"], desc: "臺灣石虎最重要的核心棲地與活動廊道之一。" },
-            { id: "spot_lianhuachi", zoneId: "zone_lowland", name: "蓮華池闊葉試驗林", county: "南投縣", town: "魚池鄉", elevation: "600~800m", tempWeather: "20.5°C · 暖溫帶潮濕", microHabitat: "低海拔天然闊葉林", traits: ["闊葉林", "昆蟲寶庫", "兩棲"], desc: "研究台灣低海拔天然闊葉林與兩棲類的聖地。" },
-            { id: "spot_yangming_lake", zoneId: "zone_lowland", name: "陽明山夢幻湖", county: "台北市", town: "士林區", elevation: "880m", tempWeather: "18.5°C · 涼爽多霧", microHabitat: "火山地熱火口湖", traits: ["水韭", "火山地貌", "原生"], desc: "火山地質包裹的天然湖泊，台灣水韭國寶棲地。" },
+    // Application state
+    let products = [];
+    let transactions = [];
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let isCloudSyncAvailable = false;
 
-            { id: "spot_alishan_cypress", zoneId: "zone_midland", name: "阿里山檜木巨木群", county: "嘉義縣", town: "阿里山鄉", elevation: "2200m", tempWeather: "11.2°C · 涼溫帶霧林", microHabitat: "紅檜扁柏混合林", traits: ["巨木", "霧林帶", "山椒魚"], desc: "千年紅檜與扁柏霧林帶，山椒魚與中海拔鳥類棲地。" },
-            { id: "spot_baxianshan", zoneId: "zone_midland", name: "谷關八仙山森林區", county: "台中市", town: "和平區", elevation: "1000~2400m", tempWeather: "14.5°C · 溫帶山地", microHabitat: "十文溪清澈溪谷", traits: ["冷水溪谷", "鳥類熱點", "針闊葉"], desc: "清澈溪流與鳥類觀察勝地。" },
-            { id: "spot_cuifeng_lake", zoneId: "zone_midland", name: "太平山翠峰湖濕地", county: "宜蘭縣", town: "大同鄉", elevation: "1840m", tempWeather: "12.0°C · 終年濃霧", microHabitat: "高山湖泊與泥炭苔", traits: ["高山湖泊", "苔蘚", "霧林"], desc: "臺灣最大高山湖泊，終年霧氣繚繞。" },
-            { id: "spot_sheding_park", zoneId: "zone_midland", name: "墾丁社頂高位珊瑚礁", county: "屏東縣", town: "恆春鎮", elevation: "200~300m", tempWeather: "23.0°C · 熱帶高台", microHabitat: "石灰岩溶洞與森林", traits: ["石灰岩", "梅花鹿", "特有植物"], desc: "獨特石灰岩植被與梅花鹿復育區。" },
+    // Config setup
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'market-sales-tracker-app';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' 
+      ? JSON.parse(__firebase_config) 
+      : {
+          apiKey: "demo-key",
+          authDomain: "demo.firebaseapp.com",
+          projectId: "demo-project",
+          storageBucket: "demo.appspot.com",
+          messagingSenderId: "123456789",
+          appId: "1:123456789:web:abcdef"
+        };
 
-            { id: "spot_xueshan_cirque", zoneId: "zone_alpine", name: "雪山圈谷高山圈谷", county: "台中市", town: "和平區", elevation: "3500~3886m", tempWeather: "5.0°C · 高山寒帶", microHabitat: "冰河圈谷與玉山圓柏", traits: ["圈谷", "冰河遺留", "極寒"], desc: "經典冰河遺跡圈谷，高山孑遺生物棲地。" },
-            { id: "spot_hehuan_grass", zoneId: "zone_alpine", name: "合歡山高山箭竹草原", county: "南投縣", town: "仁愛鄉", elevation: "3100m", tempWeather: "7.5°C · 亞高山氣候", microHabitat: "玉山箭竹草原與冷杉", traits: ["箭竹草原", "高山鳥類", "水鹿"], desc: "廣闊的高山箭竹草原，臺灣水鹿活躍。" },
-            { id: "spot_chilaichuan", zoneId: "zone_alpine", name: "梨山七家灣溪國寶魚區", county: "台中市", town: "和平區", elevation: "1750m", tempWeather: "13.0°C · 低溫溪谷", microHabitat: "16°C以下清澈溪流", traits: ["國寶魚", "冷水溪", "高山"], desc: "櫻花鉤吻鮭唯一野生棲息水域。" },
-            { id: "spot_taroko_gorge", zoneId: "zone_alpine", name: "太魯閣立霧溪峽谷", county: "花蓮縣", town: "秀林鄉", elevation: "800~2000m", tempWeather: "16.0°C · 大理岩峽谷", microHabitat: "大理岩陡峭崖壁", traits: ["峽谷", "大理岩", "攀岩生物"], desc: "世界級大理岩峽谷與崖生植物。" },
+    // Initialize Firebase
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      auth = getAuth(app);
 
-            { id: "spot_lanyu_rainforest", zoneId: "zone_island", name: "蘭嶼熱帶雨林潮間帶", county: "台東縣", town: "蘭嶼鄉", elevation: "0~550m", tempWeather: "22.8°C · 高溫多雨海洋", microHabitat: "熱帶雨林與潮間帶", traits: ["黑潮", "離島特有", "熱帶雨林"], desc: "獨特離島特有物種密度極高。" },
-            { id: "spot_ludao_coral", zoneId: "zone_island", name: "綠島珊瑚礁海岸", county: "台東縣", town: "綠島鄉", elevation: "0~250m", tempWeather: "23.5°C · 海洋季風", microHabitat: "裙礁海岸與珊瑚礁", traits: ["珊瑚礁", "陸蟹", "離島"], desc: "黑潮經過的火山離島，豐富陸蟹棲地。" },
-            { id: "spot_kinmen_taiwu", zoneId: "zone_island", name: "金門太武山花崗岩區", county: "金門縣", town: "金湖鎮", elevation: "0~253m", tempWeather: "20.8°C · 亞熱帶大陸", microHabitat: "花崗片麻岩與次生林", traits: ["歐亞水獺", "大陸邊緣", "花崗岩"], desc: "歐亞水獺與大陸邊緣特有物種棲地。" },
-            { id: "spot_penghu_basalt", zoneId: "zone_island", name: "澎湖玄武岩地質區", county: "澎湖縣", town: "西嶼鄉", elevation: "0~50m", tempWeather: "22.5°C · 強風乾旱", microHabitat: "柱狀玄武岩與灌叢", traits: ["玄武岩", "耐鹽植物", "海鳥"], desc: "柱狀玄武岩奇景與海鳥繁殖重鎮。" }
-        ];
-
-        // 簡化載入 100 種物種資料庫陣列（保留完整 100 種核心結構）
-        const SPECIES_DATABASE = [
-            { id: "sp_01", name: "台灣水韭", scientificName: "Isoetes taiwanensis", icon: "🌱", rarity: "歷史極危", rarityValue: 0.05, trophic: "生產者", trophicLevel: 1, conservation: "I 級瀕臨絕種", endemic: true, tags: ["沉水植物", "水域濕地"], spots: ["spot_yangming_lake"], desc: "僅分布於陽明山夢幻湖的極危水生蕨類。", unlocked: false, captured: false, population: 0, ability: "【濕地基底】兩棲類發現率 +30%" },
-            { id: "sp_02", name: "台灣紅檜", scientificName: "Chamaecyparis formosensis", icon: "🌲", rarity: "特有種", rarityValue: 0.15, trophic: "生產者", trophicLevel: 1, conservation: "II 級珍貴稀有", endemic: true, tags: ["針葉樹", "樹冠層"], spots: ["spot_alishan_cypress", "spot_baxianshan"], desc: "臺灣特有巨木，多分布於中高海拔霧林帶。", unlocked: false, captured: false, population: 0, ability: "【霧林庇護】高山與霧林物種痕跡搜尋率 +25%" },
-            { id: "sp_03", name: "筆筒樹", scientificName: "Cyathea lepifera", icon: "🌿", rarity: "常見", rarityValue: 0.40, trophic: "生產者", trophicLevel: 1, conservation: "一般類", endemic: false, tags: ["樹蕨", "灌木層"], spots: ["spot_qilong_trail", "spot_emei_lake"], desc: "大型樹蕨，為臺灣極具代表性的古老植被。", unlocked: true, captured: true, population: 3, ability: "【綠色基底】草食生物繁育速度 +30%" },
-            { id: "sp_23", name: "山羌", scientificName: "Muntiacus reevesi micrurus", icon: "🦌", rarity: "常見", rarityValue: 0.45, trophic: "草食/初級消費者", trophicLevel: 2, conservation: "一般類", endemic: true, tags: ["小型鹿科", "地表灌木"], spots: ["spot_qilong_trail", "spot_sanyi_hills"], desc: "臺灣體型最小的鹿科動物，鳴聲類似犬吠。", unlocked: true, captured: true, population: 2, ability: "【警訊吠叫】降低探險驚嚇度" },
-            { id: "sp_25", name: "獨角仙", scientificName: "Trypoxylus dichotomus", icon: "🪲", rarity: "常見", rarityValue: 0.50, trophic: "草食/初級消費者", trophicLevel: 2, conservation: "一般類", endemic: false, tags: ["甲蟲昆蟲", "樹幹中層"], spots: ["spot_qilong_trail", "spot_emei_lake"], desc: "低海拔次生林常見大型甲蟲。", unlocked: true, captured: true, population: 3, ability: "【強壯甲殼】昆蟲發現點數 +20%" },
-            { id: "sp_52", name: "石虎", scientificName: "Prionailurus bengalensis", icon: "🐆", rarity: "歷史極危", rarityValue: 0.06, trophic: "次級/高階掠食者", trophicLevel: 4, conservation: "I 級瀕臨絕種", endemic: false, tags: ["貓科獵手", "灌木/地表"], spots: ["spot_sanyi_hills", "spot_qilong_trail"], desc: "臺灣唯一的原生貓科野生動物。", unlocked: false, captured: false, population: 0, ability: "【夜行伏擊】夜間探險稀有物種遭遇率 +30%" },
-            { id: "sp_54", name: "台灣藍鵲", scientificName: "Urocissa caerulea", icon: "🐦", rarity: "常見", rarityValue: 0.40, trophic: "次級/高階掠食者", trophicLevel: 3, conservation: "III 級應予保育", endemic: true, tags: ["長尾鴉科", "樹冠層"], spots: ["spot_yangming_lake", "spot_qilong_trail"], desc: "羽毛亮藍色，家族護巢能力極強。", unlocked: true, captured: true, population: 2, ability: "【高空視野】樹棲物種痕跡搜尋範圍擴大" },
-            { id: "sp_61", name: "大冠鷲", scientificName: "Spilornis cheela hooya", icon: "🦅", rarity: "常見", rarityValue: 0.40, trophic: "次級/高階掠食者", trophicLevel: 4, conservation: "II 級珍貴稀有", endemic: true, tags: ["蛇鷹猛禽", "樹冠頂層"], spots: ["spot_qilong_trail", "spot_sanyi_hills"], desc: "盤旋於淺山天空的高空猛禽，主要以蛇類為食。能有效壓制綠鬣蜥危機！", unlocked: false, captured: false, population: 0, ability: "【天敵壓制】完美清除綠鬣蜥危機" },
-            { id: "sp_86", name: "黑水虻", scientificName: "Hermetia illucens", icon: "🪰", rarity: "常見", rarityValue: 0.50, trophic: "分解者/微物種", trophicLevel: 1, conservation: "一般類", endemic: false, tags: ["分解昆蟲", "有機轉化"], spots: ["spot_emei_lake", "spot_qilong_trail"], desc: "高效分解者，能將腐殖質轉化為養分，也能清除小花蔓澤蘭！", unlocked: true, captured: true, population: 5, ability: "【有機循環與除草】清除小花蔓澤蘭危機" }
-        ];
-
-        // 補足其餘 90 種占位或完整定義讓圖鑑達 100
-        for (let i = 4; i <= 100; i++) {
-            if (!SPECIES_DATABASE.find(s => s.id === `sp_${String(i).padStart(2, '0')}`)) {
-                SPECIES_DATABASE.push({
-                    id: `sp_${String(i).padStart(2, '0')}`,
-                    name: `臺灣原生生物 #${i}`,
-                    scientificName: `Taiwanensis species ${i}`,
-                    icon: i % 4 === 0 ? "🌿" : (i % 4 === 1 ? "🦋" : (i % 4 === 2 ? "🐸" : "🍄")),
-                    rarity: i % 10 === 0 ? "歷史極危" : (i % 3 === 0 ? "稀有" : "常見"),
-                    rarityValue: 0.30,
-                    trophic: i % 2 === 0 ? "草食/初級消費者" : "分解者/微物種",
-                    trophicLevel: i % 2 === 0 ? 2 : 1,
-                    conservation: "一般類",
-                    endemic: i % 2 === 0,
-                    tags: ["臺灣原生", "微棲地"],
-                    spots: ["spot_qilong_trail", "spot_sanyi_hills", "spot_emei_lake"],
-                    desc: `臺灣在地生態系中不可或缺的第 ${i} 號關鍵原生生物。`,
-                    unlocked: false,
-                    captured: false,
-                    population: 0,
-                    ability: `【生態適應 #${i}】基礎生存與點數加成`
-                });
-            }
+      // Auth initialization
+      const initAuth = async () => {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
         }
+      };
 
-        let gameState = {
-            ecoPoints: 200,
-            reputation: 0,
-            stamina: 100,
-            selectedZoneId: "zone_lowland",
-            selectedSpotId: "spot_qilong_trail",
-            activeSquad: ["sp_23", "sp_25", "sp_54"],
-            inventory: { energyDrink: 1, bait: 2, cage: 1, lens: false },
-            currentTrace: null,
-            currentEncounter: null,
-            // New Climate & Crisis State
-            timeOfDay: "day", // day, dusk, night
-            weather: "sunny", // sunny, rainy, foggy
-            activeCrisis: null, // { type: 'iguana' | 'mikania', title, desc, spotId }
-            townshipHealth: {
-                "恆春鎮": 55, "七股區": 45, "員山鄉": 30, "峨眉鄉": 45,
-                "橫山鄉": 40, "三義鄉": 35, "魚池鄉": 50, "士林區": 50,
-                "阿里山鄉": 40, "和平區": 25, "大同鄉": 30, "秀林鄉": 25,
-                "仁愛鄉": 30, "蘭嶼鄉": 60, "綠島鄉": 50, "金湖鎮": 35, "西嶼鄉": 40
-            }
-        };
+      initAuth().catch(err => {
+        console.warn("Firebase Auth fallback to local mode:", err);
+        showToast("進入離線/預設模式", "info");
+      });
 
-        function getPlayerLevel() { return Math.floor(gameState.reputation / 100) + 1; }
-        function getMaxSquadSize() { return 3 + Math.floor((getPlayerLevel() - 1) / 5); }
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          isCloudSyncAvailable = true;
+          updateSyncStatus(true, "雲端自動連線中");
+          setupRealtimeListeners();
+        } else {
+          isCloudSyncAvailable = false;
+          updateSyncStatus(false, "單機模式");
+          loadDefaultSampleData();
+        }
+      });
+    } catch (e) {
+      console.warn("Firebase Initialization error, falling back to local memory:", e);
+      updateSyncStatus(false, "離線預設模式");
+      loadDefaultSampleData();
+    }
 
-        const SFX = {
-            click: () => { try { if (window.Tone && Tone.context && Tone.context.state === 'running') { const s = new Tone.Synth().toDestination(); s.triggerAttackRelease("C6", "8n"); } } catch(e){} },
-            trace: () => { try { if (window.Tone && Tone.context && Tone.context.state === 'running') { const s = new Tone.Synth().toDestination(); s.triggerAttackRelease("E4", "8n", Tone.now()); s.triggerAttackRelease("B4", "8n", Tone.now() + 0.1); } } catch(e){} },
-            capture: () => { try { if (window.Tone && Tone.context && Tone.context.state === 'running') { const s = new Tone.PolySynth(Tone.Synth).toDestination(); s.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n"); } } catch(e){} }
-        };
+    // Set up Firestore collection realtime listener
+    function setupRealtimeListeners() {
+      if (!db || !currentUser) return;
 
-        document.addEventListener('click', () => {
-            if (window.Tone && Tone.context && Tone.context.state !== 'running') { Tone.start().catch(e => {}); }
-        }, { once: true });
+      const productsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+      const transactionsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initClimateZoneDropdown();
-            renderActiveSquad();
-            update3DEcoSynergies();
-            updateHeaderStats();
-            bindEventListeners();
+      // Listen to products
+      onSnapshot(productsColRef, (snapshot) => {
+        const loadedProducts = [];
+        snapshot.forEach((doc) => {
+          loadedProducts.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // If first load and empty, populate defaults
+        if (loadedProducts.length === 0 && products.length === 0) {
+          seedInitialProducts();
+        } else {
+          products = loadedProducts;
+          renderUI();
+        }
+      }, (error) => {
+        console.error("Products subscription error:", error);
+        updateSyncStatus(false, "連線有限");
+      });
 
-            setInterval(autoGenerateEcoPoints, 10000);
-            setInterval(progressTimeAndWeather, 30000); // 30秒輪替一次時段與天候
-            addLog("system", "🌲 台灣生物多樣性探險記 v2.2 (危機與氣候動態版) 初始化完成！");
+      // Listen to logs/transactions
+      onSnapshot(transactionsColRef, (snapshot) => {
+        const loadedTx = [];
+        snapshot.forEach((doc) => {
+          loadedTx.push({ id: doc.id, ...doc.data() });
+        });
+        // Sort transactions by time descending
+        transactions = loadedTx.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+        renderTransactions();
+      }, (error) => {
+        console.error("Transactions subscription error:", error);
+      });
+    }
+
+    // Seed default items if empty
+    async function seedInitialProducts() {
+      const defaults = [
+        { name: '芭蕉乾', price: 100, count: 0 },
+        { name: '有機椴木香菇', price: 250, count: 0 },
+        { name: '手作洛神花醬', price: 150, count: 0 }
+      ];
+      for (const item of defaults) {
+        await createProductInDb(item.name, item.price, item.count);
+      }
+    }
+
+    function loadDefaultSampleData() {
+      if (products.length === 0) {
+        products = [
+          { id: '1', name: '芭蕉乾', price: 100, count: 0 },
+          { id: '2', name: '有機椴木香菇', price: 250, count: 0 },
+          { id: '3', name: '手作洛神花醬', price: 150, count: 0 }
+        ];
+      }
+      renderUI();
+    }
+
+    // Database CRUD wrappers
+    async function createProductInDb(name, price, count = 0) {
+      if (isCloudSyncAvailable && db) {
+        try {
+          const productsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+          await addDoc(productsColRef, {
+            name,
+            price: Number(price),
+            count: Number(count),
+            updatedAt: serverTimestamp()
+          });
+          showToast(`已成功新增品項: ${name}`, "success");
+        } catch (err) {
+          console.error("Failed to add product to Firestore:", err);
+        }
+      } else {
+        // Fallback local memory
+        const newProduct = { id: Date.now().toString(), name, price: Number(price), count: Number(count) };
+        products.push(newProduct);
+        renderUI();
+        showToast(`已新增品項: ${name}`, "success");
+      }
+    }
+
+    async function updateProductQuantityInDb(productId, delta) {
+      const prod = products.find(p => p.id === productId);
+      if (!prod) return;
+
+      const newCount = Math.max(0, (prod.count || 0) + delta);
+      const actualDelta = newCount - (prod.count || 0);
+      if (actualDelta === 0 && delta < 0) return; // cannot go below 0
+
+      if (isCloudSyncAvailable && db) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', productId);
+          await setDoc(docRef, { count: newCount }, { merge: true });
+
+          // Log transaction
+          const txColRef = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
+          await addDoc(txColRef, {
+            productName: prod.name,
+            delta: actualDelta,
+            unitPrice: prod.price,
+            totalChange: actualDelta * prod.price,
+            timestamp: serverTimestamp()
+          });
+        } catch (err) {
+          console.error("Error updating quantity:", err);
+        }
+      } else {
+        prod.count = newCount;
+        transactions.unshift({
+          id: Date.now().toString(),
+          productName: prod.name,
+          delta: actualDelta,
+          unitPrice: prod.price,
+          totalChange: actualDelta * prod.price,
+          timestamp: { seconds: Math.floor(Date.now() / 1000) }
+        });
+        renderUI();
+        renderTransactions();
+      }
+    }
+
+    async function updateProductDetailsInDb(productId, name, price, count) {
+      if (isCloudSyncAvailable && db) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', productId);
+          await setDoc(docRef, {
+            name: name,
+            price: Number(price),
+            count: Number(count),
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+          showToast("更新商品成功", "success");
+        } catch (err) {
+          console.error("Error saving edit:", err);
+        }
+      } else {
+        const prod = products.find(p => p.id === productId);
+        if (prod) {
+          prod.name = name;
+          prod.price = Number(price);
+          prod.count = Number(count);
+        }
+        renderUI();
+        showToast("更新商品成功", "success");
+      }
+    }
+
+    async function deleteProductInDb(productId) {
+      const prod = products.find(p => p.id === productId);
+      if (!prod) return;
+
+      if (isCloudSyncAvailable && db) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', productId);
+          await deleteDoc(docRef);
+          showToast(`已刪除 ${prod.name}`, "info");
+        } catch (err) {
+          console.error("Error deleting product:", err);
+        }
+      } else {
+        products = products.filter(p => p.id !== productId);
+        renderUI();
+        showToast(`已刪除 ${prod.name}`, "info");
+      }
+    }
+
+    async function resetAllDataInDb() {
+      if (isCloudSyncAvailable && db) {
+        try {
+          for (const prod of products) {
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', prod.id);
+            await setDoc(docRef, { count: 0 }, { merge: true });
+          }
+          showToast("已清空本日所有銷售計數", "info");
+        } catch (e) {
+          console.error("Failed resetting data:", e);
+        }
+      } else {
+        products.forEach(p => p.count = 0);
+        transactions = [];
+        renderUI();
+        renderTransactions();
+        showToast("已清空當前數據", "info");
+      }
+    }
+
+    // UI Rendering Functions
+    function renderUI() {
+      const grid = document.getElementById('product-list');
+      const summaryTable = document.getElementById('summary-table-body');
+      
+      let grandTotal = 0;
+      let grandCount = 0;
+
+      if (products.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-stone-400 bg-white rounded-2xl border border-dashed border-stone-200">
+            <i class="fa-solid fa-basket-shopping text-3xl mb-2 text-stone-300"></i>
+            <p>目前無銷售商品，請使用上方表單新增品項。</p>
+          </div>
+        `;
+        summaryTable.innerHTML = `<tr><td colspan="4" class="px-5 py-4 text-center text-stone-400 text-xs">無數據</td></tr>`;
+      } else {
+        let gridHtml = '';
+        let tableHtml = '';
+
+        products.forEach(prod => {
+          const subtotal = (prod.count || 0) * (prod.price || 0);
+          grandTotal += subtotal;
+          grandCount += (prod.count || 0);
+
+          // Render Grid Card
+          gridHtml += `
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 hover:shadow-md transition flex flex-col justify-between">
+              <div class="flex items-start justify-between">
+                <div>
+                  <h3 class="font-bold text-lg text-stone-800 leading-tight">${escapeHtml(prod.name)}</h3>
+                  <div class="text-xs text-stone-500 mt-1">
+                    單價: <span class="font-semibold text-emerald-700 text-sm">NT$ ${prod.price}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button onclick="openEditModal('${prod.id}')" title="編輯品項" class="text-stone-400 hover:text-stone-600 p-1.5 rounded-lg hover:bg-stone-100 text-xs transition">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button onclick="confirmDeleteProduct('${prod.id}', '${escapeHtml(prod.name)}')" title="刪除品項" class="text-rose-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 text-xs transition">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Controls Section -->
+              <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
+                <div>
+                  <span class="text-xs text-stone-400 block">銷售小計</span>
+                  <span class="text-lg font-bold text-emerald-800">NT$ ${subtotal.toLocaleString()}</span>
+                </div>
+
+                <!-- Touch Friendly Quick Buttons -->
+                <div class="flex items-center bg-stone-100 p-1 rounded-xl gap-2">
+                  <button onclick="changeQty('${prod.id}', -1)" 
+                    class="w-11 h-11 bg-white hover:bg-rose-50 text-rose-600 font-bold rounded-lg shadow-sm border border-stone-200 active:scale-95 flex items-center justify-center text-xl transition">
+                    <i class="fa-solid fa-minus"></i>
+                  </button>
+                  
+                  <span class="w-10 text-center font-extrabold text-xl text-stone-800">${prod.count || 0}</span>
+
+                  <button onclick="changeQty('${prod.id}', 1)" 
+                    class="w-11 h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md active:scale-95 flex items-center justify-center text-xl transition">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Render Table Row
+          tableHtml += `
+            <tr class="hover:bg-stone-50">
+              <td class="px-5 py-3 font-medium text-stone-800">${escapeHtml(prod.name)}</td>
+              <td class="px-5 py-3">NT$ ${prod.price}</td>
+              <td class="px-5 py-3 font-semibold text-stone-700">${prod.count || 0} 包/件</td>
+              <td class="px-5 py-3 text-right font-bold text-emerald-700">NT$ ${subtotal.toLocaleString()}</td>
+            </tr>
+          `;
         });
 
-        function progressTimeAndWeather() {
-            const times = ["day", "dusk", "night"];
-            const weathers = ["sunny", "rainy", "foggy"];
-            
-            const nextTimeIdx = (times.indexOf(gameState.timeOfDay) + 1) % times.length;
-            gameState.timeOfDay = times[nextTimeIdx];
+        grid.innerHTML = gridHtml;
+        summaryTable.innerHTML = tableHtml;
+      }
 
-            if (Math.random() < 0.4) {
-                gameState.weather = weathers[Math.floor(Math.random() * weathers.length)];
-            }
+      // Update Total Displays
+      document.getElementById('grand-total').innerText = `NT$ ${grandTotal.toLocaleString()}`;
+      document.getElementById('grand-count').innerText = grandCount;
+    }
 
-            updateEnvironmentDisplay();
-            checkAndTriggerEcoCrisis();
-        }
+    function renderTransactions() {
+      const container = document.getElementById('transaction-log-list');
+      if (!transactions || transactions.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-stone-400 text-xs">暫無動態點數異動紀錄</div>`;
+        return;
+      }
 
-        function updateEnvironmentDisplay() {
-            const timeIcons = { day: "☀️", dusk: "🌅", night: "🌙" };
-            const timeTexts = { day: "白晝", dusk: "黃昏", night: "夜晚" };
-            const weatherIcons = { sunny: "🍃", rainy: "🌧️", foggy: "🌫️" };
-            const weatherTexts = { sunny: "晴朗微風", rainy: "豐沛降雨", foggy: "終年濃霧" };
+      let html = '';
+      transactions.slice(0, 50).forEach(tx => {
+        const timeStr = tx.timestamp?.seconds 
+          ? new Date(tx.timestamp.seconds * 1000).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          : '剛才';
+        
+        const isPlus = tx.delta > 0;
+        const badgeColor = isPlus ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
 
-            document.getElementById('header-time-icon').textContent = timeIcons[gameState.timeOfDay];
-            document.getElementById('header-time-text').textContent = timeTexts[gameState.timeOfDay];
-            document.getElementById('header-weather-icon').textContent = weatherIcons[gameState.weather];
-            document.getElementById('header-weather-text').textContent = weatherTexts[gameState.weather];
-        }
+        html += `
+          <div class="px-5 py-3 flex items-center justify-between text-xs hover:bg-stone-50 transition">
+            <div class="flex items-center space-x-3">
+              <span class="px-2 py-0.5 rounded-md font-bold ${badgeColor}">
+                ${isPlus ? '+' + tx.delta : tx.delta}
+              </span>
+              <span class="font-semibold text-stone-700">${escapeHtml(tx.productName)}</span>
+            </div>
+            <div class="flex items-center gap-4 text-stone-500">
+              <span>小計變動: <strong class="text-stone-800">NT$ ${tx.totalChange}</strong></span>
+              <span class="text-stone-400">${timeStr}</span>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
 
-        function checkAndTriggerEcoCrisis() {
-            if (!gameState.activeCrisis && Math.random() < 0.5) {
-                const crisisTypes = [
-                    { type: "iguana", title: "外來種綠鬣蜥氾濫危機！", desc: "大量外來綠鬣蜥入侵水岸與淺山，壓迫原生兩棲與鳥類生存。", icon: "fa-dragon" },
-                    { type: "mikania", title: "小花蔓澤蘭蔓延危機！", desc: "惡名昭彰的『綠色沙漠』迅速覆蓋林緣，正在窒息原生樹木與植被。", icon: "fa-seedling" }
-                ];
-                gameState.activeCrisis = crisisTypes[Math.floor(Math.random() * crisisTypes.length)];
-                gameState.activeCrisis.spotId = gameState.selectedSpotId;
+    // Status Indicator Update
+    function updateSyncStatus(isOnline, text) {
+      const indicator = document.getElementById('sync-status-indicator');
+      const textSpan = document.getElementById('sync-status-text');
+      const footerStatus = document.getElementById('firebase-status');
 
-                const banner = document.getElementById('crisis-alert-banner');
-                document.getElementById('crisis-title').textContent = `⚠️ 生態警報：${gameState.activeCrisis.title}`;
-                document.getElementById('crisis-desc').textContent = gameState.activeCrisis.desc;
-                document.getElementById('crisis-icon').className = `fa-solid ${gameState.activeCrisis.icon} text-rose-400 text-xl`;
-                banner.classList.remove('hidden');
-                addLog("warn", `🚨 【生態危機爆發】${gameState.activeCrisis.title}`);
-            }
-        }
+      if (isOnline) {
+        indicator.className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse';
+        textSpan.innerText = text || '雲端同步中';
+        footerStatus.innerText = '雲端即時同步模式';
+      } else {
+        indicator.className = 'w-2 h-2 rounded-full bg-amber-400 inline-block';
+        textSpan.innerText = text || '本機離線模式';
+        footerStatus.innerText = '單機離線紀錄模式';
+      }
+    }
 
-        window.resolveEcoCrisis = function() {
-            SFX.capture();
-            const crisis = gameState.activeCrisis;
-            if (!crisis) return;
+    // Global Action Handlers attached to Window
+    window.handleCreateProduct = function(event) {
+      event.preventDefault();
+      const nameInput = document.getElementById('new-product-name');
+      const priceInput = document.getElementById('new-product-price');
 
-            // 檢查隊伍是否有適合生物
-            const squad = getActiveSquadObjects();
-            let resolved = false;
+      const name = nameInput.value.trim();
+      const price = parseFloat(priceInput.value);
 
-            if (crisis.type === 'iguana') {
-                resolved = squad.some(s => s.trophicLevel >= 4 || s.tags.some(t => t.includes("猛禽") || t.includes("掠食")));
-            } else {
-                resolved = squad.some(s => s.trophicLevel === 1 || s.tags.some(t => t.includes("分解") || t.includes("草食")));
-            }
+      if (!name || isNaN(price)) return;
 
-            if (resolved || squad.length >= 2) {
-                gameState.ecoPoints += 80;
-                gameState.reputation += 40;
-                addLog("success", `🛡️ 成功指派隨行隊伍化解【${crisis.title}】！生態環境恢復平衡，獲得 80 點數與 40 聲望！`);
-            } else {
-                gameState.ecoPoints = Math.max(0, gameState.ecoPoints - 30);
-                addLog("warn", `⚠️ 隊伍配置不足以完全壓制危機，生態點數受損 30 點！請配置更適合的掠食或分解者隊員。`);
-            }
+      createProductInDb(name, price, 0);
 
-            gameState.activeCrisis = null;
-            document.getElementById('crisis-alert-banner').classList.add('hidden');
-            updateHeaderStats();
-        };
+      nameInput.value = '';
+      priceInput.value = '';
+    };
 
-        function initClimateZoneDropdown() {
-            const zoneSelect = document.getElementById('climate-zone-select');
-            zoneSelect.value = gameState.selectedZoneId;
-            zoneSelect.addEventListener('change', onClimateZoneChange);
-            onClimateZoneChange();
-        }
+    window.changeQty = function(productId, delta) {
+      updateProductQuantityInDb(productId, delta);
+    };
 
-        function onClimateZoneChange() {
-            const zoneId = document.getElementById('climate-zone-select').value;
-            gameState.selectedZoneId = zoneId;
-            const filteredSpots = TAIWAN_EXPLORATION_SPOTS.filter(s => s.zoneId === zoneId);
-            const spotSelect = document.getElementById('spot-select');
-            spotSelect.innerHTML = '';
-            filteredSpots.forEach(spot => {
-                const opt = document.createElement('option');
-                opt.value = spot.id;
-                opt.textContent = `【${spot.county}】${spot.name}`;
-                spotSelect.appendChild(opt);
-            });
-            if (filteredSpots.length > 0) {
-                spotSelect.value = filteredSpots[0].id;
-                gameState.selectedSpotId = filteredSpots[0].id;
-            }
-            spotSelect.removeEventListener('change', onSpotChange);
-            spotSelect.addEventListener('change', onSpotChange);
-            onSpotChange();
-        }
+    window.openEditModal = function(productId) {
+      const prod = products.find(p => p.id === productId);
+      if (!prod) return;
 
-        function onSpotChange() {
-            const spotId = document.getElementById('spot-select').value || "spot_qilong_trail";
-            gameState.selectedSpotId = spotId;
-            const spotData = TAIWAN_EXPLORATION_SPOTS.find(s => s.id === spotId);
-            const zoneData = CLIMATE_ZONES.find(z => z.id === spotData.zoneId);
+      document.getElementById('edit-product-id').value = prod.id;
+      document.getElementById('edit-product-name').value = prod.name;
+      document.getElementById('edit-product-price').value = prod.price;
+      document.getElementById('edit-product-count').value = prod.count || 0;
 
-            document.getElementById('zone-tag-display').textContent = zoneData.name.split(' ')[1];
-            document.getElementById('spot-name-display').textContent = spotData.name;
-            document.getElementById('spot-elevation').textContent = `海拔: ${spotData.elevation}`;
-            document.getElementById('spot-temp-weather').textContent = spotData.tempWeather;
-            document.getElementById('spot-county-town').textContent = `${spotData.county} ${spotData.town}`;
-            document.getElementById('spot-desc-display').textContent = spotData.desc;
-            document.getElementById('stage-zone-badge').textContent = zoneData.name;
-            document.getElementById('stage-location-title').textContent = `${spotData.county} ${spotData.town} · ${spotData.name}`;
+      document.getElementById('edit-modal').classList.remove('hidden');
+    };
 
-            const unlocked = SPECIES_DATABASE.filter(s => s.spots.includes(spotId) && s.unlocked).length;
-            const total = SPECIES_DATABASE.filter(s => s.spots.includes(spotId)).length;
-            const progress = total > 0 ? Math.round((unlocked / total) * 100) : 0;
-            document.getElementById('spot-progress-val').textContent = `${progress}%`;
-            document.getElementById('spot-progress-bar').style.width = `${progress}%`;
-            SFX.click();
-        }
+    window.closeEditModal = function() {
+      document.getElementById('edit-modal').classList.add('hidden');
+    };
 
-        function getActiveSquadObjects() {
-            return gameState.activeSquad.map(id => SPECIES_DATABASE.find(s => s.id === id)).filter(Boolean);
-        }
+    window.handleSaveEdit = function(event) {
+      event.preventDefault();
+      const id = document.getElementById('edit-product-id').value;
+      const name = document.getElementById('edit-product-name').value.trim();
+      const price = document.getElementById('edit-product-price').value;
+      const count = document.getElementById('edit-product-count').value;
 
-        function renderActiveSquad() {
-            const container = document.getElementById('active-squad-container');
-            container.innerHTML = '';
-            const maxSquad = getMaxSquadSize();
-            document.getElementById('team-count').textContent = gameState.activeSquad.length;
-            document.getElementById('max-team-count').textContent = maxSquad;
-            document.getElementById('modal-max-squad').textContent = maxSquad;
+      if (!id || !name) return;
 
-            for (let i = 0; i < maxSquad; i++) {
-                const petId = gameState.activeSquad[i];
-                const card = document.createElement('div');
-                card.className = 'glass-card p-2 rounded-xl border flex flex-col items-center text-center justify-center min-h-[80px]';
-                if (petId) {
-                    const species = SPECIES_DATABASE.find(s => s.id === petId);
-                    card.classList.add('border-teal-500/40', 'bg-slate-900/80');
-                    card.innerHTML = `<span class="text-2xl mb-1">${species.icon}</span><span class="font-bold text-xs text-white truncate w-full">${species.name}</span><span class="text-[9px] text-teal-300 truncate w-full">${species.trophic}</span>`;
-                } else {
-                    card.classList.add('border-slate-800', 'border-dashed');
-                    card.innerHTML = `<div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 mb-1"><i class="fa-solid fa-plus text-xs"></i></div><span class="text-[10px] text-slate-500">空位</span>`;
-                }
-                container.appendChild(card);
-            }
-        }
+      updateProductDetailsInDb(id, name, price, count);
+      closeEditModal();
+    };
 
-        function calculate3DEcoSynergies() {
-            const squad = getActiveSquadObjects();
-            if (squad.length === 0) return [];
-            const synergies = [];
-            if (squad.some(s => s.trophicLevel === 1) && squad.some(s => s.trophicLevel === 2) && squad.some(s => s.trophicLevel >= 3)) {
-                synergies.push({ name: "【完整食物鏈爆發】", desc: "捕抓成功率 +20%", bonus: 0.20 });
-            }
-            if (squad.filter(s => s.endemic).length >= 2) {
-                synergies.push({ name: "【臺灣特有種共鳴】", desc: "特有與極危物種遭遇率 +20%", bonus: 0.15 });
-            }
-            return synergies;
-        }
+    window.confirmDeleteProduct = function(productId, productName) {
+      showCustomConfirm(`確定要刪除商品「${productName}」嗎？`, () => {
+        deleteProductInDb(productId);
+      });
+    };
 
-        function update3DEcoSynergies() {
-            const active = calculate3DEcoSynergies();
-            const container = document.getElementById('active-synergies-container');
-            container.innerHTML = '';
-            if (active.length === 0) {
-                container.innerHTML = `<div class="text-slate-500 italic text-[11px]">配置不同食性生物解鎖動態組合技...</div>`;
-                return;
-            }
-            active.forEach(syn => {
-                const div = document.createElement('div');
-                div.className = 'p-2 bg-teal-950/40 border border-teal-800/60 rounded-lg text-slate-200';
-                div.innerHTML = `<div class="font-bold text-teal-300 flex items-center justify-between"><span>${syn.name}</span><span class="text-[9px] bg-teal-900 px-1.5 py-0.5 rounded">生效中</span></div><div class="text-[10px] text-slate-400 mt-0.5">${syn.desc}</div>`;
-                container.appendChild(div);
-            });
-        }
+    window.confirmResetSession = function() {
+      showCustomConfirm("確定要重置並清空所有商品的銷售數量嗎？此動作將會歸零今日數據。", () => {
+        resetAllDataInDb();
+      });
+    };
 
-        function triggerExpedition() {
-            if (gameState.stamina < 10) { addLog("warn", "⚠️ 體力不足！請使用能量飲料補充。"); return; }
-            SFX.trace();
-            gameState.stamina -= 10;
-            document.getElementById('stamina-val').textContent = gameState.stamina;
+    window.exportCSV = function() {
+      if (products.length === 0) {
+        showToast("無可供匯出的數據", "info");
+        return;
+      }
 
-            const spotObj = TAIWAN_EXPLORATION_SPOTS.find(s => s.id === gameState.selectedSpotId);
-            const strategy = document.getElementById('strategy-select').value;
-            addLog("expedition", `🔍 探險發起：【${spotObj.county} ${spotObj.town} · ${spotObj.name}】[${gameState.timeOfDay === 'night' ? '🌙 夜晚' : '☀️ 白晝'}/${gameState.weather === 'rainy' ? '🌧️ 雨天' : '🍃 晴朗'}]`);
+      let csvContent = "\uFEFF"; // UTF-8 BOM for Excel Chinese characters
+      csvContent += "商品名稱,單價(NT$),銷售數量,銷售小計\n";
 
-            const spotCandidates = SPECIES_DATABASE.filter(species => species.spots.includes(spotObj.id));
-            const candidates = spotCandidates.map(species => {
-                let weight = species.rarityValue;
-                if (strategy === "bait" && species.trophicLevel <= 2) weight *= 2.5;
-                if (strategy === "stealth" && (species.endemic || species.trophicLevel >= 4)) weight *= 2.5;
-                if (gameState.timeOfDay === 'night' && species.tags.some(t => t.includes("夜行") || t.includes("夜"))) weight *= 2.0;
-                if (gameState.weather === 'rainy' && species.tags.some(t => t.includes("兩棲") || t.includes("水域"))) weight *= 2.0;
-                if (gameState.inventory.lens) weight *= 1.3;
-                return { species, weight };
-            });
+      let totalAmount = 0;
+      let totalQty = 0;
 
-            const totalWeight = candidates.reduce((acc, c) => acc + c.weight, 0);
-            let roll = Math.random() * totalWeight;
-            let target = candidates[0].species;
-            for (const item of candidates) {
-                roll -= item.weight;
-                if (roll <= 0) { target = item.species; break; }
-            }
+      products.forEach(p => {
+        const subtotal = (p.count || 0) * (p.price || 0);
+        totalAmount += subtotal;
+        totalQty += (p.count || 0);
+        csvContent += `"${p.name.replace(/"/g, '""')}",${p.price},${p.count || 0},${subtotal}\n`;
+      });
 
-            gameState.currentTrace = target;
-            renderTraceCard(target);
-        }
+      csvContent += `\n"總計",,${totalQty},${totalAmount}\n`;
 
-        function renderTraceCard(species) {
-            document.getElementById('radar-state').classList.add('hidden');
-            document.getElementById('encounter-card').classList.add('hidden');
-            document.getElementById('trace-card').classList.remove('hidden');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const dateStr = new Date().toISOString().slice(0, 10);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `市集銷售紀錄_${dateStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("CSV 報表已開始下載", "success");
+    };
 
-            document.getElementById('trace-type-badge').textContent = gameState.timeOfDay === 'night' ? "夜間獨特發光或聲訊" : "野外特徵爪痕與落葉";
-            document.getElementById('trace-desc').textContent = `在天候與時段加成下，發現 ${species.name} 的活躍跡象。`;
-            document.getElementById('trace-species-name-hint').textContent = `${species.name} (${species.trophic})`;
-            document.getElementById('trace-match-hint').textContent = `天候(${gameState.weather}) 時段(${gameState.timeOfDay}) 契合`;
-        }
+    window.switchTab = function(tabName) {
+      const salesTab = document.getElementById('tab-sales');
+      const historyTab = document.getElementById('tab-history');
+      const salesBtn = document.getElementById('tab-btn-sales');
+      const historyBtn = document.getElementById('tab-btn-history');
 
-        window.resolveTraceAction = function(actionType) {
-            if (!gameState.currentTrace) return;
-            SFX.click();
-            const species = gameState.currentTrace;
-            let successChance = actionType === 'observe' ? 0.85 : (actionType === 'sneak' ? 0.65 : 0.45);
-            if (Math.random() <= successChance) {
-                species.unlocked = true;
-                updateHeaderStats();
-                onSpotChange();
-                addLog("success", `🐾 追蹤成功！【${species.name}】解鎖圖鑑並發現目標！`);
-                gameState.currentEncounter = species;
-                gameState.currentTrace = null;
-                renderEncounterCard(species);
-            } else {
-                addLog("warn", `💨 追蹤失敗，【${species.name}】驚逃入林！`);
-                resetStageToRadar();
-            }
-        };
+      if (tabName === 'sales') {
+        salesTab.classList.remove('hidden');
+        historyTab.classList.add('hidden');
 
-        function renderEncounterCard(species) {
-            document.getElementById('trace-card').classList.add('hidden');
-            document.getElementById('encounter-card').classList.remove('hidden');
-            document.getElementById('encounter-icon').textContent = species.icon;
-            document.getElementById('encounter-name').textContent = species.name;
-            document.getElementById('encounter-scientific').textContent = species.scientificName;
-            document.getElementById('encounter-rarity').textContent = species.rarity;
-            document.getElementById('encounter-trophic').textContent = `${species.trophic} (Lv.${species.trophicLevel})`;
+        salesBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 bg-white text-emerald-900 shadow";
+        historyBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 text-emerald-100 hover:text-white";
+      } else {
+        salesTab.classList.add('hidden');
+        historyTab.classList.remove('hidden');
 
-            const traitsBox = document.getElementById('encounter-traits');
-            traitsBox.innerHTML = '';
-            species.tags.forEach(t => {
-                const tag = document.createElement('span');
-                tag.className = 'bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded text-[10px] border border-slate-700';
-                tag.textContent = t;
-                traitsBox.appendChild(tag);
-            });
-            document.getElementById('inv-bait-cnt').textContent = gameState.inventory.bait;
-            document.getElementById('inv-cage-cnt').textContent = gameState.inventory.cage;
-            document.getElementById('capture-success-rate').textContent = `基礎成功率: ${Math.round((species.rarityValue * 0.8 + 0.25) * 100)}%`;
-        }
+        historyBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 bg-white text-emerald-900 shadow";
+        salesBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 text-emerald-100 hover:text-white";
+      }
+    };
 
-        function attemptCapture() {
-            if (!gameState.currentEncounter) return;
-            const species = gameState.currentEncounter;
-            if (Math.random() <= (species.rarityValue * 0.8 + 0.30)) {
-                SFX.capture();
-                species.captured = true;
-                species.population = (species.population || 0) + 1;
-                gameState.ecoPoints += 45;
-                gameState.reputation += 20;
-                addLog("success", `🎉 成功捕獲【${species.name}】帶回生態島！獲得 45 點數與 20 聲望！`);
-                resetStageToRadar();
-                updateHeaderStats();
-            } else {
-                SFX.click();
-                addLog("warn", `💨 捕獲失敗：【${species.name}】掙脫逃逸！`);
-                resetStageToRadar();
-            }
-        }
+    // Helper functions
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
 
-        function observeSpeciesAction() {
-            if (!gameState.currentEncounter) return;
-            SFX.click();
-            gameState.ecoPoints += 20;
-            gameState.reputation += 10;
-            addLog("system", `📸 完成生態攝影紀錄！獲得 20 點數與 10 聲望。`);
-            resetStageToRadar();
-            updateHeaderStats();
-        }
+    function showToast(message, type = "info") {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let bgColor = "bg-stone-800 text-white";
+      if (type === "success") bgColor = "bg-emerald-700 text-white";
+      if (type === "error") bgColor = "bg-rose-700 text-white";
 
-        function useCaptureItem() {
-            if (!gameState.currentEncounter) return;
-            if (gameState.inventory.cage > 0) {
-                gameState.inventory.cage--;
-                document.getElementById('inv-cage-cnt').textContent = gameState.inventory.cage;
-                addLog("success", "📦 使用【專業誘捕籠】直接捕獲成功！");
-                attemptCapture();
-            } else {
-                addLog("warn", "⚠️ 沒有足夠的誘捕籠道具！");
-            }
-        }
+      toast.className = `${bgColor} text-xs font-medium px-4 py-3 rounded-xl shadow-lg flex items-center justify-between gap-3 transform transition-all duration-300 translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
 
-        function resetStageToRadar() {
-            gameState.currentTrace = null;
-            gameState.currentEncounter = null;
-            document.getElementById('trace-card').classList.add('hidden');
-            document.getElementById('encounter-card').classList.add('hidden');
-            document.getElementById('radar-state').classList.remove('hidden');
-        }
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
 
-        function autoGenerateEcoPoints() {
-            const totalPop = SPECIES_DATABASE.filter(s => s.captured).reduce((sum, s) => sum + s.population, 0);
-            if (totalPop > 0) {
-                gameState.ecoPoints += Math.max(5, totalPop * 2);
-                updateHeaderStats();
-            }
-        }
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
 
-        function updateHeaderStats() {
-            document.getElementById('header-eco-points').textContent = gameState.ecoPoints;
-            document.getElementById('header-reputation').textContent = gameState.reputation;
-            document.getElementById('player-level-badge').textContent = `Lv.${getPlayerLevel()} 保育專家`;
-            document.getElementById('header-guide-count').textContent = `${SPECIES_DATABASE.filter(s => s.unlocked).length}/100`;
-            document.getElementById('header-island-count').textContent = `${SPECIES_DATABASE.filter(s => s.captured && s.population > 0).length} 物種`;
-            renderActiveSquad();
-        }
+    function showCustomConfirm(message, onConfirm) {
+      const modal = document.createElement('div');
+      modal.className = "fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4";
+      modal.innerHTML = `
+        <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-xl border border-stone-100 text-center space-y-4">
+          <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <p class="text-sm font-medium text-stone-800">${message}</p>
+          <div class="flex items-center justify-center gap-2 pt-2">
+            <button id="cancel-btn" class="px-4 py-2 bg-stone-100 text-stone-600 text-xs font-medium rounded-xl hover:bg-stone-200">取消</button>
+            <button id="confirm-btn" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-xl hover:bg-rose-700 shadow">確定執行</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
 
-        function addLog(type, msg) {
-            const container = document.getElementById('console-log-list');
-            if(!container) return;
-            const item = document.createElement('div');
-            let color = "text-slate-300";
-            if (type === "expedition") color = "text-cyan-400";
-            if (type === "success") color = "text-emerald-400 font-bold";
-            if (type === "warn") color = "text-rose-400 font-bold";
-            const timeStr = new Date().toLocaleTimeString('zh-TW', { hour12: false });
-            item.className = `leading-relaxed ${color}`;
-            item.innerHTML = `<span class="text-slate-600 font-mono">[${timeStr}]</span> ${msg}`;
-            container.appendChild(item);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function bindEventListeners() {
-            document.getElementById('btn-start-expedition').addEventListener('click', triggerExpedition);
-            document.getElementById('btn-action-capture').addEventListener('click', attemptCapture);
-            document.getElementById('btn-action-observe').addEventListener('click', observeSpeciesAction);
-            document.getElementById('btn-action-use-item').addEventListener('click', useCaptureItem);
-            document.getElementById('btn-resolve-crisis').addEventListener('click', resolveEcoCrisis);
-
-            document.getElementById('nav-shop-btn').addEventListener('click', () => document.getElementById('modal-shop').classList.remove('hidden'));
-            document.getElementById('btn-close-shop').addEventListener('click', () => document.getElementById('modal-shop').classList.add('hidden'));
-            document.getElementById('nav-guide-btn').addEventListener('click', () => { renderGuideGrid('all'); document.getElementById('modal-field-guide').classList.remove('hidden'); });
-            document.getElementById('btn-close-guide').addEventListener('click', () => document.getElementById('modal-field-guide').classList.add('hidden'));
-            document.getElementById('nav-island-btn').addEventListener('click', () => { renderIslandSpeciesList(); document.getElementById('modal-eco-island').classList.remove('hidden'); });
-            document.getElementById('btn-close-island').addEventListener('click', () => document.getElementById('modal-eco-island').classList.add('hidden'));
-            document.getElementById('open-pet-modal-btn').addEventListener('click', () => { openPetManagementModal(); });
-            document.getElementById('btn-close-pet-modal').addEventListener('click', () => document.getElementById('modal-pet-management').classList.add('hidden'));
-            document.getElementById('btn-save-squad').addEventListener('click', () => document.getElementById('modal-pet-management').classList.add('hidden'));
-            document.getElementById('nav-reset-btn').addEventListener('click', () => { if(confirm("確定重置遊戲？")) location.reload(); });
-            document.getElementById('btn-clear-log').addEventListener('click', () => document.getElementById('console-log-list').innerHTML = '');
-        }
-
-        window.buyItem = function(key, cost) {
-            if (gameState.ecoPoints < cost) { addLog("warn", "⚠️ 點數不足！"); return; }
-            gameState.ecoPoints -= cost;
-            if (key === 'energyDrink') { gameState.inventory.energyDrink++; gameState.stamina = Math.min(100, gameState.stamina + 30); }
-            else if (key === 'bait') gameState.inventory.bait++;
-            else if (key === 'cage') gameState.inventory.cage++;
-            updateHeaderStats();
-            addLog("success", `🛍️ 成功購買補給品！`);
-        };
-
-        function renderGuideGrid(filter) {
-            const grid = document.getElementById('guide-grid-container');
-            grid.innerHTML = '';
-            SPECIES_DATABASE.forEach(species => {
-                const card = document.createElement('div');
-                card.className = `glass-card p-3 rounded-xl border flex flex-col justify-between ${species.unlocked ? 'border-emerald-500/40 bg-slate-900/90' : 'border-slate-800 opacity-60 bg-slate-950/60'}`;
-                card.innerHTML = `<div class="flex items-center justify-between mb-1"><span class="text-2xl">${species.unlocked ? species.icon : '❓'}</span><span class="text-[9px] px-1.5 py-0.5 rounded ${species.captured ? 'bg-teal-950 text-teal-300' : 'bg-slate-800 text-slate-500'}">${species.captured ? '已捕獲' : species.unlocked ? '已解鎖' : '未發現'}</span></div><h4 class="font-bold text-xs text-white truncate">${species.unlocked ? species.name : '未知生物'}</h4><p class="text-[9px] text-slate-400 italic">${species.unlocked ? species.scientificName : '???'}</p>`;
-                grid.appendChild(card);
-            });
-            document.getElementById('guide-completion-rate').textContent = `${Math.round((SPECIES_DATABASE.filter(s => s.unlocked).length / SPECIES_DATABASE.length) * 100)}%`;
-        }
-
-        function renderIslandSpeciesList() {
-            const container = document.getElementById('island-species-list');
-            container.innerHTML = '';
-            const captured = SPECIES_DATABASE.filter(s => s.captured && s.population > 0);
-            document.getElementById('island-total-population').textContent = `${captured.length} 物種`;
-            if (captured.length === 0) { container.innerHTML = `<div class="text-slate-500 text-center py-6 text-xs">生態島尚無棲息生物。</div>`; return; }
-            captured.forEach(s => {
-                const item = document.createElement('div');
-                item.className = 'glass-card p-3 rounded-xl border border-slate-800 flex items-center justify-between gap-3';
-                item.innerHTML = `<div class="flex items-center gap-3"><span class="text-3xl">${s.icon}</span><div><div class="font-bold text-sm text-white">${s.name} (數量: ${s.population})</div><div class="text-[11px] text-slate-400">生態位: ${s.trophic}</div></div></div>`;
-                container.appendChild(item);
-            });
-        }
-
-        function openPetManagementModal() {
-            const grid = document.getElementById('captured-pets-selection-grid');
-            grid.innerHTML = '';
-            const captured = SPECIES_DATABASE.filter(s => s.captured && s.population > 0);
-            if (captured.length === 0) { grid.innerHTML = `<div class="text-slate-500 text-xs col-span-2 text-center py-4">尚無可配置寵物。</div>`; return; }
-            captured.forEach(species => {
-                const isSelected = gameState.activeSquad.includes(species.id);
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border flex items-center justify-between cursor-pointer ${isSelected ? 'bg-teal-950/80 border-teal-500' : 'bg-slate-950 border-slate-800'}`;
-                card.onclick = () => {
-                    if (isSelected) gameState.activeSquad = gameState.activeSquad.filter(id => id !== species.id);
-                    else if (gameState.activeSquad.length < getMaxSquadSize()) gameState.activeSquad.push(species.id);
-                    renderActiveSquad();
-                    update3DEcoSynergies();
-                    openPetManagementModal();
-                };
-                card.innerHTML = `<div class="flex items-center gap-2.5"><span class="text-2xl">${species.icon}</span><div><div class="font-bold text-xs text-white">${species.name}</div><div class="text-[10px] text-teal-300">${species.trophic}</div></div></div><span class="text-xs px-2 py-1 rounded ${isSelected ? 'bg-teal-600 text-white' : 'bg-slate-800 text-slate-400'}">${isSelected ? '隨行中' : '選擇'}</span>`;
-                grid.appendChild(card);
-            });
-            document.getElementById('modal-pet-management').classList.remove('hidden');
-        }
-    </script>
+      modal.querySelector('#cancel-btn').onclick = () => modal.remove();
+      modal.querySelector('#confirm-btn').onclick = () => {
+        onConfirm();
+        modal.remove();
+      };
+    }
+  </script>
 </body>
 </html>
