@@ -1,844 +1,1885 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>市集銷售實時紀錄系統 Market Sales Tracker</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts Inter & Noto Sans TC -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
-              500: '#22c55e',
-              600: '#16a34a',
-              700: '#15803d',
-              800: '#166534',
-            },
-            earth: {
-              50: '#fffbeb',
-              100: '#fef3c7',
-              500: '#f59e0b',
-              700: '#b45309',
-              800: '#78350f',
-            }
-          },
-          fontFamily: {
-            sans: ['Noto Sans TC', 'Inter', 'sans-serif'],
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天堂 Lineage - 最新整合全功能 RPG</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #08080a;
+            color: #d1d5db;
+            user-select: none;
         }
-      }
-    }
-  </script>
+        .retro-font { font-family: 'Press Start 2P', cursive; }
+        
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-  <style>
-    /* Custom scrollbar for transaction history */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-  </style>
+        .lineage-border {
+            border: 2px solid #5a4b38;
+            box-shadow: inset 0 0 12px #000, 0 0 8px rgba(0,0,0,0.9);
+            background: linear-gradient(180deg, #1c1712 0%, #0c0a08 100%);
+        }
+        .lineage-box {
+            border: 1px solid #4a3e2e;
+            background-color: rgba(15, 13, 10, 0.9);
+        }
+
+        /* Rarity classes */
+        .rarity-0 { color: #d1d5db; border-color: #4b5563; }
+        .rarity-1 { color: #4ade80; border-color: #15803d; }
+        .rarity-2 { color: #60a5fa; border-color: #1d4ed8; }
+        .rarity-3 { color: #f87171; border-color: #b91c1c; }
+        .rarity-4 { color: #c084fc; border-color: #7e22ce; }
+        .rarity-5 { color: #fbbf24; border-color: #d97706; text-shadow: 0 0 6px rgba(251,191,36,0.8); }
+        
+        .bg-rarity-0 { background-color: rgba(156, 163, 175, 0.08); }
+        .bg-rarity-1 { background-color: rgba(74, 222, 128, 0.1); }
+        .bg-rarity-2 { background-color: rgba(96, 165, 250, 0.12); }
+        .bg-rarity-3 { background-color: rgba(248, 113, 113, 0.15); }
+        .bg-rarity-4 { background-color: rgba(192, 132, 252, 0.2); }
+        .bg-rarity-5 { background-color: rgba(251, 191, 36, 0.25); border: 1px solid #fbbf24; }
+
+        .gold-glow { animation: goldGlow 1.8s infinite; }
+        @keyframes goldGlow {
+            0%, 100% { filter: drop-shadow(0 0 2px #fbbf24); }
+            50% { filter: drop-shadow(0 0 8px #fbbf24); }
+        }
+    </style>
 </head>
-<body class="bg-stone-50 text-stone-800 font-sans min-h-screen flex flex-col justify-between selection:bg-emerald-100 selection:text-emerald-800">
+<body class="h-screen flex flex-col justify-between overflow-hidden bg-black text-xs md:text-sm">
 
-  <!-- Main Navigation & Header -->
-  <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-40">
-    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="bg-amber-500 text-stone-900 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-inner">
-          <i class="fa-solid font-bold fa-store"></i>
-        </div>
-        <div>
-          <h1 class="font-bold text-lg leading-tight">市集銷售隨手記</h1>
-          <p class="text-xs text-emerald-200 flex items-center gap-1">
-            <span id="sync-status-indicator" class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
-            <span id="sync-status-text">雲端同步中</span>
-          </p>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs -->
-      <nav class="flex bg-emerald-900/60 p-1 rounded-xl text-sm font-medium">
-        <button id="tab-btn-sales" onclick="switchTab('sales')" class="px-3 py-1.5 rounded-lg transition-all duration-200 bg-white text-emerald-900 shadow">
-          <i class="fa-solid fa-calculator mr-1"></i>銷售主頁
-        </button>
-        <button id="tab-btn-history" onclick="switchTab('history')" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-emerald-100 hover:text-white">
-          <i class="fa-solid fa-chart-line mr-1"></i>歷史與統計
-        </button>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Dynamic Summary Header Banner (Sticky Below Nav) -->
-  <div class="bg-amber-50 border-b border-amber-200/80 px-4 py-3 shadow-sm">
-    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-baseline space-x-2">
-        <span class="text-sm font-medium text-stone-600">本日累積銷售總額:</span>
-        <span id="grand-total" class="text-3xl font-extrabold text-emerald-700">NT$ 0</span>
-      </div>
-      <div class="flex items-center space-x-4 text-sm text-stone-600">
-        <div>總售出件數: <span id="grand-count" class="font-bold text-stone-800">0</span> 包/件</div>
-        <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg text-sm shadow transition flex items-center gap-1">
-          <i class="fa-solid fa-plus"></i> 新增品項
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content Container -->
-  <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
-
-    <!-- TAB 1: SALES MAIN PAGE -->
-    <section id="tab-sales" class="space-y-6">
-
-      <!-- Quick Add New Product Bar -->
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200">
-        <h2 class="text-sm font-semibold text-stone-700 mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-cart-plus text-emerald-600"></i> 快速新增銷售商品
-        </h2>
-        <form id="add-product-form" onsubmit="handleCreateProduct(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-          <div class="sm:col-span-6">
-            <input type="text" id="new-product-name" placeholder="商品名稱 (例: 芭蕉乾, 有機草莓)" required
-              class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
-          </div>
-          <div class="sm:col-span-4">
-            <div class="relative">
-              <span class="absolute left-3 top-2.5 text-stone-400 text-sm">NT$</span>
-              <input type="number" id="new-product-price" min="0" step="1" placeholder="單價" required
-                class="w-full pl-11 pr-3 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
+    <!-- CHARACTER CREATION MODAL OVERLAY -->
+    <div id="character-select-modal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+        <div class="lineage-border p-6 rounded-xl max-w-2xl w-full text-center space-y-6">
+            <div>
+                <h1 class="text-2xl font-black text-amber-400 tracking-wider">《天堂 Lineage》角色職業選擇</h1>
+                <p class="text-stone-400 text-xs mt-1">選擇出身職業開啟亞丁大陸冒險旅程</p>
             </div>
-          </div>
-          <div class="sm:col-span-2">
-            <button type="submit" class="w-full h-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-1">
-              <i class="fa-solid fa-plus"></i> 新增
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                <!-- Prince -->
+                <div class="class-card lineage-box p-4 rounded-lg border-2 border-stone-700 hover:border-amber-400 cursor-pointer transition flex flex-col justify-between group" data-class="prince">
+                    <div>
+                        <div class="flex items-center space-x-2 text-amber-400 font-bold text-base mb-2">
+                            <i class="fa-solid fa-crown text-xl"></i>
+                            <span>王族 / 君主</span>
+                        </div>
+                        <p class="text-stone-300 text-xs mb-3">領袖象徵，能力均衡。天賦提供額外金幣與經驗取得加成。</p>
+                        <div class="space-y-1 text-[11px] text-stone-400">
+                            <div><strong class="text-amber-300">專屬天賦:</strong> 指揮官 (EXP/金幣 +15%)</div>
+                            <div><strong class="text-red-400">單體技能:</strong> 勇猛意志</div>
+                            <div><strong class="text-yellow-400">範圍技能:</strong> 光輝打擊 (AOE)</div>
+                        </div>
+                    </div>
+                    <button class="btn-select-class mt-4 w-full py-1.5 bg-amber-700 group-hover:bg-amber-600 text-amber-100 font-bold rounded text-xs" data-class="prince">選擇王族</button>
+                </div>
+
+                <!-- Knight -->
+                <div class="class-card lineage-box p-4 rounded-lg border-2 border-stone-700 hover:border-red-500 cursor-pointer transition flex flex-col justify-between group" data-class="knight">
+                    <div>
+                        <div class="flex items-center space-x-2 text-red-400 font-bold text-base mb-2">
+                            <i class="fa-solid fa-shield-halved text-xl"></i>
+                            <span>騎士</span>
+                        </div>
+                        <p class="text-stone-300 text-xs mb-3">近戰之王，血量高、物理減傷強。近戰範圍震擊傷害極高。</p>
+                        <div class="space-y-1 text-[11px] text-stone-400">
+                            <div><strong class="text-red-300">專屬天賦:</strong> 堅毅防禦 (物理減傷 +5)</div>
+                            <div><strong class="text-red-400">單體技能:</strong> 衝擊之暈</div>
+                            <div><strong class="text-yellow-400">範圍技能:</strong> 大地震擊 (AOE)</div>
+                        </div>
+                    </div>
+                    <button class="btn-select-class mt-4 w-full py-1.5 bg-red-800 group-hover:bg-red-700 text-red-100 font-bold rounded text-xs" data-class="knight">選擇騎士</button>
+                </div>
+
+                <!-- Elf -->
+                <div class="class-card lineage-box p-4 rounded-lg border-2 border-stone-700 hover:border-emerald-400 cursor-pointer transition flex flex-col justify-between group" data-class="elf">
+                    <div>
+                        <div class="flex items-center space-x-2 text-emerald-400 font-bold text-base mb-2">
+                            <i class="fa-solid fa-bow-arrow text-xl"></i>
+                            <span>妖精</span>
+                        </div>
+                        <p class="text-stone-300 text-xs mb-3">敏捷射手，極高攻速與暴擊率。技能可進行遠程廣域掃蕩。</p>
+                        <div class="space-y-1 text-[11px] text-stone-400">
+                            <div><strong class="text-emerald-300">專屬天賦:</strong> 精靈風速 (暴擊率 +15%)</div>
+                            <div><strong class="text-red-400">單體技能:</strong> 三重矢</div>
+                            <div><strong class="text-yellow-400">範圍技能:</strong> 亂箭風暴 (AOE)</div>
+                        </div>
+                    </div>
+                    <button class="btn-select-class mt-4 w-full py-1.5 bg-emerald-800 group-hover:bg-emerald-700 text-emerald-100 font-bold rounded text-xs" data-class="elf">選擇妖精</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP HEADER / PLAYER STATUS BAR -->
+    <header class="w-full bg-gradient-to-b from-stone-900 via-stone-950 to-black border-b-2 border-yellow-900/60 p-2 shadow-xl z-20">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center space-x-3">
+                <div id="class-avatar" class="w-10 h-10 rounded border-2 border-yellow-600 bg-stone-800 flex items-center justify-center text-yellow-500 font-bold text-lg shadow-inner">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-amber-400 font-bold text-sm md:text-base" id="char-name">王族冒險者</span>
+                        <span class="bg-amber-900/50 text-amber-300 border border-amber-700/50 text-[11px] px-1.5 py-0.5 rounded font-mono">Lv.<span id="char-level">1</span></span>
+                    </div>
+                    <div class="text-stone-400 text-[11px] flex space-x-3 mt-0.5">
+                        <span>AC: <strong class="text-cyan-400" id="char-ac">10</strong></span>
+                        <span>傷害: <strong class="text-red-400" id="char-dmg">2-6</strong></span>
+                        <span>命中: <strong class="text-green-400" id="char-hit">5</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HP / MP / EXP Bars -->
+            <div class="flex-1 max-w-md mx-2 space-y-1">
+                <div class="relative w-full h-4 bg-stone-900 rounded border border-stone-700 overflow-hidden shadow-inner">
+                    <div id="hp-bar" class="h-full bg-gradient-to-r from-red-800 to-red-600 transition-all duration-200" style="width: 100%;"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-[10px] text-white font-bold drop-shadow">
+                        HP: <span id="hp-text">130 / 130</span>
+                    </div>
+                </div>
+                <div class="relative w-full h-3.5 bg-stone-900 rounded border border-stone-700 overflow-hidden shadow-inner">
+                    <div id="mp-bar" class="h-full bg-gradient-to-r from-blue-800 to-blue-500 transition-all duration-200" style="width: 100%;"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-[10px] text-white font-bold drop-shadow">
+                        MP: <span id="mp-text">40 / 40</span>
+                    </div>
+                </div>
+                <div class="relative w-full h-2 bg-stone-950 rounded border border-stone-800 overflow-hidden">
+                    <div id="exp-bar" class="h-full bg-gradient-to-r from-emerald-600 to-green-400 transition-all duration-100" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- Right Gold & Settings -->
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1.5 bg-stone-900/90 border border-amber-600/40 px-3 py-1 rounded-md gold-glow">
+                    <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
+                    <span class="text-amber-300 font-mono font-bold text-xs md:text-sm" id="char-gold">500</span>
+                </div>
+                <button id="btn-sound" class="p-1.5 rounded bg-stone-800 hover:bg-stone-700 text-stone-300 border border-stone-600 transition" title="聲音開關">
+                    <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BATTLE & MANAGEMENT SECTION -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-2 grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
+        
+        <!-- CANVAS BATTLE & HOTBAR (7 COLS) -->
+        <section class="lg:col-span-7 flex flex-col h-full lineage-border rounded-lg p-2 bg-black relative overflow-hidden">
+            <div class="flex justify-between items-center mb-1.5 px-2 py-1 bg-stone-900/90 rounded border border-stone-800">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-map-location-dot text-amber-500"></i>
+                    <span class="font-bold text-amber-200" id="current-zone-name">說話之島 (歌島)</span>
+                    <span id="buff-indicator" class="hidden text-[10px] bg-red-900 text-yellow-300 px-1.5 py-0.5 rounded font-bold border border-yellow-500 animate-pulse">🔥 狂暴100%暴擊中</span>
+                </div>
+                <button id="btn-auto-attack" class="px-3 py-1 rounded text-xs font-bold transition bg-green-700 hover:bg-green-600 text-white border border-green-500 flex items-center space-x-1">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>自動掛機打怪: ON</span>
+                </button>
+            </div>
+
+            <!-- Canvas Viewport -->
+            <div class="relative flex-1 w-full h-full rounded border border-stone-800 overflow-hidden bg-stone-950">
+                <canvas id="gameCanvas" class="w-full h-full object-cover cursor-crosshair"></canvas>
+                
+                <!-- Announcement Banner -->
+                <div id="drop-announcement" class="absolute top-3 left-1/2 transform -translate-x-1/2 pointer-events-none transition-all duration-300 opacity-0 scale-95 z-30">
+                    <div class="bg-black/90 border-2 border-yellow-500 px-4 py-1.5 rounded-lg shadow-2xl text-center">
+                        <div class="text-amber-400 font-bold text-[10px] tracking-widest uppercase">★ 系統寶物廣播 ★</div>
+                        <div id="announcement-text" class="text-xs font-bold text-white mt-0.5">獲得 強化武器施法卷軸！</div>
+                    </div>
+                </div>
+
+                <div class="absolute top-2 left-2 bg-stone-950/80 border border-stone-800 px-2 py-1 rounded text-[11px] text-stone-300 pointer-events-none">
+                    周圍怪物數量: <strong id="monster-count-num" class="text-amber-400 font-mono">0</strong> / 20
+                </div>
+            </div>
+
+            <!-- SKILLS & POTIONS HOTBAR -->
+            <div class="mt-2 grid grid-cols-4 sm:grid-cols-9 gap-1">
+                <button id="btn-use-hp" class="bg-gradient-to-b from-stone-800 to-stone-900 border border-red-900/80 hover:border-red-500 p-1 rounded flex flex-col items-center justify-center transition">
+                    <span class="text-[10px] text-red-400 font-bold">紅藥水</span>
+                    <span id="cnt-hp-potion" class="font-mono text-xs font-bold text-amber-400">10</span>
+                </button>
+
+                <button id="btn-use-ghp" class="bg-gradient-to-b from-red-950 to-stone-900 border border-red-500 hover:border-yellow-400 p-1 rounded flex flex-col items-center justify-center transition">
+                    <span class="text-[10px] text-red-300 font-bold">大紅(滿)</span>
+                    <span id="cnt-ghp-potion" class="font-mono text-xs font-bold text-yellow-400">2</span>
+                </button>
+
+                <button id="btn-use-mp" class="bg-gradient-to-b from-stone-800 to-stone-900 border border-blue-900/80 hover:border-blue-500 p-1 rounded flex flex-col items-center justify-center transition">
+                    <span class="text-[10px] text-blue-400 font-bold">藍藥水</span>
+                    <span id="cnt-mp-potion" class="font-mono text-xs font-bold text-amber-400">5</span>
+                </button>
+
+                <button id="btn-use-gmp" class="bg-gradient-to-b from-blue-950 to-stone-900 border border-cyan-400 hover:border-yellow-400 p-1 rounded flex flex-col items-center justify-center transition">
+                    <span class="text-[10px] text-cyan-300 font-bold">大藍(滿)</span>
+                    <span id="cnt-gmp-potion" class="font-mono text-xs font-bold text-yellow-400">2</span>
+                </button>
+
+                <button id="btn-use-green" class="bg-gradient-to-b from-stone-800 to-stone-900 border border-emerald-900/80 hover:border-emerald-500 p-1 rounded flex flex-col items-center justify-center transition">
+                    <span class="text-[10px] text-emerald-400 font-bold">綠藥水</span>
+                    <span id="cnt-green-potion" class="font-mono text-xs font-bold text-amber-400">3</span>
+                </button>
+
+                <button id="btn-skill-buff" class="bg-gradient-to-b from-red-950 to-stone-900 border border-red-700 hover:border-red-400 p-1 rounded flex flex-col items-center justify-center text-red-200 transition">
+                    <span class="text-[10px] font-bold text-yellow-300">⚡ 狂暴覺醒</span>
+                    <span class="text-[9px] text-stone-400">MP:25</span>
+                </button>
+
+                <button id="btn-skill-single" class="bg-gradient-to-b from-blue-900 to-blue-950 border border-blue-700 hover:border-blue-400 p-1 rounded flex flex-col items-center justify-center text-blue-200 transition">
+                    <span id="skill-single-name" class="text-[10px] font-bold">勇猛意志</span>
+                    <span id="skill-single-lv-text" class="text-[9px] text-amber-300">Lv.1</span>
+                </button>
+
+                <button id="btn-skill-aoe" class="bg-gradient-to-b from-yellow-900 to-stone-950 border border-yellow-700 hover:border-yellow-400 p-1 rounded flex flex-col items-center justify-center text-yellow-200 transition">
+                    <span id="skill-aoe-name" class="text-[10px] font-bold">光輝打擊</span>
+                    <span id="skill-aoe-lv-text" class="text-[9px] text-amber-300">Lv.1 (AOE)</span>
+                </button>
+
+                <button id="btn-skill-ult" class="bg-gradient-to-b from-amber-600 via-red-700 to-purple-900 border border-yellow-300 hover:scale-105 p-1 rounded flex flex-col items-center justify-center text-yellow-100 transition shadow-lg">
+                    <span class="text-[10px] font-black text-amber-200">💥 末日審判</span>
+                    <span id="skill-ult-lv-text" class="text-[9px] text-yellow-300">Lv.1 (全屏)</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- RIGHT MANAGEMENT TABS (5 COLS) -->
+        <section class="lg:col-span-5 flex flex-col h-full lineage-border rounded-lg bg-stone-950 p-2 overflow-hidden">
+            <div class="flex border-b border-stone-800 mb-2 gap-1 text-[11px] md:text-xs">
+                <button class="tab-btn active border-b-2 border-amber-500 text-amber-400 font-bold px-2 py-1 bg-stone-900/60 rounded-t" data-tab="tab-inventory">
+                    <i class="fa-solid fa-bag-shopping mr-0.5"></i>背包
+                </button>
+                <button class="tab-btn text-stone-400 hover:text-stone-200 font-bold px-2 py-1 bg-stone-900/20 rounded-t" data-tab="tab-stats">
+                    <i class="fa-solid fa-user-gear mr-0.5"></i>屬性
+                </button>
+                <button class="tab-btn text-stone-400 hover:text-stone-200 font-bold px-2 py-1 bg-stone-900/20 rounded-t" data-tab="tab-skills">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i>技能
+                </button>
+                <button class="tab-btn text-stone-400 hover:text-stone-200 font-bold px-2 py-1 bg-stone-900/20 rounded-t" data-tab="tab-maps">
+                    <i class="fa-solid fa-map mr-0.5"></i>獵場/Boss
+                </button>
+                <button class="tab-btn text-stone-400 hover:text-stone-200 font-bold px-2 py-1 bg-stone-900/20 rounded-t" data-tab="tab-shop">
+                    <i class="fa-solid fa-store mr-0.5"></i>商店
+                </button>
+            </div>
+
+            <!-- Tab Contents Container -->
+            <div class="flex-1 overflow-y-auto pr-1">
+
+                <!-- TAB 1: INVENTORY & EQUIPMENT -->
+                <div id="tab-inventory" class="tab-content space-y-2">
+                    <div class="lineage-box p-2 rounded">
+                        <div class="text-[11px] font-bold text-amber-400 mb-1.5 border-b border-stone-800 pb-1 flex justify-between">
+                            <span><i class="fa-solid fa-user-shield mr-1"></i>身上裝備 (點擊進行穿脫或強化)</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <div class="equip-slot bg-stone-900 border border-stone-700 hover:border-amber-500 rounded p-1 flex flex-col items-center cursor-pointer relative" data-slot="weapon">
+                                <span class="text-[9px] text-stone-500">武器</span>
+                                <div id="slot-weapon" class="text-xs font-bold text-center truncate w-full text-stone-400">無</div>
+                            </div>
+                            <div class="equip-slot bg-stone-900 border border-stone-700 hover:border-amber-500 rounded p-1 flex flex-col items-center cursor-pointer relative" data-slot="armor">
+                                <span class="text-[9px] text-stone-500">盔甲</span>
+                                <div id="slot-armor" class="text-xs font-bold text-center truncate w-full text-stone-400">無</div>
+                            </div>
+                            <div class="equip-slot bg-stone-900 border border-stone-700 hover:border-amber-500 rounded p-1 flex flex-col items-center cursor-pointer relative" data-slot="helmet">
+                                <span class="text-[9px] text-stone-500">頭盔</span>
+                                <div id="slot-helmet" class="text-xs font-bold text-center truncate w-full text-stone-500">無</div>
+                            </div>
+                            <div class="equip-slot bg-stone-900 border border-stone-700 hover:border-amber-500 rounded p-1 flex flex-col items-center cursor-pointer relative" data-slot="gloves">
+                                <span class="text-[9px] text-stone-500">手套</span>
+                                <div id="slot-gloves" class="text-xs font-bold text-center truncate w-full text-stone-500">無</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Grid -->
+                    <div class="lineage-box p-2 rounded">
+                        <div class="flex justify-between items-center mb-1.5 border-b border-stone-800 pb-1 text-[11px]">
+                            <span class="font-bold text-stone-300">
+                                <i class="fa-solid fa-box-open mr-1 text-amber-500"></i>背包物品 (<span id="inv-capacity">0</span>/24)
+                            </span>
+                            <div class="space-x-1">
+                                <button id="btn-toggle-sell-mode" class="px-2 py-0.5 rounded bg-stone-800 border border-stone-600 hover:border-amber-400 text-stone-300 text-[10px]">
+                                    開啟販售模式: OFF
+                                </button>
+                            </div>
+                        </div>
+                        <div id="inventory-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-1.5 min-h-[160px]">
+                            <!-- Inventory items rendered JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: TALENT & STATS -->
+                <div id="tab-stats" class="tab-content hidden space-y-2">
+                    <div class="lineage-box p-3 rounded space-y-2">
+                        <div class="flex justify-between items-center border-b border-stone-800 pb-1.5">
+                            <span class="font-bold text-amber-400">剩餘屬性點數 (升級+10):</span>
+                            <span id="stat-points" class="font-mono text-base font-bold text-yellow-400">0</span>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-red-400 text-xs">力量 (STR)</div>
+                                <div class="text-[10px] text-stone-400">提升物理攻擊力與命中</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="stat-str" class="font-mono font-bold text-stone-200">13</span>
+                                <button class="btn-add-stat bg-amber-700 hover:bg-amber-600 text-white w-5 h-5 rounded flex items-center justify-center font-bold text-xs" data-stat="str">+</button>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-green-400 text-xs">敏捷 (DEX)</div>
+                                <div class="text-[10px] text-stone-400">降低 AC 防禦力</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="stat-dex" class="font-mono font-bold text-stone-200">11</span>
+                                <button class="btn-add-stat bg-amber-700 hover:bg-amber-600 text-white w-5 h-5 rounded flex items-center justify-center font-bold text-xs" data-stat="dex">+</button>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-yellow-400 text-xs">體質 (CON)</div>
+                                <div class="text-[10px] text-stone-400">提升最大血量 HP 上限</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="stat-con" class="font-mono font-bold text-stone-200">12</span>
+                                <button class="btn-add-stat bg-amber-700 hover:bg-amber-600 text-white w-5 h-5 rounded flex items-center justify-center font-bold text-xs" data-stat="con">+</button>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-blue-400 text-xs">智力 (INT)</div>
+                                <div class="text-[10px] text-stone-400">提升 MP 上限與技能爆發力</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="stat-int" class="font-mono font-bold text-stone-200">10</span>
+                                <button class="btn-add-stat bg-amber-700 hover:bg-amber-600 text-white w-5 h-5 rounded flex items-center justify-center font-bold text-xs" data-stat="int">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: SKILL SYSTEM -->
+                <div id="tab-skills" class="tab-content hidden space-y-2">
+                    <div class="lineage-box p-3 rounded space-y-2">
+                        <div class="flex justify-between items-center border-b border-stone-800 pb-1.5">
+                            <span class="font-bold text-amber-400">剩餘技能點數 (升級+5):</span>
+                            <span id="skill-points-display" class="font-mono text-base font-bold text-yellow-400">0</span>
+                        </div>
+
+                        <div class="text-xs font-bold text-stone-300 mt-2 mb-1">【基礎被動強化 (最高 Lv.100)】</div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-red-400 text-xs">強化攻擊 (Atk Boost) <span class="text-amber-300 font-mono" id="sk-lv-atk">Lv.0/100</span></div>
+                                <div class="text-[10px] text-stone-400">每級提升物理攻擊力 +3</div>
+                            </div>
+                            <button class="btn-upgrade-skill bg-amber-700 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold text-xs" data-skill="atk">升級</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-cyan-400 text-xs">強化防禦 (Defense Boost) <span class="text-amber-300 font-mono" id="sk-lv-def">Lv.0/100</span></div>
+                                <div class="text-[10px] text-stone-400">每級降低 AC 防禦力 -2</div>
+                            </div>
+                            <button class="btn-upgrade-skill bg-amber-700 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold text-xs" data-skill="def">升級</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-green-400 text-xs">強化血量 (Max HP) <span class="text-amber-300 font-mono" id="sk-lv-hp">Lv.0/100</span></div>
+                                <div class="text-[10px] text-stone-400">每級提升最大生命值 +30</div>
+                            </div>
+                            <button class="btn-upgrade-skill bg-amber-700 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold text-xs" data-skill="hp">升級</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-blue-400 text-xs">強化魔力 (Max MP) <span class="text-amber-300 font-mono" id="sk-lv-mp">Lv.0/100</span></div>
+                                <div class="text-[10px] text-stone-400">每級提升最大魔力值 +15</div>
+                            </div>
+                            <button class="btn-upgrade-skill bg-amber-700 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold text-xs" data-skill="mp">升級</button>
+                        </div>
+
+                        <div class="text-xs font-bold text-stone-300 mt-3 mb-1">【戰鬥與全屏技能強化 (最高 Lv.100)】</div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-yellow-400 text-xs">單體技能等級 <span class="text-amber-300 font-mono" id="sk-lv-single">Lv.1/100</span></div>
+                                <div class="text-[10px] text-stone-400">提升單體爆發打擊傷害倍率</div>
+                            </div>
+                            <button class="btn-upgrade-skill bg-amber-700 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold text-xs" data-skill="single">升級</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-amber-400 text-xs">範圍技能 (AOE) 等級 <span class="text-amber-300 font-mono" id="sk-lv-aoe">Lv.1/100</span></div>
+                                <div class="text-[10px] text-stone-400">強化打擊周圍怪物的範圍總傷害</div>
+                            </div>
+                            <button class="btn-upgrade-skill bg-amber-700 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold text-xs" data-skill="aoe">升級</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900/60 p-2 rounded border border-amber-600/50">
+                            <div>
+                                <div class="font-bold text-yellow-300 text-xs">💥 全屏終極殺傷【末日審判】<span class="text-amber-300 font-mono" id="sk-lv-ult">Lv.1/100</span></div>
+                                <div class="text-[10px] text-stone-400">消耗 50 MP，毀滅畫面中所有怪物！</div>
+                            </div>
+                            <button class="btn-upgrade-skill bg-amber-700 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold text-xs" data-skill="ult">升級</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: ZONES & BOSS CHALLENGE SELECT -->
+                <div id="tab-maps" class="tab-content hidden space-y-2">
+                    <div class="text-xs font-bold text-amber-400 mb-1">一般獵場區域 (1-100級)</div>
+                    <div id="zone-list" class="space-y-1.5">
+                        <!-- Dynamic Maps List -->
+                    </div>
+
+                    <div class="text-xs font-bold text-red-500 mt-3 mb-1 flex items-center">
+                        <i class="fa-solid fa-skull mr-1"></i>高階 Boss 挑戰地牢 (掉落幸運卷、金裝升級石與神話金裝)
+                    </div>
+                    <div id="boss-zone-list" class="space-y-1.5">
+                        <!-- Dynamic Boss List -->
+                    </div>
+                </div>
+
+                <!-- TAB 5: SHOP -->
+                <div id="tab-shop" class="tab-content hidden space-y-2">
+                    <div class="lineage-box p-2 rounded space-y-2">
+                        <div class="text-xs font-bold text-amber-400 border-b border-stone-800 pb-1">亞丁雜貨商與卷軸商人</div>
+                        
+                        <div class="flex justify-between items-center bg-stone-900 p-1.5 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-red-400">紅藥水 (HP)</div>
+                                <div class="text-[10px] text-stone-400">恢復 50 HP</div>
+                            </div>
+                            <button class="btn-buy-shop bg-amber-800 hover:bg-amber-700 px-2 py-1 rounded text-amber-200 font-bold text-xs" data-item="hp" data-price="40">40 金幣</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900 p-1.5 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-red-300">大紅藥水 (HP 全滿)</div>
+                                <div class="text-[10px] text-stone-400">立即補滿所有生命值</div>
+                            </div>
+                            <button class="btn-buy-shop bg-amber-800 hover:bg-amber-700 px-2 py-1 rounded text-amber-200 font-bold text-xs" data-item="ghp" data-price="500">500 金幣</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900 p-1.5 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-blue-400">藍藥水 (MP)</div>
+                                <div class="text-[10px] text-stone-400">恢復 50 MP</div>
+                            </div>
+                            <button class="btn-buy-shop bg-amber-800 hover:bg-amber-700 px-2 py-1 rounded text-amber-200 font-bold text-xs" data-item="mp" data-price="70">70 金幣</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900 p-1.5 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-cyan-300">大藍藥水 (MP 全滿)</div>
+                                <div class="text-[10px] text-stone-400">立即補滿所有魔力值</div>
+                            </div>
+                            <button class="btn-buy-shop bg-amber-800 hover:bg-amber-700 px-2 py-1 rounded text-amber-200 font-bold text-xs" data-item="gmp" data-price="800">800 金幣</button>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-stone-900 p-1.5 rounded border border-stone-800">
+                            <div>
+                                <div class="font-bold text-emerald-400">加速藥水 (綠水)</div>
+                                <div class="text-[10px] text-stone-400">攻速 +25%</div>
+                            </div>
+                            <button class="btn-buy-shop bg-amber-800 hover:bg-amber-700 px-2 py-1 rounded text-amber-200 font-bold text-xs" data-item="green" data-price="250">250 金幣</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- COMBAT LOG CONSOLE -->
+            <div class="mt-2 pt-2 border-t border-stone-800 h-28 flex flex-col">
+                <div class="text-[10px] text-stone-500 font-bold mb-1 flex items-center justify-between">
+                    <span><i class="fa-solid fa-list-ul mr-1"></i>系統與戰鬥資訊</span>
+                    <button id="btn-clear-log" class="text-stone-600 hover:text-stone-400">清除記錄</button>
+                </div>
+                <div id="combat-log" class="flex-1 overflow-y-auto space-y-1 font-mono text-[11px] bg-stone-900/70 p-1.5 rounded border border-stone-800">
+                    <div class="text-stone-400">歡迎來到《天堂 Lineage》！請點擊上方職業卡片開始冒險。</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ENCHANT MODAL DIALOG -->
+    <div id="enchant-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="lineage-border bg-stone-950 p-4 rounded-lg w-96 max-w-[90vw] relative shadow-2xl">
+            <button id="close-enchant-modal" class="absolute top-2 right-2 text-stone-400 hover:text-white text-base">
+                <i class="fa-solid fa-xmark"></i>
             </button>
-          </div>
-        </form>
-      </div>
+            
+            <h3 class="text-sm font-bold text-amber-400 border-b border-stone-800 pb-2 mb-3 text-center">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>裝備管理與卷軸強化
+            </h3>
 
-      <!-- Products Grid -->
-      <div>
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-base font-bold text-stone-800 flex items-center gap-2">
-            <i class="fa-solid fa-boxes-stacked text-amber-600"></i> 目前展售商品列表
-          </h2>
-          <span class="text-xs text-stone-500">點擊 ＋ / － 按鈕即可直接即時紀錄並同步雲端</span>
-        </div>
+            <div class="space-y-3">
+                <div class="bg-stone-900 p-2.5 rounded border border-stone-800 text-center">
+                    <div id="enchant-target-name" class="font-bold text-sm text-white">裝備: 無</div>
+                    <div id="enchant-target-stats" class="text-xs text-stone-400 mt-0.5">--</div>
+                </div>
 
-        <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Dynamic product cards will be rendered here -->
-          <div class="col-span-full py-12 text-center text-stone-400 bg-white rounded-2xl border border-dashed border-stone-300">
-            <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600 mb-2"></i>
-            <p>載入商品資料中...</p>
-          </div>
-        </div>
-      </div>
-    </section>
+                <div class="flex gap-2">
+                    <button id="btn-toggle-equip-item" class="w-full py-1.5 bg-stone-800 hover:bg-stone-700 border border-stone-600 font-bold text-stone-200 rounded text-xs">
+                        穿戴 / 卸下裝備
+                    </button>
+                </div>
 
-    <!-- TAB 2: HISTORY & ANALYTICS -->
-    <section id="tab-history" class="space-y-6 hidden">
-      
-      <!-- Action Toolbar -->
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl shadow-sm border border-stone-200">
-        <div>
-          <h2 class="text-base font-bold text-stone-800">銷售紀錄統計與備份</h2>
-          <p class="text-xs text-stone-500">檢視所有銷售數據、匯出報表或開立新市集 Session</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="exportCSV()" class="bg-stone-700 hover:bg-stone-800 text-white text-xs font-medium px-3.5 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-file-csv text-emerald-400"></i> 匯出 CSV 報表
-          </button>
-          <button onclick="confirmResetSession()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-medium px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5">
-            <i class="fa-solid fa-rotate-right"></i> 清空重置當前數據
-          </button>
-        </div>
-      </div>
+                <div id="gold-gear-upgrade-box" class="hidden p-2 rounded bg-amber-950/60 border border-amber-500/80 text-center space-y-1.5">
+                    <div class="text-xs font-bold text-amber-300">✨ 金裝升級系統 (最高 Lv.10) ✨</div>
+                    <div class="text-[10px] text-stone-300">消耗「金裝升級石」提升等級，每升一級基本數值 +100！</div>
+                    <button id="btn-upgrade-gold-tier" class="w-full py-1 bg-gradient-to-r from-yellow-600 to-amber-700 hover:from-yellow-500 hover:to-amber-600 text-black font-extrabold rounded text-xs shadow">
+                        升級金色裝備 (+100數值)
+                    </button>
+                </div>
 
-      <!-- Item Sales Summary Table -->
-      <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-        <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
-          <h3 class="font-bold text-stone-800 text-sm flex items-center gap-2">
-            <i class="fa-solid fa-list-check text-emerald-600"></i> 各商品銷售總計
-          </h3>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-stone-50 text-stone-500 border-b border-stone-100">
-              <tr>
-                <th class="px-5 py-3 font-medium">商品名稱</th>
-                <th class="px-5 py-3 font-medium">單價</th>
-                <th class="px-5 py-3 font-medium">已售出數量</th>
-                <th class="px-5 py-3 font-medium text-right">銷售小計</th>
-              </tr>
-            </thead>
-            <tbody id="summary-table-body" class="divide-y divide-stone-100 text-stone-700">
-              <!-- Summary rows inserted dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+                <div class="space-y-1">
+                    <label class="text-[11px] text-amber-300 font-bold">選擇背包中的強化卷軸：</label>
+                    <select id="enchant-scroll-select" class="w-full bg-stone-900 border border-stone-700 text-xs text-stone-200 p-2 rounded focus:outline-none focus:border-amber-500">
+                    </select>
+                </div>
 
-      <!-- Transaction Log -->
-      <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-        <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
-          <h3 class="font-bold text-stone-800 text-sm flex items-center gap-2">
-            <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> 實時點數異動日誌 (Recent Transactions)
-          </h3>
-          <span class="text-xs text-stone-400">最近 50 筆異動</span>
+                <div id="enchant-risk-warn" class="text-[11px] p-2 rounded bg-emerald-950/40 border border-emerald-800/50 text-emerald-300 text-center">
+                    安全範圍內 100% 成功
+                </div>
+
+                <button id="btn-do-enchant" class="w-full py-2 bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-600 hover:to-amber-800 border border-amber-500 font-bold text-yellow-100 rounded shadow transition text-xs">
+                    確定施加卷軸
+                </button>
+            </div>
         </div>
-        <div class="max-h-80 overflow-y-auto divide-y divide-stone-100" id="transaction-log-list">
-          <!-- Logs will be populated dynamically -->
-          <div class="p-6 text-center text-stone-400 text-xs">暫無紀錄</div>
-        </div>
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- Footer -->
-  <footer class="bg-white border-t border-stone-200 py-4 text-center text-xs text-stone-400">
-    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-      <p>市集銷售紀錄系統 &copy; 2026 - 支援 GitHub Pages 雲端即時備份</p>
-      <p class="flex items-center gap-1 text-stone-500">
-        <i class="fa-solid fa-cloud text-emerald-600"></i> 狀態: <span id="firebase-status">雲端同步模式</span>
-      </p>
     </div>
-  </footer>
 
-  <!-- Modal for Editing Product -->
-  <div id="edit-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-100 space-y-4">
-      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-        <h3 class="font-bold text-stone-800">修改商品資訊</h3>
-        <button onclick="closeEditModal()" class="text-stone-400 hover:text-stone-600">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-      <form id="edit-product-form" onsubmit="handleSaveEdit(event)" class="space-y-4">
-        <input type="hidden" id="edit-product-id">
-        <div>
-          <label class="block text-xs font-semibold text-stone-600 mb-1">商品名稱</label>
-          <input type="text" id="edit-product-name" required class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-stone-600 mb-1">單價 (NT$)</label>
-          <input type="number" id="edit-product-price" min="0" step="1" required class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-stone-600 mb-1">當前銷售數量</label>
-          <input type="number" id="edit-product-count" min="0" step="1" required class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-stone-100 text-stone-600 text-xs font-medium rounded-xl hover:bg-stone-200">取消</button>
-          <button type="submit" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl hover:bg-emerald-700 shadow">儲存更新</button>
-        </div>
-      </form>
-    </div>
-  </div>
+    <!-- GAME LOGIC SCRIPT -->
+    <script>
+        /* --- GAME DATA STATE --- */
+        const gameState = {
+            soundEnabled: true,
+            autoAttack: true,
+            sellMode: false,
 
-  <!-- Custom Alert/Confirm Toast Notification Container -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
+            player: {
+                name: '冒險者',
+                classKey: 'prince',
+                level: 1,
+                exp: 0,
+                maxExp: 100,
+                hp: 130,
+                maxHp: 130,
+                mp: 40,
+                maxMp: 40,
+                gold: 500,
 
-  <!-- Firebase Integration Script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, query, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+                str: 13,
+                dex: 11,
+                con: 12,
+                int: 10,
+                statPoints: 0,
+                skillPoints: 0,
 
-    // Application state
-    let products = [];
-    let transactions = [];
-    let db = null;
-    let auth = null;
-    let currentUser = null;
-    let isCloudSyncAvailable = false;
+                skills: {
+                    atk: 0,
+                    def: 0,
+                    hp: 0,
+                    mp: 0,
+                    single: 1,
+                    aoe: 1,
+                    ult: 1
+                },
 
-    // Config setup
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'market-sales-tracker-app';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' 
-      ? JSON.parse(__firebase_config) 
-      : {
-          apiKey: "demo-key",
-          authDomain: "demo.firebaseapp.com",
-          projectId: "demo-project",
-          storageBucket: "demo.appspot.com",
-          messagingSenderId: "123456789",
-          appId: "1:123456789:web:abcdef"
+                buffActiveUntil: 0,
+                buffCdUntil: 0,
+
+                equipped: {
+                    weapon: null,
+                    armor: null,
+                    helmet: null,
+                    gloves: null
+                },
+
+                potions: {
+                    hp: 10,
+                    ghp: 2,
+                    mp: 5,
+                    gmp: 2,
+                    green: 3
+                }
+            },
+
+            inventory: [],
+            monsters: [],
+            currentZoneIndex: 0,
+            isBossZone: false,
+            selectedItemForEnchant: null
         };
 
-    // Initialize Firebase
-    try {
-      const app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
-      auth = getAuth(app);
+        const CLASS_TEMPLATES = {
+            prince: {
+                name: '王族/君主', icon: 'fa-crown',
+                str: 13, dex: 11, con: 12, int: 10, hp: 130, mp: 40,
+                singleSkillName: '勇猛意志', aoeSkillName: '光輝打擊'
+            },
+            knight: {
+                name: '騎士', icon: 'fa-shield-halved',
+                str: 16, dex: 10, con: 15, int: 7, hp: 170, mp: 25,
+                singleSkillName: '衝擊之暈', aoeSkillName: '大地震擊'
+            },
+            elf: {
+                name: '妖精', icon: 'fa-bow-arrow',
+                str: 10, dex: 16, con: 10, int: 12, hp: 110, mp: 65,
+                singleSkillName: '三重矢', aoeSkillName: '亂箭風暴'
+            }
+        };
 
-      // Auth initialization
-      const initAuth = async () => {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      };
-
-      initAuth().catch(err => {
-        console.warn("Firebase Auth fallback to local mode:", err);
-        showToast("進入離線/預設模式", "info");
-      });
-
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          currentUser = user;
-          isCloudSyncAvailable = true;
-          updateSyncStatus(true, "雲端自動連線中");
-          setupRealtimeListeners();
-        } else {
-          isCloudSyncAvailable = false;
-          updateSyncStatus(false, "單機模式");
-          loadDefaultSampleData();
-        }
-      });
-    } catch (e) {
-      console.warn("Firebase Initialization error, falling back to local memory:", e);
-      updateSyncStatus(false, "離線預設模式");
-      loadDefaultSampleData();
-    }
-
-    // Set up Firestore collection realtime listener
-    function setupRealtimeListeners() {
-      if (!db || !currentUser) return;
-
-      const productsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-      const transactionsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
-
-      // Listen to products
-      onSnapshot(productsColRef, (snapshot) => {
-        const loadedProducts = [];
-        snapshot.forEach((doc) => {
-          loadedProducts.push({ id: doc.id, ...doc.data() });
-        });
-        
-        // If first load and empty, populate defaults
-        if (loadedProducts.length === 0 && products.length === 0) {
-          seedInitialProducts();
-        } else {
-          products = loadedProducts;
-          renderUI();
-        }
-      }, (error) => {
-        console.error("Products subscription error:", error);
-        updateSyncStatus(false, "連線有限");
-      });
-
-      // Listen to logs/transactions
-      onSnapshot(transactionsColRef, (snapshot) => {
-        const loadedTx = [];
-        snapshot.forEach((doc) => {
-          loadedTx.push({ id: doc.id, ...doc.data() });
-        });
-        // Sort transactions by time descending
-        transactions = loadedTx.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-        renderTransactions();
-      }, (error) => {
-        console.error("Transactions subscription error:", error);
-      });
-    }
-
-    // Seed default items if empty
-    async function seedInitialProducts() {
-      const defaults = [
-        { name: '芭蕉乾', price: 100, count: 0 },
-        { name: '有機椴木香菇', price: 250, count: 0 },
-        { name: '手作洛神花醬', price: 150, count: 0 }
-      ];
-      for (const item of defaults) {
-        await createProductInDb(item.name, item.price, item.count);
-      }
-    }
-
-    function loadDefaultSampleData() {
-      if (products.length === 0) {
-        products = [
-          { id: '1', name: '芭蕉乾', price: 100, count: 0 },
-          { id: '2', name: '有機椴木香菇', price: 250, count: 0 },
-          { id: '3', name: '手作洛神花醬', price: 150, count: 0 }
+        // Zones 1 to 100 Level progression
+        const ZONES = [
+            {
+                name: '說話之島 (1-20級)', reqLevel: 1, bgColor: '#151914',
+                templates: [
+                    { name: '哥布林', hp: 35, dmg: 4, ac: 8, exp: 18, gold: 12, rarity: 0 },
+                    { name: '妖精蜘蛛', hp: 55, dmg: 6, ac: 6, exp: 28, gold: 18, rarity: 0 },
+                    { name: '狼人', hp: 90, dmg: 10, ac: 4, exp: 45, gold: 30, rarity: 1 }
+                ]
+            },
+            {
+                name: '地底洞窟 (21-40級)', reqLevel: 21, bgColor: '#14141d',
+                templates: [
+                    { name: '骷髏兵', hp: 280, dmg: 35, ac: 2, exp: 180, gold: 120, rarity: 1 },
+                    { name: '巨魔', hp: 550, dmg: 75, ac: -5, exp: 450, gold: 300, rarity: 2 }
+                ]
+            },
+            {
+                name: '龍之谷 (41-60級)', reqLevel: 41, bgColor: '#1d1414',
+                templates: [
+                    { name: '黑長者', hp: 1200, dmg: 160, ac: -15, exp: 1200, gold: 800, rarity: 2 },
+                    { name: '骨龍', hp: 2800, dmg: 320, ac: -30, exp: 3200, gold: 2000, rarity: 3 }
+                ]
+            },
+            {
+                name: '火龍窟 (61-80級)', reqLevel: 61, bgColor: '#2d0a0a',
+                templates: [
+                    { name: '烈炎獸', hp: 6000, dmg: 550, ac: -45, exp: 7500, gold: 4500, rarity: 3 },
+                    { name: '火風暴精靈', hp: 12000, dmg: 900, ac: -60, exp: 15000, gold: 9000, rarity: 4 }
+                ]
+            },
+            {
+                name: '神龍之谷 (81-100級極限)', reqLevel: 81, bgColor: '#250838',
+                templates: [
+                    { name: '深淵魔龍騎士', hp: 25000, dmg: 1800, ac: -85, exp: 35000, gold: 22000, rarity: 4 },
+                    { name: '混沌吞噬者', hp: 55000, dmg: 3500, ac: -120, exp: 80000, gold: 50000, rarity: 5 }
+                ]
+            }
         ];
-      }
-      renderUI();
-    }
 
-    // Database CRUD wrappers
-    async function createProductInDb(name, price, count = 0) {
-      if (isCloudSyncAvailable && db) {
-        try {
-          const productsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-          await addDoc(productsColRef, {
-            name,
-            price: Number(price),
-            count: Number(count),
-            updatedAt: serverTimestamp()
-          });
-          showToast(`已成功新增品項: ${name}`, "success");
-        } catch (err) {
-          console.error("Failed to add product to Firestore:", err);
+        const BOSS_ZONES = [
+            {
+                name: '【BOSS】狂暴熊王之巢 (Lv.20)', reqLevel: 20, bgColor: '#271010',
+                boss: { name: '狂暴熊王', hp: 3500, dmg: 120, ac: -15, exp: 3000, gold: 5000, rarity: 3 }
+            },
+            {
+                name: '【BOSS】死亡騎士地牢 (Lv.50)', reqLevel: 50, bgColor: '#1b092b',
+                boss: { name: '死亡騎士', hp: 15000, dmg: 500, ac: -45, exp: 18000, gold: 25000, rarity: 4 }
+            },
+            {
+                name: '【BOSS】火龍巴拉卡斯 (Lv.80)', reqLevel: 80, bgColor: '#3d0a0a',
+                boss: { name: '火龍 巴拉卡斯', hp: 60000, dmg: 2200, ac: -90, exp: 80000, gold: 100000, rarity: 5 }
+            },
+            {
+                name: '【神話BOSS】阿努比斯神王 (Lv.100)', reqLevel: 100, bgColor: '#382e05',
+                boss: { name: '神王 阿努比斯', hp: 200000, dmg: 6500, ac: -150, exp: 300000, gold: 500000, rarity: 5 }
+            }
+        ];
+
+        const RARITY_NAMES = ['普通', '高級', '稀有', '英雄', '傳說', '★神話金裝★'];
+
+        const WEAPON_TEMPLATES = [
+            { name: '短劍', baseDmg: 4, type: 'weapon', rarity: 0 },
+            { name: '武士刀', baseDmg: 7, type: 'weapon', rarity: 1 },
+            { name: '細劍', baseDmg: 10, type: 'weapon', rarity: 2 },
+            { name: '瑟魯基之劍', baseDmg: 15, type: 'weapon', rarity: 3 },
+            { name: '屠龍劍', baseDmg: 25, type: 'weapon', rarity: 4 },
+            { name: '神聖光輝天之劍', baseDmg: 120, type: 'weapon', rarity: 5, isGoldTier: true }
+        ];
+
+        const ARMOR_TEMPLATES = [
+            { name: '皮甲', baseAc: -2, type: 'armor', rarity: 0 },
+            { name: '鎖子甲', baseAc: -4, type: 'armor', rarity: 1 },
+            { name: '板甲', baseAc: -7, type: 'armor', rarity: 2 },
+            { name: '古老的皮甲', baseAc: -11, type: 'armor', rarity: 3 },
+            { name: '龍鱗鎧甲', baseAc: -16, type: 'armor', rarity: 4 },
+            { name: '太陽神金光戰甲', baseAc: -110, type: 'armor', rarity: 5, isGoldTier: true }
+        ];
+
+        const HELMET_TEMPLATES = [
+            { name: '皮帽', baseAc: -1, type: 'helmet', rarity: 0 },
+            { name: '抗魔頭盔', baseAc: -3, type: 'helmet', rarity: 2 },
+            { name: '威嚴頭盔', baseAc: -6, type: 'helmet', rarity: 4 }
+        ];
+
+        const GLOVES_TEMPLATES = [
+            { name: '皮手套', baseAc: -1, type: 'gloves', rarity: 0 },
+            { name: '力量手套', baseAc: -3, type: 'gloves', rarity: 2 },
+            { name: '屬性長手套', baseAc: -5, type: 'gloves', rarity: 4 }
+        ];
+
+        /* --- SOUND ENGINE --- */
+        class SoundEngine {
+            constructor() { this.ctx = null; }
+            init() {
+                if (!this.ctx && window.AudioContext) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            playHit() {
+                if (!gameState.soundEnabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + 0.08);
+                } catch(e) {}
+            }
+            playAoe() {
+                if (!gameState.soundEnabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+                } catch(e) {}
+            }
+            playDrop() {
+                if (!gameState.soundEnabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+                } catch(e) {}
+            }
+            playSuccess() {
+                if (!gameState.soundEnabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+                    osc.frequency.setValueAtTime(880, this.ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + 0.25);
+                } catch(e) {}
+            }
+            playBreak() {
+                if (!gameState.soundEnabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+                } catch(e) {}
+            }
         }
-      } else {
-        // Fallback local memory
-        const newProduct = { id: Date.now().toString(), name, price: Number(price), count: Number(count) };
-        products.push(newProduct);
-        renderUI();
-        showToast(`已新增品項: ${name}`, "success");
-      }
-    }
+        const sfx = new SoundEngine();
 
-    async function updateProductQuantityInDb(productId, delta) {
-      const prod = products.find(p => p.id === productId);
-      if (!prod) return;
-
-      const newCount = Math.max(0, (prod.count || 0) + delta);
-      const actualDelta = newCount - (prod.count || 0);
-      if (actualDelta === 0 && delta < 0) return; // cannot go below 0
-
-      if (isCloudSyncAvailable && db) {
-        try {
-          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', productId);
-          await setDoc(docRef, { count: newCount }, { merge: true });
-
-          // Log transaction
-          const txColRef = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
-          await addDoc(txColRef, {
-            productName: prod.name,
-            delta: actualDelta,
-            unitPrice: prod.price,
-            totalChange: actualDelta * prod.price,
-            timestamp: serverTimestamp()
-          });
-        } catch (err) {
-          console.error("Error updating quantity:", err);
+        /* --- LOGGING & ANNOUNCEMENTS --- */
+        function logMessage(html) {
+            const logEl = document.getElementById('combat-log');
+            if (!logEl) return;
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            logEl.appendChild(div);
+            if (logEl.childNodes.length > 80) logEl.removeChild(logEl.firstChild);
+            logEl.scrollTop = logEl.scrollHeight;
         }
-      } else {
-        prod.count = newCount;
-        transactions.unshift({
-          id: Date.now().toString(),
-          productName: prod.name,
-          delta: actualDelta,
-          unitPrice: prod.price,
-          totalChange: actualDelta * prod.price,
-          timestamp: { seconds: Math.floor(Date.now() / 1000) }
+
+        function showAnnouncement(text, rarityClass) {
+            const ann = document.getElementById('drop-announcement');
+            const txt = document.getElementById('announcement-text');
+            if (!ann || !txt) return;
+            txt.innerText = text;
+            txt.className = `text-xs font-bold mt-0.5 ${rarityClass || 'text-white'}`;
+            ann.classList.remove('opacity-0', 'scale-95');
+            ann.classList.add('opacity-100', 'scale-100');
+            setTimeout(() => {
+                ann.classList.remove('opacity-100', 'scale-100');
+                ann.classList.add('opacity-0', 'scale-95');
+            }, 3000);
+        }
+
+        /* --- COMPUTED STATS --- */
+        function getComputedPlayerStats() {
+            const p = gameState.player;
+            let dmg = Math.floor(p.str * 0.85) + (p.skills.atk * 3);
+            let hit = Math.floor(p.str * 0.5) + p.level;
+            let ac = 10 - Math.floor(p.dex * 0.5) - (p.skills.def * 2);
+
+            let totalDmgMultiplier = 1.0;
+            const isBuffActive = Date.now() < p.buffActiveUntil;
+            if (isBuffActive) totalDmgMultiplier += 0.5;
+
+            if (p.classKey === 'knight') ac -= 3;
+
+            ['weapon', 'armor', 'helmet', 'gloves'].forEach(slot => {
+                const item = p.equipped[slot];
+                if (item) {
+                    const itemTierAdd = (item.gearLevel || 0) * 100;
+                    if (item.type === 'weapon') {
+                        dmg += item.baseDmg + item.enchant + itemTierAdd;
+                        hit += item.enchant;
+                    } else {
+                        ac += (item.baseAc - item.enchant - itemTierAdd);
+                    }
+                    if (item.isGoldTier) {
+                        totalDmgMultiplier += 0.10;
+                    }
+                }
+            });
+
+            dmg = Math.floor(dmg * totalDmgMultiplier);
+            return { dmgMin: Math.max(1, dmg - 2), dmgMax: dmg + 4, hit, ac, isBuffActive };
+        }
+
+        /* --- INITIALIZE GAME ON CLASS SELECTION --- */
+        function selectClass(classKey) {
+            const cInfo = CLASS_TEMPLATES[classKey];
+            gameState.player.classKey = classKey;
+            gameState.player.name = `${cInfo.name}冒險者`;
+            gameState.player.str = cInfo.str;
+            gameState.player.dex = cInfo.dex;
+            gameState.player.con = cInfo.con;
+            gameState.player.int = cInfo.int;
+            gameState.player.maxHp = cInfo.hp;
+            gameState.player.hp = cInfo.hp;
+            gameState.player.maxMp = cInfo.mp;
+            gameState.player.mp = cInfo.mp;
+
+            const singleNameEl = document.getElementById('skill-single-name');
+            const aoeNameEl = document.getElementById('skill-aoe-name');
+            if (singleNameEl) singleNameEl.innerText = cInfo.singleSkillName;
+            if (aoeNameEl) aoeNameEl.innerText = cInfo.aoeSkillName;
+
+            const avatarEl = document.getElementById('class-avatar');
+            if (avatarEl) avatarEl.innerHTML = `<i class="fa-solid ${cInfo.icon}"></i>`;
+
+            const starterWeapon = { id: 'w_init', name: '短劍', type: 'weapon', baseDmg: 4, enchant: 0, safeEnchant: 6, rarity: 0, sellValue: 50 };
+            const starterArmor = { id: 'a_init', name: '皮甲', type: 'armor', baseAc: -2, enchant: 0, safeEnchant: 6, rarity: 0, sellValue: 50 };
+            const scrollDai = { id: 's_dai1', name: '對武器施法的卷軸', type: 'scroll_dai', rarity: 2, sellValue: 1200 };
+            const scrollLucky = { id: 's_luck1', name: '幸運卷軸', type: 'scroll_lucky', rarity: 3, sellValue: 2500 };
+            const stone = { id: 'stone_init', name: '金裝升級石', type: 'scroll_gold_stone', rarity: 5, sellValue: 5000 };
+
+            gameState.inventory.push(starterWeapon, starterArmor, scrollDai, scrollLucky, stone);
+            gameState.player.equipped.weapon = starterWeapon;
+            gameState.player.equipped.armor = starterArmor;
+
+            const modal = document.getElementById('character-select-modal');
+            if (modal) modal.classList.add('hidden');
+            
+            initCanvas();
+            renderMapList();
+            spawnMonsterWave();
+            updatePlayerUI();
+            renderInventoryUI();
+            renderSkillsUI();
+
+            logMessage(`<span class="text-amber-400 font-bold">歡迎進入天堂世界！選擇職業【${cInfo.name}】成功！</span>`);
+        }
+
+        /* --- SPAWN MONSTERS (UP TO 20) --- */
+        function spawnMonsterWave() {
+            if (gameState.isBossZone) {
+                const bZone = BOSS_ZONES[gameState.currentZoneIndex];
+                if (gameState.monsters.length === 0 && bZone) {
+                    const b = bZone.boss;
+                    gameState.monsters.push({
+                        id: 'boss_' + Date.now(),
+                        name: b.name,
+                        hp: b.hp, maxHp: b.hp,
+                        dmg: b.dmg, ac: b.ac,
+                        exp: b.exp, gold: b.gold,
+                        rarity: b.rarity,
+                        isBoss: true,
+                        offsetX: 0, offsetY: 0, hitFlash: 0
+                    });
+                }
+            } else {
+                const zone = ZONES[gameState.currentZoneIndex] || ZONES[0];
+                const targetCount = 14 + Math.floor(Math.random() * 7);
+
+                while (gameState.monsters.length < targetCount) {
+                    const template = zone.templates[Math.floor(Math.random() * zone.templates.length)];
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 50 + Math.random() * 160;
+
+                    gameState.monsters.push({
+                        id: 'm_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                        name: template.name,
+                        hp: template.hp, maxHp: template.hp,
+                        dmg: template.dmg, ac: template.ac,
+                        exp: template.exp, gold: template.gold,
+                        rarity: template.rarity,
+                        isBoss: false,
+                        offsetX: Math.cos(angle) * dist,
+                        offsetY: Math.sin(angle) * dist,
+                        hitFlash: 0
+                    });
+                }
+            }
+            updateMonsterCountUI();
+        }
+
+        /* --- COMBAT ACTIONS --- */
+        function executeSingleAttack() {
+            sfx.init();
+            if (!gameState.monsters || gameState.monsters.length === 0) return;
+
+            const target = gameState.monsters[0];
+            const stats = getComputedPlayerStats();
+
+            const isHit = Math.random() < 0.88;
+            if (isHit) {
+                const singleSkillLv = gameState.player.skills.single;
+                const skillMult = 1.0 + (singleSkillLv * 0.25);
+
+                const isCrit = stats.isBuffActive || Math.random() < (0.15 + (gameState.player.classKey === 'elf' ? 0.15 : 0));
+                let dmg = Math.floor((Math.random() * (stats.dmgMax - stats.dmgMin + 1) + stats.dmgMin) * skillMult);
+                if (isCrit) dmg = Math.floor(dmg * 1.8);
+
+                target.hp -= dmg;
+                target.hitFlash = 8;
+                addFloatingText(target.offsetX, target.offsetY, `-${dmg}${isCrit ? '💥' : ''}`, isCrit ? '#fcd34d' : '#ffffff', isCrit ? 22 : 15);
+                
+                if (isCrit) sfx.playAoe(); else sfx.playHit();
+
+                if (target.hp <= 0) handleMonsterDeath(target);
+            } else {
+                addFloatingText(target.offsetX, target.offsetY, 'MISS', '#9ca3af', 13);
+            }
+        }
+
+        function executeAOESkill() {
+            sfx.init();
+            const p = gameState.player;
+            const aoeLv = p.skills.aoe;
+            const mpCost = 18 + (aoeLv * 2);
+
+            if (p.mp < mpCost) {
+                logMessage(`<span class="text-blue-400">MP 不足！無法施展範圍技能。</span>`);
+                return;
+            }
+
+            if (!gameState.monsters || gameState.monsters.length === 0) return;
+
+            p.mp -= mpCost;
+            sfx.playAoe();
+            updatePlayerUI();
+
+            const stats = getComputedPlayerStats();
+            const aoeMultiplier = 1.3 + (aoeLv * 0.35) + (p.int * 0.04);
+
+            for (let i = gameState.monsters.length - 1; i >= 0; i--) {
+                const m = gameState.monsters[i];
+                if (!m) continue;
+                const isCrit = stats.isBuffActive || Math.random() < 0.2;
+                let baseDmg = Math.floor((Math.random() * (stats.dmgMax - stats.dmgMin + 1) + stats.dmgMin) * aoeMultiplier);
+                if (isCrit) baseDmg = Math.floor(baseDmg * 1.6);
+
+                m.hp -= baseDmg;
+                m.hitFlash = 12;
+                addFloatingText(m.offsetX, m.offsetY, `-${baseDmg}${isCrit ? '🔥' : '💥'}`, '#f87171', 24);
+
+                if (m.hp <= 0) handleMonsterDeath(m);
+            }
+        }
+
+        function executeUltimateSkill() {
+            sfx.init();
+            const p = gameState.player;
+            const ultLv = p.skills.ult;
+            const mpCost = 50;
+
+            if (p.mp < mpCost) {
+                logMessage(`<span class="text-blue-400">MP 不足 50！無法施展末日審判。</span>`);
+                return;
+            }
+
+            if (!gameState.monsters || gameState.monsters.length === 0) return;
+
+            p.mp -= mpCost;
+            sfx.playAoe();
+            updatePlayerUI();
+
+            const stats = getComputedPlayerStats();
+            const ultMultiplier = 3.0 + (ultLv * 0.8) + (p.int * 0.1);
+
+            logMessage(`<span class="text-amber-400 font-extrabold text-sm">🔥 施展 【末日審判】！全螢幕終極毀滅打擊！</span>`);
+
+            for (let i = gameState.monsters.length - 1; i >= 0; i--) {
+                const m = gameState.monsters[i];
+                if (!m) continue;
+                let dmg = Math.floor((Math.random() * (stats.dmgMax - stats.dmgMin + 1) + stats.dmgMin) * ultMultiplier);
+
+                m.hp -= dmg;
+                m.hitFlash = 15;
+                addFloatingText(m.offsetX, m.offsetY, `-${dmg}⚡`, '#fbbf24', 28);
+
+                if (m.hp <= 0) handleMonsterDeath(m);
+            }
+        }
+
+        function executeBuffSkill() {
+            const p = gameState.player;
+            const now = Date.now();
+            if (now < p.buffCdUntil) {
+                logMessage(`<span class="text-stone-400">狂暴覺醒冷卻中！</span>`);
+                return;
+            }
+            if (p.mp < 25) {
+                logMessage(`<span class="text-blue-400">MP 不足！</span>`);
+                return;
+            }
+
+            p.mp -= 25;
+            p.buffActiveUntil = now + 30000;
+            p.buffCdUntil = now + 40000;
+            sfx.playSuccess();
+
+            logMessage(`<span class="text-red-400 font-bold">🔥 狂暴覺醒！30秒內 100% 暴擊率與 +50% 傷害！</span>`);
+            updatePlayerUI();
+        }
+
+        function handleMonsterDeath(m) {
+            const multiplier = gameState.player.classKey === 'prince' ? 1.15 : 1.0;
+            const expGained = Math.floor(m.exp * multiplier);
+            const goldGained = Math.floor(m.gold * multiplier);
+
+            gameState.player.gold += goldGained;
+            addExp(expGained);
+
+            logMessage(`擊敗 <span class="font-bold text-red-400">${m.name}</span>！獲得 ${expGained} 經驗，${goldGained} 金幣。`);
+
+            rollLootDrop(m);
+
+            const idx = gameState.monsters.findIndex(item => item.id === m.id);
+            if (idx !== -1) gameState.monsters.splice(idx, 1);
+
+            updateMonsterCountUI();
+
+            if (gameState.monsters.length === 0) {
+                setTimeout(spawnMonsterWave, gameState.isBossZone ? 3000 : 500);
+            }
+        }
+
+        /* --- LOOT DROP SYSTEM --- */
+        function rollLootDrop(m) {
+            if (gameState.inventory.length >= 24) return;
+            const dropRoll = Math.random();
+
+            if (m.isBoss || dropRoll < 0.08) {
+                if (m.isBoss && Math.random() < 0.50) {
+                    const isWeapon = Math.random() < 0.5;
+                    const tpl = isWeapon ? WEAPON_TEMPLATES[5] : ARMOR_TEMPLATES[5];
+
+                    const goldGear = {
+                        id: 'gold_' + Date.now(),
+                        name: tpl.name,
+                        type: tpl.type,
+                        baseDmg: tpl.baseDmg || 0,
+                        baseAc: tpl.baseAc || 0,
+                        enchant: 0,
+                        safeEnchant: 6,
+                        rarity: 5,
+                        isGoldTier: true,
+                        gearLevel: 0,
+                        sellValue: 15000
+                    };
+
+                    gameState.inventory.push(goldGear);
+                    logMessage(`<span class="text-yellow-400 font-extrabold">★ BOSS 爆寶：[${goldGear.name}] (金色裝備/總傷+10%) 存入背包！</span>`);
+                    showAnnouncement(`獲得 【${goldGear.name}】！`, 'rarity-5');
+                    sfx.playDrop();
+                    renderInventoryUI();
+                    return;
+                }
+
+                if (m.isBoss || Math.random() < 0.3) {
+                    const stone = { id: 's_stone_' + Date.now(), name: '金裝升級石', type: 'scroll_gold_stone', rarity: 5, sellValue: 5000 };
+                    gameState.inventory.push(stone);
+                    logMessage(`<span class="text-amber-300 font-bold">★ 獲得神話道具：[金裝升級石]！</span>`);
+                    renderInventoryUI();
+                    return;
+                }
+            }
+
+            if (dropRoll < 0.25) {
+                const isDai = Math.random() < 0.5;
+                const scrollItem = isDai ? {
+                    id: 'scroll_' + Date.now(), name: '對武器施法的卷軸', type: 'scroll_dai', rarity: 2, sellValue: 1200
+                } : {
+                    id: 'scroll_' + Date.now(), name: '對防具施法的卷軸', type: 'scroll_zel', rarity: 1, sellValue: 800
+                };
+                gameState.inventory.push(scrollItem);
+                renderInventoryUI();
+                return;
+            }
+
+            if (dropRoll < 0.42) {
+                const gearTypeRoll = Math.random();
+                let pool = WEAPON_TEMPLATES;
+                if (gearTypeRoll < 0.35) pool = ARMOR_TEMPLATES;
+                else if (gearTypeRoll < 0.7) pool = HELMET_TEMPLATES;
+                else pool = GLOVES_TEMPLATES;
+
+                const tpl = pool[Math.min(pool.length - 2, Math.floor(Math.random() * (m.rarity + 2)))] || pool[0];
+
+                const newItem = {
+                    id: 'gear_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                    name: tpl.name,
+                    type: tpl.type,
+                    baseDmg: tpl.baseDmg || 0,
+                    baseAc: tpl.baseAc || 0,
+                    enchant: 0,
+                    safeEnchant: 6,
+                    rarity: tpl.rarity,
+                    sellValue: (tpl.rarity + 1) * 200
+                };
+
+                gameState.inventory.push(newItem);
+                logMessage(`★ 掉落裝備：<span class="font-bold rarity-${newItem.rarity}">[${RARITY_NAMES[newItem.rarity]}] ${newItem.name}</span>！`);
+                sfx.playDrop();
+                renderInventoryUI();
+            }
+        }
+
+        /* --- EXPERIENCE & LEVEL UP --- */
+        function addExp(val) {
+            const p = gameState.player;
+            p.exp += val;
+            if (p.exp >= p.maxExp) {
+                p.level++;
+                p.exp -= p.maxExp;
+                p.maxExp = Math.floor(p.maxExp * 1.5);
+
+                p.maxHp += 20 + p.con + (p.skills.hp * 30);
+                p.hp = p.maxHp;
+                p.maxMp += 10 + p.int + (p.skills.mp * 15);
+                p.mp = p.maxMp;
+
+                p.statPoints += 10;
+                p.skillPoints += 5;
+
+                logMessage(`<span class="text-yellow-400 font-bold">恭喜升級！升至 Level ${p.level}！獲得 10 點屬性、5 點技能點！</span>`);
+            }
+            updatePlayerUI();
+        }
+
+        /* --- UI UPDATERS --- */
+        function updatePlayerUI() {
+            const p = gameState.player;
+            const stats = getComputedPlayerStats();
+
+            const cName = document.getElementById('char-name');
+            const cLvl = document.getElementById('char-level');
+            const cAc = document.getElementById('char-ac');
+            const cDmg = document.getElementById('char-dmg');
+            const cHit = document.getElementById('char-hit');
+            const cGold = document.getElementById('char-gold');
+
+            if (cName) cName.innerText = p.name;
+            if (cLvl) cLvl.innerText = p.level;
+            if (cAc) cAc.innerText = stats.ac;
+            if (cDmg) cDmg.innerText = `${stats.dmgMin}-${stats.dmgMax}`;
+            if (cHit) cHit.innerText = stats.hit;
+            if (cGold) cGold.innerText = p.gold;
+
+            const hpBar = document.getElementById('hp-bar');
+            const hpText = document.getElementById('hp-text');
+            if (hpBar) hpBar.style.width = `${Math.max(0, Math.min(100, (p.hp / p.maxHp) * 100))}%`;
+            if (hpText) hpText.innerText = `${p.hp} / ${p.maxHp}`;
+
+            const mpBar = document.getElementById('mp-bar');
+            const mpText = document.getElementById('mp-text');
+            if (mpBar) mpBar.style.width = `${Math.max(0, Math.min(100, (p.mp / p.maxMp) * 100))}%`;
+            if (mpText) mpText.innerText = `${p.mp} / ${p.maxMp}`;
+
+            const expBar = document.getElementById('exp-bar');
+            if (expBar) expBar.style.width = `${Math.max(0, Math.min(100, (p.exp / p.maxExp) * 100))}%`;
+
+            const statPts = document.getElementById('stat-points');
+            const skillPts = document.getElementById('skill-points-display');
+            if (statPts) statPts.innerText = p.statPoints;
+            if (skillPts) skillPts.innerText = p.skillPoints;
+
+            ['str', 'dex', 'con', 'int'].forEach(st => {
+                const el = document.getElementById(`stat-${st}`);
+                if (el) el.innerText = p[st];
+            });
+
+            const cntHp = document.getElementById('cnt-hp-potion');
+            const cntGhp = document.getElementById('cnt-ghp-potion');
+            const cntMp = document.getElementById('cnt-mp-potion');
+            const cntGmp = document.getElementById('cnt-gmp-potion');
+            const cntGreen = document.getElementById('cnt-green-potion');
+            if (cntHp) cntHp.innerText = p.potions.hp;
+            if (cntGhp) cntGhp.innerText = p.potions.ghp;
+            if (cntMp) cntMp.innerText = p.potions.mp;
+            if (cntGmp) cntGmp.innerText = p.potions.gmp;
+            if (cntGreen) cntGreen.innerText = p.potions.green;
+
+            const buffInd = document.getElementById('buff-indicator');
+            if (buffInd) {
+                if (stats.isBuffActive) buffInd.classList.remove('hidden');
+                else buffInd.classList.add('hidden');
+            }
+
+            // Equipped slots UI
+            ['weapon', 'armor', 'helmet', 'gloves'].forEach(slot => {
+                const slotEl = document.getElementById(`slot-${slot}`);
+                if (!slotEl) return;
+                const eqItem = p.equipped[slot];
+                if (eqItem) {
+                    const prefix = eqItem.enchant > 0 ? `+${eqItem.enchant} ` : '';
+                    slotEl.innerText = `${prefix}${eqItem.name}`;
+                    slotEl.className = `text-xs font-bold text-center truncate w-full rarity-${eqItem.rarity}`;
+                } else {
+                    slotEl.innerText = '無';
+                    slotEl.className = 'text-xs font-bold text-center truncate w-full text-stone-500';
+                }
+            });
+        }
+
+        function updateMonsterCountUI() {
+            const numEl = document.getElementById('monster-count-num');
+            if (numEl) numEl.innerText = gameState.monsters.length;
+        }
+
+        function renderInventoryUI() {
+            const grid = document.getElementById('inventory-grid');
+            const cap = document.getElementById('inv-capacity');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+            if (cap) cap.innerText = gameState.inventory.length;
+
+            gameState.inventory.forEach((item, index) => {
+                const isEquipped = Object.values(gameState.player.equipped).some(eq => eq && eq.id === item.id);
+                const isScroll = item.type.startsWith('scroll_');
+
+                const card = document.createElement('div');
+                card.className = `lineage-box rounded p-1 flex flex-col items-center justify-between cursor-pointer border hover:border-amber-400 relative rarity-${item.rarity} bg-rarity-${item.rarity} ${isEquipped ? 'ring-2 ring-amber-400' : ''}`;
+
+                const prefix = item.enchant > 0 ? `+${item.enchant} ` : '';
+
+                card.innerHTML = `
+                    <div class="text-[9px] font-bold self-start ${isEquipped ? 'text-amber-400' : 'text-stone-500'}">
+                        ${isEquipped ? 'E' : ''}
+                    </div>
+                    <div class="font-bold text-[11px] text-center truncate w-full my-0.5">
+                        ${prefix}${item.name}
+                    </div>
+                    <div class="text-[9px] text-stone-400">
+                        ${isScroll ? '卷軸/道具' : (item.type === 'weapon' ? `攻:${item.baseDmg}` : `AC:${item.baseAc}`)}
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    if (gameState.sellMode) {
+                        sellItem(index);
+                    } else if (item.type === 'weapon' || item.type === 'armor' || item.type === 'helmet' || item.type === 'gloves') {
+                        // Click equipped gear or inventory gear to open enchant/upgrade modal
+                        openEnchantModalForItem(item);
+                    } else if (isScroll) {
+                        logMessage(`請點擊背包中的武器或防具裝備來開啟強化介面！`);
+                    }
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleEquip(item) {
+            const eq = gameState.player.equipped;
+            const slotType = item.type;
+
+            if (eq[slotType] && eq[slotType].id === item.id) {
+                eq[slotType] = null;
+                logMessage(`卸下了裝備: ${item.name}`);
+            } else {
+                eq[slotType] = item;
+                logMessage(`裝備了: ${item.name}`);
+            }
+            updatePlayerUI();
+            renderInventoryUI();
+        }
+
+        function sellItem(index) {
+            const item = gameState.inventory[index];
+            if (!item) return;
+
+            const eq = gameState.player.equipped;
+            if (eq[item.type] && eq[item.type].id === item.id) {
+                eq[item.type] = null;
+            }
+
+            gameState.player.gold += item.sellValue;
+            logMessage(`販售 <span class="text-amber-300">${item.name}</span>，獲得金幣 +${item.sellValue}！`);
+            gameState.inventory.splice(index, 1);
+
+            updatePlayerUI();
+            renderInventoryUI();
+        }
+
+        /* --- ENCHANT & UPGRADE MODAL LOGIC --- */
+        function openEnchantModalForItem(item) {
+            gameState.selectedItemForEnchant = item;
+            const modal = document.getElementById('enchant-modal');
+            if (modal) modal.classList.remove('hidden');
+
+            const goldBox = document.getElementById('gold-gear-upgrade-box');
+            if (goldBox) {
+                if (item.isGoldTier) goldBox.classList.remove('hidden');
+                else goldBox.classList.add('hidden');
+            }
+
+            const safeLv = item.safeEnchant || 6;
+            const gearLvAdd = (item.gearLevel || 0) * 100;
+
+            const isEquipped = Object.values(gameState.player.equipped).some(eq => eq && eq.id === item.id);
+            const btnEquipToggle = document.getElementById('btn-toggle-equip-item');
+            if (btnEquipToggle) {
+                btnEquipToggle.innerText = isEquipped ? '卸下裝備' : '穿戴裝備';
+            }
+
+            const tName = document.getElementById('enchant-target-name');
+            const tStats = document.getElementById('enchant-target-stats');
+            if (tName) tName.innerText = `+${item.enchant} ${item.name} ${item.gearLevel ? '(金裝Lv.' + item.gearLevel + ')' : ''}`;
+            if (tStats) tStats.innerText = item.type === 'weapon' ? `攻擊力: +${item.baseDmg + item.enchant + gearLvAdd}` : `防禦 AC: ${item.baseAc - item.enchant - gearLvAdd}`;
+
+            const selectEl = document.getElementById('enchant-scroll-select');
+            if (!selectEl) return;
+            selectEl.innerHTML = '';
+
+            const reqScrollType = item.type === 'weapon' ? 'scroll_dai' : 'scroll_zel';
+            const availableScrolls = gameState.inventory.filter(i => i.type === reqScrollType || i.type === 'scroll_lucky');
+
+            if (availableScrolls.length === 0) {
+                selectEl.innerHTML = `<option value="">背包中無可用強化卷軸！</option>`;
+            } else {
+                availableScrolls.forEach((sc) => {
+                    const opt = document.createElement('option');
+                    opt.value = sc.id;
+                    opt.innerText = sc.type === 'scroll_lucky' ? `【幸運卷軸】(提升安定值+1)` : `強化卷軸: ${sc.name}`;
+                    selectEl.appendChild(opt);
+                });
+            }
+        }
+
+        function executeEnchant() {
+            const item = gameState.selectedItemForEnchant;
+            if (!item) return;
+
+            const selectEl = document.getElementById('enchant-scroll-select');
+            if (!selectEl) return;
+            const scrollId = selectEl.value;
+
+            if (!scrollId) {
+                logMessage(`<span class="text-red-400">請先選擇強化卷軸！</span>`);
+                return;
+            }
+
+            const scrollIdx = gameState.inventory.findIndex(i => i.id === scrollId);
+            if (scrollIdx === -1) return;
+
+            const scrollItem = gameState.inventory[scrollIdx];
+            gameState.inventory.splice(scrollIdx, 1);
+
+            if (scrollItem.type === 'scroll_lucky') {
+                item.safeEnchant = (item.safeEnchant || 6) + 1;
+                sfx.playSuccess();
+                logMessage(`<span class="text-yellow-300 font-bold">✨ 幸運卷軸加持成功！安定值提升至 +${item.safeEnchant}！</span>`);
+                showAnnouncement(`安定值提升至 +${item.safeEnchant}！`, 'rarity-4');
+                openEnchantModalForItem(item);
+                updatePlayerUI();
+                renderInventoryUI();
+                return;
+            }
+
+            const safeLv = item.safeEnchant || 6;
+            let successRate = 1.0;
+            if (item.enchant >= safeLv) {
+                if (item.enchant === safeLv) successRate = 0.45;
+                else if (item.enchant === safeLv + 1) successRate = 0.30;
+                else successRate = 0.20;
+            }
+
+            const isSuccess = Math.random() <= successRate;
+
+            if (isSuccess) {
+                item.enchant++;
+                item.sellValue += 500;
+                sfx.playSuccess();
+                logMessage(`<span class="text-yellow-400 font-bold">✨ 裝備成功強化為 +${item.enchant} ${item.name}！</span>`);
+                showAnnouncement(`誕生 +${item.enchant} ${item.name}！`, 'rarity-4');
+            } else {
+                sfx.playBreak();
+                logMessage(`<span class="text-red-500 font-bold">💥 強化失敗！+${item.enchant} ${item.name} 碎裂消失了！</span>`);
+
+                const eq = gameState.player.equipped;
+                if (eq[item.type] && eq[item.type].id === item.id) eq[item.type] = null;
+
+                const itemIdx = gameState.inventory.findIndex(i => i.id === item.id);
+                if (itemIdx !== -1) gameState.inventory.splice(itemIdx, 1);
+
+                const modal = document.getElementById('enchant-modal');
+                if (modal) modal.classList.add('hidden');
+            }
+
+            updatePlayerUI();
+            renderInventoryUI();
+            if (isSuccess) openEnchantModalForItem(item);
+        }
+
+        function upgradeGoldGearTier() {
+            const item = gameState.selectedItemForEnchant;
+            if (!item || !item.isGoldTier) return;
+
+            if ((item.gearLevel || 0) >= 10) {
+                logMessage(`<span class="text-amber-400">該金裝已達最高 10 等！</span>`);
+                return;
+            }
+
+            const stoneIdx = gameState.inventory.findIndex(i => i.type === 'scroll_gold_stone');
+            if (stoneIdx === -1) {
+                logMessage(`<span class="text-red-400">背包中缺乏「金裝升級石」！(擊敗Boss有機率獲取)</span>`);
+                return;
+            }
+
+            gameState.inventory.splice(stoneIdx, 1);
+            item.gearLevel = (item.gearLevel || 0) + 1;
+            sfx.playSuccess();
+
+            logMessage(`<span class="text-yellow-300 font-bold">✨ 金裝升級成功！[${item.name}] 提升至 Lv.${item.gearLevel} (+${item.gearLevel * 100}數值)！</span>`);
+            openEnchantModalForItem(item);
+            updatePlayerUI();
+            renderInventoryUI();
+        }
+
+        /* --- SKILLS & STATS UI RENDERERS --- */
+        function renderSkillsUI() {
+            const p = gameState.player;
+            ['atk', 'def', 'hp', 'mp', 'single', 'aoe', 'ult'].forEach(sk => {
+                const el = document.getElementById(`sk-lv-${sk}`);
+                if (el) {
+                    if (sk === 'single' || sk === 'aoe' || sk === 'ult') {
+                        el.innerText = `Lv.${p.skills[sk]}/100`;
+                    } else {
+                        el.innerText = `Lv.${p.skills[sk]}/100`;
+                    }
+                }
+            });
+        }
+
+        function upgradeSkill(skKey) {
+            const p = gameState.player;
+            if (p.skillPoints <= 0) {
+                logMessage(`<span class="text-red-400">技能點數不足！升級可獲得技能點。</span>`);
+                return;
+            }
+            if (p.skills[skKey] >= 100) {
+                logMessage(`<span class="text-amber-400">此技能已達最高 Lv.100！</span>`);
+                return;
+            }
+
+            p.skillPoints--;
+            p.skills[skKey]++;
+            sfx.playSuccess();
+
+            p.maxHp = p.con * 10 + 100 + (p.skills.hp * 30);
+            p.maxMp = p.int * 5 + 30 + (p.skills.mp * 15);
+
+            logMessage(`<span class="text-yellow-400 font-bold">技能升級！【${skKey}】提升至 Lv.${p.skills[skKey]}！</span>`);
+            updatePlayerUI();
+            renderSkillsUI();
+        }
+
+        /* --- MAPS & BOSS SELECTION --- */
+        function renderMapList() {
+            const zoneList = document.getElementById('zone-list');
+            const bossList = document.getElementById('boss-zone-list');
+            if (!zoneList || !bossList) return;
+
+            zoneList.innerHTML = '';
+            bossList.innerHTML = '';
+
+            ZONES.forEach((z, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-2 rounded border flex justify-between items-center transition ${gameState.currentZoneIndex === idx && !gameState.isBossZone ? 'bg-amber-950/60 border-amber-500 text-amber-300 font-bold' : 'bg-stone-900 border-stone-800 hover:border-stone-600 text-stone-300'}`;
+                btn.innerHTML = `<span>${z.name}</span><span class="text-[10px] text-stone-400">需求: Lv.${z.reqLevel}</span>`;
+                btn.addEventListener('click', () => {
+                    if (gameState.player.level < z.reqLevel) {
+                        logMessage(`<span class="text-red-400">等級不足！需達 Lv.${z.reqLevel} 方可進入此獵場。</span>`);
+                        return;
+                    }
+                    gameState.currentZoneIndex = idx;
+                    gameState.isBossZone = false;
+                    gameState.monsters = [];
+                    spawnMonsterWave();
+                    document.getElementById('current-zone-name').innerText = z.name;
+                    logMessage(`已傳送至獵場：<span class="text-amber-400 font-bold">${z.name}</span>`);
+                    renderMapList();
+                });
+                zoneList.appendChild(btn);
+            });
+
+            BOSS_ZONES.forEach((bz, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-2 rounded border flex justify-between items-center transition ${gameState.currentZoneIndex === idx && gameState.isBossZone ? 'bg-red-950/70 border-red-500 text-red-300 font-bold' : 'bg-stone-900 border-stone-800 hover:border-red-900 text-stone-300'}`;
+                btn.innerHTML = `<span>${bz.name}</span><span class="text-[10px] text-red-400">挑戰 Lv.${bz.reqLevel}</span>`;
+                btn.addEventListener('click', () => {
+                    if (gameState.player.level < bz.reqLevel) {
+                        logMessage(`<span class="text-red-400">等級不足！需達 Lv.${bz.reqLevel} 方可挑戰此 Boss。</span>`);
+                        return;
+                    }
+                    gameState.currentZoneIndex = idx;
+                    gameState.isBossZone = true;
+                    gameState.monsters = [];
+                    spawnMonsterWave();
+                    document.getElementById('current-zone-name').innerText = bz.name;
+                    logMessage(`<span class="text-red-400 font-bold">進入 Boss 挑戰：${bz.name}！</span>`);
+                    renderMapList();
+                });
+                bossList.appendChild(btn);
+            });
+        }
+
+        /* --- CANVAS RENDERING ENGINE --- */
+        let canvas, ctx;
+        const floatingTexts = [];
+
+        function initCanvas() {
+            canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        function addFloatingText(x, y, text, color, size) {
+            floatingTexts.push({
+                x: canvas.width / 2 + x + (Math.random() * 20 - 10),
+                y: canvas.height / 2 + y + (Math.random() * 20 - 10),
+                text, color, size, life: 1.0, vy: -1.2
+            });
+        }
+
+        function gameLoop() {
+            if (!ctx || !canvas) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Render Player Sprite / Center
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#fff';
+            ctx.stroke();
+
+            // Render Monsters
+            gameState.monsters.forEach(m => {
+                const mx = cx + m.offsetX;
+                const my = cy + m.offsetY;
+
+                ctx.fillStyle = m.isBoss ? '#ef4444' : (m.rarity > 1 ? '#a855f7' : '#f87171');
+                if (m.hitFlash > 0) {
+                    ctx.fillStyle = '#ffffff';
+                    m.hitFlash--;
+                }
+
+                ctx.beginPath();
+                const radius = m.isBoss ? 24 : 11;
+                ctx.arc(mx, my, radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#000';
+                ctx.stroke();
+
+                // Monster HP Bar
+                const barW = m.isBoss ? 50 : 26;
+                const hpPct = Math.max(0, m.hp / m.maxHp);
+                ctx.fillStyle = '#333';
+                ctx.fillRect(mx - barW / 2, my - radius - 10, barW, 4);
+                ctx.fillStyle = m.isBoss ? '#facc15' : '#ef4444';
+                ctx.fillRect(mx - barW / 2, my - radius - 10, barW * hpPct, 4);
+
+                // Monster Name
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(m.name, mx, my - radius - 13);
+            });
+
+            // Render Floating Damage Numbers
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                const ft = floatingTexts[i];
+                ft.y += ft.vy;
+                ft.life -= 0.03;
+                ctx.globalAlpha = Math.max(0, ft.life);
+                ctx.fillStyle = ft.color;
+                ctx.font = `bold ${ft.size}px monospace`;
+                ctx.textAlign = 'center';
+                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.globalAlpha = 1.0;
+
+                if (ft.life <= 0) floatingTexts.splice(i, 1);
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        /* --- DOM EVENT LISTENERS SETUP --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Class selection buttons
+            document.querySelectorAll('.btn-select-class').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const cls = e.currentTarget.getAttribute('data-class');
+                    selectClass(cls);
+                });
+            });
+
+            // Tab Navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('active', 'border-b-2', 'border-amber-500', 'text-amber-400');
+                        b.classList.add('text-stone-400');
+                    });
+                    e.currentTarget.classList.add('active', 'border-b-2', 'border-amber-500', 'text-amber-400');
+                    e.currentTarget.classList.remove('text-stone-400');
+
+                    const tabId = e.currentTarget.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    const targetTab = document.getElementById(tabId);
+                    if (targetTab) targetTab.classList.remove('hidden');
+                });
+            });
+
+            // Auto Attack Toggle
+            const autoBtn = document.getElementById('btn-auto-attack');
+            if (autoBtn) {
+                autoBtn.addEventListener('click', () => {
+                    gameState.autoAttack = !gameState.autoAttack;
+                    autoBtn.innerText = `自動掛機打怪: ${gameState.autoAttack ? 'ON' : 'OFF'}`;
+                    autoBtn.className = gameState.autoAttack ? 
+                        'px-3 py-1 rounded text-xs font-bold transition bg-green-700 hover:bg-green-600 text-white border border-green-500 flex items-center space-x-1' :
+                        'px-3 py-1 rounded text-xs font-bold transition bg-stone-800 hover:bg-stone-700 text-stone-400 border border-stone-600 flex items-center space-x-1';
+                });
+            }
+
+            // Sell mode toggle
+            const sellBtn = document.getElementById('btn-toggle-sell-mode');
+            if (sellBtn) {
+                sellBtn.addEventListener('click', () => {
+                    gameState.sellMode = !gameState.sellMode;
+                    sellBtn.innerText = `開啟販售模式: ${gameState.sellMode ? 'ON (點擊道具變賣)' : 'OFF'}`;
+                    sellBtn.className = gameState.sellMode ?
+                        'px-2 py-0.5 rounded bg-red-900 border border-red-500 text-yellow-200 text-[10px]' :
+                        'px-2 py-0.5 rounded bg-stone-800 border border-stone-600 text-stone-300 text-[10px]';
+                });
+            }
+
+            // Stat Distribution Buttons
+            document.querySelectorAll('.btn-add-stat').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const st = e.currentTarget.getAttribute('data-stat');
+                    if (gameState.player.statPoints > 0) {
+                        gameState.player.statPoints--;
+                        gameState.player[st]++;
+                        updatePlayerUI();
+                        logMessage(`提升屬性 【${st.toUpperCase()}】 +1`);
+                    } else {
+                        logMessage(`<span class="text-stone-400">天賦點數不足！</span>`);
+                    }
+                });
+            });
+
+            // Skill Upgrade Buttons
+            document.querySelectorAll('.btn-upgrade-skill').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const sk = e.currentTarget.getAttribute('data-skill');
+                    upgradeSkill(sk);
+                });
+            });
+
+            // Hotbar Potions & Skills
+            document.getElementById('btn-use-hp').addEventListener('click', () => {
+                if (gameState.player.potions.hp > 0) {
+                    gameState.player.potions.hp--;
+                    gameState.player.hp = Math.min(gameState.player.maxHp, gameState.player.hp + 50);
+                    updatePlayerUI();
+                }
+            });
+
+            document.getElementById('btn-use-ghp').addEventListener('click', () => {
+                if (gameState.player.potions.ghp > 0) {
+                    gameState.player.potions.ghp--;
+                    gameState.player.hp = gameState.player.maxHp;
+                    updatePlayerUI();
+                }
+            });
+
+            document.getElementById('btn-use-mp').addEventListener('click', () => {
+                if (gameState.player.potions.mp > 0) {
+                    gameState.player.potions.mp--;
+                    gameState.player.mp = Math.min(gameState.player.maxMp, gameState.player.mp + 50);
+                    updatePlayerUI();
+                }
+            });
+
+            document.getElementById('btn-use-gmp').addEventListener('click', () => {
+                if (gameState.player.potions.gmp > 0) {
+                    gameState.player.potions.gmp--;
+                    gameState.player.mp = gameState.player.maxMp;
+                    updatePlayerUI();
+                }
+            });
+
+            document.getElementById('btn-use-green').addEventListener('click', () => {
+                if (gameState.player.potions.green > 0) {
+                    gameState.player.potions.green--;
+                    logMessage(`<span class="text-emerald-400 font-bold">使用了加速藥水 (綠水)！</span>`);
+                    updatePlayerUI();
+                }
+            });
+
+            document.getElementById('btn-skill-buff').addEventListener('click', executeBuffSkill);
+            document.getElementById('btn-skill-single').addEventListener('click', executeSingleAttack);
+            document.getElementById('btn-skill-aoe').addEventListener('click', executeAOESkill);
+            document.getElementById('btn-skill-ult').addEventListener('click', executeUltimateSkill);
+
+            // Shop Buy Buttons
+            document.querySelectorAll('.btn-buy-shop').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const itemType = e.currentTarget.getAttribute('data-item');
+                    const prices = { hp: 40, ghp: 500, mp: 70, gmp: 800, green: 250 };
+                    const price = prices[itemType] || 100;
+
+                    if (gameState.player.gold >= price) {
+                        gameState.player.gold -= price;
+                        if (itemType === 'hp') gameState.player.potions.hp++;
+                        else if (itemType === 'ghp') gameState.player.potions.ghp++;
+                        else if (itemType === 'mp') gameState.player.potions.mp++;
+                        else if (itemType === 'gmp') gameState.player.potions.gmp++;
+                        else if (itemType === 'green') gameState.player.potions.green++;
+
+                        updatePlayerUI();
+                        logMessage(`購買成功，花費金幣 ${price}。`);
+                    } else {
+                        logMessage(`<span class="text-red-400">金幣不足！</span>`);
+                    }
+                });
+            });
+
+            // Equip Toggle inside Enchant Modal
+            document.getElementById('btn-toggle-equip-item').addEventListener('click', () => {
+                if (gameState.selectedItemForEnchant) {
+                    toggleEquip(gameState.selectedItemForEnchant);
+                    openEnchantModalForItem(gameState.selectedItemForEnchant);
+                }
+            });
+
+            // Enchant Modal Close & Actions
+            document.getElementById('close-enchant-modal').addEventListener('click', () => {
+                document.getElementById('enchant-modal').classList.add('hidden');
+            });
+
+            document.getElementById('btn-do-enchant').addEventListener('click', executeEnchant);
+            document.getElementById('btn-upgrade-gold-tier').addEventListener('click', upgradeGoldGearTier);
+
+            // Sound Toggle
+            document.getElementById('btn-sound').addEventListener('click', () => {
+                gameState.soundEnabled = !gameState.soundEnabled;
+                const icon = document.getElementById('sound-icon');
+                if (icon) {
+                    icon.className = gameState.soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+                }
+            });
+
+            // Clear Log
+            document.getElementById('btn-clear-log').addEventListener('click', () => {
+                const logEl = document.getElementById('combat-log');
+                if (logEl) logEl.innerHTML = '<div class="text-stone-400">記錄已清除。</div>';
+            });
+
+            // Interval loops
+            setInterval(() => {
+                if (gameState.autoAttack) executeSingleAttack();
+                if (!gameState.isBossZone && gameState.monsters.length < 5) spawnMonsterWave();
+            }, 800);
+
+            setInterval(() => {
+                const p = gameState.player;
+                if (p.hp < p.maxHp) p.hp = Math.min(p.maxHp, p.hp + 3 + Math.floor(p.con * 0.4));
+                if (p.mp < p.maxMp) p.mp = Math.min(p.maxMp, p.mp + 2 + Math.floor(p.int * 0.3));
+                updatePlayerUI();
+            }, 3000);
         });
-        renderUI();
-        renderTransactions();
-      }
-    }
-
-    async function updateProductDetailsInDb(productId, name, price, count) {
-      if (isCloudSyncAvailable && db) {
-        try {
-          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', productId);
-          await setDoc(docRef, {
-            name: name,
-            price: Number(price),
-            count: Number(count),
-            updatedAt: serverTimestamp()
-          }, { merge: true });
-          showToast("更新商品成功", "success");
-        } catch (err) {
-          console.error("Error saving edit:", err);
-        }
-      } else {
-        const prod = products.find(p => p.id === productId);
-        if (prod) {
-          prod.name = name;
-          prod.price = Number(price);
-          prod.count = Number(count);
-        }
-        renderUI();
-        showToast("更新商品成功", "success");
-      }
-    }
-
-    async function deleteProductInDb(productId) {
-      const prod = products.find(p => p.id === productId);
-      if (!prod) return;
-
-      if (isCloudSyncAvailable && db) {
-        try {
-          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', productId);
-          await deleteDoc(docRef);
-          showToast(`已刪除 ${prod.name}`, "info");
-        } catch (err) {
-          console.error("Error deleting product:", err);
-        }
-      } else {
-        products = products.filter(p => p.id !== productId);
-        renderUI();
-        showToast(`已刪除 ${prod.name}`, "info");
-      }
-    }
-
-    async function resetAllDataInDb() {
-      if (isCloudSyncAvailable && db) {
-        try {
-          for (const prod of products) {
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', prod.id);
-            await setDoc(docRef, { count: 0 }, { merge: true });
-          }
-          showToast("已清空本日所有銷售計數", "info");
-        } catch (e) {
-          console.error("Failed resetting data:", e);
-        }
-      } else {
-        products.forEach(p => p.count = 0);
-        transactions = [];
-        renderUI();
-        renderTransactions();
-        showToast("已清空當前數據", "info");
-      }
-    }
-
-    // UI Rendering Functions
-    function renderUI() {
-      const grid = document.getElementById('product-list');
-      const summaryTable = document.getElementById('summary-table-body');
-      
-      let grandTotal = 0;
-      let grandCount = 0;
-
-      if (products.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-stone-400 bg-white rounded-2xl border border-dashed border-stone-200">
-            <i class="fa-solid fa-basket-shopping text-3xl mb-2 text-stone-300"></i>
-            <p>目前無銷售商品，請使用上方表單新增品項。</p>
-          </div>
-        `;
-        summaryTable.innerHTML = `<tr><td colspan="4" class="px-5 py-4 text-center text-stone-400 text-xs">無數據</td></tr>`;
-      } else {
-        let gridHtml = '';
-        let tableHtml = '';
-
-        products.forEach(prod => {
-          const subtotal = (prod.count || 0) * (prod.price || 0);
-          grandTotal += subtotal;
-          grandCount += (prod.count || 0);
-
-          // Render Grid Card
-          gridHtml += `
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 hover:shadow-md transition flex flex-col justify-between">
-              <div class="flex items-start justify-between">
-                <div>
-                  <h3 class="font-bold text-lg text-stone-800 leading-tight">${escapeHtml(prod.name)}</h3>
-                  <div class="text-xs text-stone-500 mt-1">
-                    單價: <span class="font-semibold text-emerald-700 text-sm">NT$ ${prod.price}</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button onclick="openEditModal('${prod.id}')" title="編輯品項" class="text-stone-400 hover:text-stone-600 p-1.5 rounded-lg hover:bg-stone-100 text-xs transition">
-                    <i class="fa-solid fa-pen"></i>
-                  </button>
-                  <button onclick="confirmDeleteProduct('${prod.id}', '${escapeHtml(prod.name)}')" title="刪除品項" class="text-rose-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 text-xs transition">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Controls Section -->
-              <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
-                <div>
-                  <span class="text-xs text-stone-400 block">銷售小計</span>
-                  <span class="text-lg font-bold text-emerald-800">NT$ ${subtotal.toLocaleString()}</span>
-                </div>
-
-                <!-- Touch Friendly Quick Buttons -->
-                <div class="flex items-center bg-stone-100 p-1 rounded-xl gap-2">
-                  <button onclick="changeQty('${prod.id}', -1)" 
-                    class="w-11 h-11 bg-white hover:bg-rose-50 text-rose-600 font-bold rounded-lg shadow-sm border border-stone-200 active:scale-95 flex items-center justify-center text-xl transition">
-                    <i class="fa-solid fa-minus"></i>
-                  </button>
-                  
-                  <span class="w-10 text-center font-extrabold text-xl text-stone-800">${prod.count || 0}</span>
-
-                  <button onclick="changeQty('${prod.id}', 1)" 
-                    class="w-11 h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md active:scale-95 flex items-center justify-center text-xl transition">
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-
-          // Render Table Row
-          tableHtml += `
-            <tr class="hover:bg-stone-50">
-              <td class="px-5 py-3 font-medium text-stone-800">${escapeHtml(prod.name)}</td>
-              <td class="px-5 py-3">NT$ ${prod.price}</td>
-              <td class="px-5 py-3 font-semibold text-stone-700">${prod.count || 0} 包/件</td>
-              <td class="px-5 py-3 text-right font-bold text-emerald-700">NT$ ${subtotal.toLocaleString()}</td>
-            </tr>
-          `;
-        });
-
-        grid.innerHTML = gridHtml;
-        summaryTable.innerHTML = tableHtml;
-      }
-
-      // Update Total Displays
-      document.getElementById('grand-total').innerText = `NT$ ${grandTotal.toLocaleString()}`;
-      document.getElementById('grand-count').innerText = grandCount;
-    }
-
-    function renderTransactions() {
-      const container = document.getElementById('transaction-log-list');
-      if (!transactions || transactions.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-stone-400 text-xs">暫無動態點數異動紀錄</div>`;
-        return;
-      }
-
-      let html = '';
-      transactions.slice(0, 50).forEach(tx => {
-        const timeStr = tx.timestamp?.seconds 
-          ? new Date(tx.timestamp.seconds * 1000).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-          : '剛才';
-        
-        const isPlus = tx.delta > 0;
-        const badgeColor = isPlus ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
-
-        html += `
-          <div class="px-5 py-3 flex items-center justify-between text-xs hover:bg-stone-50 transition">
-            <div class="flex items-center space-x-3">
-              <span class="px-2 py-0.5 rounded-md font-bold ${badgeColor}">
-                ${isPlus ? '+' + tx.delta : tx.delta}
-              </span>
-              <span class="font-semibold text-stone-700">${escapeHtml(tx.productName)}</span>
-            </div>
-            <div class="flex items-center gap-4 text-stone-500">
-              <span>小計變動: <strong class="text-stone-800">NT$ ${tx.totalChange}</strong></span>
-              <span class="text-stone-400">${timeStr}</span>
-            </div>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
-    }
-
-    // Status Indicator Update
-    function updateSyncStatus(isOnline, text) {
-      const indicator = document.getElementById('sync-status-indicator');
-      const textSpan = document.getElementById('sync-status-text');
-      const footerStatus = document.getElementById('firebase-status');
-
-      if (isOnline) {
-        indicator.className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse';
-        textSpan.innerText = text || '雲端同步中';
-        footerStatus.innerText = '雲端即時同步模式';
-      } else {
-        indicator.className = 'w-2 h-2 rounded-full bg-amber-400 inline-block';
-        textSpan.innerText = text || '本機離線模式';
-        footerStatus.innerText = '單機離線紀錄模式';
-      }
-    }
-
-    // Global Action Handlers attached to Window
-    window.handleCreateProduct = function(event) {
-      event.preventDefault();
-      const nameInput = document.getElementById('new-product-name');
-      const priceInput = document.getElementById('new-product-price');
-
-      const name = nameInput.value.trim();
-      const price = parseFloat(priceInput.value);
-
-      if (!name || isNaN(price)) return;
-
-      createProductInDb(name, price, 0);
-
-      nameInput.value = '';
-      priceInput.value = '';
-    };
-
-    window.changeQty = function(productId, delta) {
-      updateProductQuantityInDb(productId, delta);
-    };
-
-    window.openEditModal = function(productId) {
-      const prod = products.find(p => p.id === productId);
-      if (!prod) return;
-
-      document.getElementById('edit-product-id').value = prod.id;
-      document.getElementById('edit-product-name').value = prod.name;
-      document.getElementById('edit-product-price').value = prod.price;
-      document.getElementById('edit-product-count').value = prod.count || 0;
-
-      document.getElementById('edit-modal').classList.remove('hidden');
-    };
-
-    window.closeEditModal = function() {
-      document.getElementById('edit-modal').classList.add('hidden');
-    };
-
-    window.handleSaveEdit = function(event) {
-      event.preventDefault();
-      const id = document.getElementById('edit-product-id').value;
-      const name = document.getElementById('edit-product-name').value.trim();
-      const price = document.getElementById('edit-product-price').value;
-      const count = document.getElementById('edit-product-count').value;
-
-      if (!id || !name) return;
-
-      updateProductDetailsInDb(id, name, price, count);
-      closeEditModal();
-    };
-
-    window.confirmDeleteProduct = function(productId, productName) {
-      showCustomConfirm(`確定要刪除商品「${productName}」嗎？`, () => {
-        deleteProductInDb(productId);
-      });
-    };
-
-    window.confirmResetSession = function() {
-      showCustomConfirm("確定要重置並清空所有商品的銷售數量嗎？此動作將會歸零今日數據。", () => {
-        resetAllDataInDb();
-      });
-    };
-
-    window.exportCSV = function() {
-      if (products.length === 0) {
-        showToast("無可供匯出的數據", "info");
-        return;
-      }
-
-      let csvContent = "\uFEFF"; // UTF-8 BOM for Excel Chinese characters
-      csvContent += "商品名稱,單價(NT$),銷售數量,銷售小計\n";
-
-      let totalAmount = 0;
-      let totalQty = 0;
-
-      products.forEach(p => {
-        const subtotal = (p.count || 0) * (p.price || 0);
-        totalAmount += subtotal;
-        totalQty += (p.count || 0);
-        csvContent += `"${p.name.replace(/"/g, '""')}",${p.price},${p.count || 0},${subtotal}\n`;
-      });
-
-      csvContent += `\n"總計",,${totalQty},${totalAmount}\n`;
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      const dateStr = new Date().toISOString().slice(0, 10);
-      link.setAttribute("href", url);
-      link.setAttribute("download", `市集銷售紀錄_${dateStr}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast("CSV 報表已開始下載", "success");
-    };
-
-    window.switchTab = function(tabName) {
-      const salesTab = document.getElementById('tab-sales');
-      const historyTab = document.getElementById('tab-history');
-      const salesBtn = document.getElementById('tab-btn-sales');
-      const historyBtn = document.getElementById('tab-btn-history');
-
-      if (tabName === 'sales') {
-        salesTab.classList.remove('hidden');
-        historyTab.classList.add('hidden');
-
-        salesBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 bg-white text-emerald-900 shadow";
-        historyBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 text-emerald-100 hover:text-white";
-      } else {
-        salesTab.classList.add('hidden');
-        historyTab.classList.remove('hidden');
-
-        historyBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 bg-white text-emerald-900 shadow";
-        salesBtn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 text-emerald-100 hover:text-white";
-      }
-    };
-
-    // Helper functions
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>"']/g, function(m) {
-        return {
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#039;'
-        }[m];
-      });
-    }
-
-    function showToast(message, type = "info") {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      
-      let bgColor = "bg-stone-800 text-white";
-      if (type === "success") bgColor = "bg-emerald-700 text-white";
-      if (type === "error") bgColor = "bg-rose-700 text-white";
-
-      toast.className = `${bgColor} text-xs font-medium px-4 py-3 rounded-xl shadow-lg flex items-center justify-between gap-3 transform transition-all duration-300 translate-y-2 opacity-0`;
-      toast.innerHTML = `
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      `;
-
-      container.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      }, 10);
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-
-    function showCustomConfirm(message, onConfirm) {
-      const modal = document.createElement('div');
-      modal.className = "fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4";
-      modal.innerHTML = `
-        <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-xl border border-stone-100 text-center space-y-4">
-          <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-          </div>
-          <p class="text-sm font-medium text-stone-800">${message}</p>
-          <div class="flex items-center justify-center gap-2 pt-2">
-            <button id="cancel-btn" class="px-4 py-2 bg-stone-100 text-stone-600 text-xs font-medium rounded-xl hover:bg-stone-200">取消</button>
-            <button id="confirm-btn" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-xl hover:bg-rose-700 shadow">確定執行</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-
-      modal.querySelector('#cancel-btn').onclick = () => modal.remove();
-      modal.querySelector('#confirm-btn').onclick = () => {
-        onConfirm();
-        modal.remove();
-      };
-    }
-  </script>
+    </script>
 </body>
 </html>
