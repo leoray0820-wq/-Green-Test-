@@ -3,321 +3,2376 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lineage RPG Ultimate Edition</title>
+  <title>火影忍者：忍界小隊奧義對決</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-color: #0b0c10;
-      --panel-bg: rgba(20, 24, 33, 0.95);
-      --border-color: #45a29e;
-      --text-main: #c5c6c7;
-      --gold-color: #f39c12;
-      --hp-color: #e74c3c;
-      --mp-color: #3498db;
-      --exp-color: #2ecc71;
+      --bg-dark: #0b0d13;
+      --panel-bg: #131722;
+      --gold-border: #b45309;
+      --gold-light: #fbbf24;
+      --crimson: #991b1b;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: 'Consolas', 'Microsoft JhengHei', monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      overflow: hidden;
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: var(--bg-dark);
+      color: #f1f5f9;
+      user-select: none;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(153, 27, 27, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(180, 83, 9, 0.12) 0%, transparent 45%);
     }
-    #game-container {
-      width: 1000px;
-      height: 700px;
-      background: #000;
-      border: 3px solid #333;
-      box-shadow: 0 0 20px rgba(0,255,200,0.2);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    /* 頂部狀態列 */
-    #top-bar {
-      height: 60px;
-      background: #111;
-      border-bottom: 2px solid #333;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 15px;
-    }
-    .char-info { display: flex; gap: 15px; align-items: center; }
-    .status-bars { width: 220px; display: flex; flex-direction: column; gap: 4px; }
-    .bar-wrap { height: 12px; background: #222; border: 1px solid #444; position: relative; border-radius: 2px; }
-    .bar-fill { height: 100%; transition: width 0.1s; }
-    .bar-text { position: absolute; top: -2px; left: 0; width: 100%; text-align: center; font-size: 10px; color: #fff; text-shadow: 1px 1px 1px #000; }
-    
-    /* 戰鬥畫布 */
-    #canvas-container { flex: 1; position: relative; background: #050505; }
-    canvas { width: 100%; height: 100%; display: block; }
-    
-    /* 底部控制介面 */
-    #bottom-bar {
-      height: 220px;
-      background: var(--panel-bg);
-      border-top: 2px solid var(--border-color);
-      display: flex;
-    }
-    .panel-tab { flex: 1; border-right: 1px solid #333; padding: 10px; display: flex; flex-direction: column; }
-    .tab-title { font-size: 14px; color: var(--gold-color); font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 4px; display: flex; justify-content: space-between; }
-    
-    /* 背包格 */
-    .inventory-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; overflow-y: auto; max-height: 160px; }
-    .item-slot {
-      width: 42px; height: 42px; background: #1a1a24; border: 1px solid #333; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; font-size: 11px;
-    }
-    .item-slot:hover { border-color: var(--border-color); background: #252535; }
-    .item-slot .count { position: absolute; bottom: 1px; right: 2px; font-size: 9px; color: #fff; }
-    .item-tier-gold { border-color: #f1c40f !important; box-shadow: 0 0 5px rgba(241, 196, 15, 0.5); }
-    .item-tier-red { border-color: #e74c3c !important; }
-    .item-tier-purple { border-color: #9b59b6 !important; }
-    .item-tier-blue { border-color: #3498db !important; }
 
-    /* 按鈕樣式 */
-    .btn { background: #2c3e50; color: #fff; border: 1px solid #34495e; padding: 4px 8px; font-size: 11px; cursor: pointer; border-radius: 3px; }
-    .btn:hover { background: #34495e; border-color: var(--border-color); }
-    .btn-gold { background: #b7950b; border-color: #f1c40f; }
-
-    /* 全螢幕創角彈窗 */
-    #modal-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 99;
+    .font-serif-tc {
+      font-family: 'Noto Serif TC', serif;
     }
-    .modal-box { background: #151922; border: 2px solid var(--gold-color); padding: 25px; border-radius: 8px; width: 450px; text-align: center; }
-    .class-select { display: flex; justify-content: space-around; margin: 20px 0; }
-    .class-card { border: 1px solid #444; padding: 10px; cursor: pointer; width: 30%; border-radius: 5px; }
-    .class-card.selected { border-color: var(--gold-color); background: rgba(241, 196, 15, 0.1); }
 
-    /* Floating log */
-    #game-log { position: absolute; top: 70px; right: 10px; width: 260px; height: 150px; background: rgba(0,0,0,0.6); border: 1px solid #333; pointer-events: none; padding: 5px; font-size: 11px; overflow: hidden; display: flex; flex-direction: column-reverse; }
-    .log-line { margin: 2px 0; }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f131c; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* Japanese Washi & Gold Trim Card */
+    .scroll-panel {
+      background: linear-gradient(145deg, #161b28 0%, #0f131d 100%);
+      border: 1px solid rgba(217, 119, 6, 0.35);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(251, 191, 36, 0.12);
+    }
+
+    .rarity-ssr {
+      border-color: #f59e0b;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.25);
+    }
+    .rarity-sr {
+      border-color: #a855f7;
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.2);
+    }
+    .rarity-r {
+      border-color: #38bdf8;
+    }
+
+    /* Animations */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-1deg); }
+      40% { transform: translateX(8px) rotate(1deg); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+    .anim-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      25% { opacity: 1; transform: translateY(-18px) scale(1.15); }
+      100% { opacity: 0; transform: translateY(-55px) scale(0.95); }
+    }
+    .dmg-popup {
+      animation: floatUp 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes comboFlash {
+      0% { opacity: 0; transform: scale(0.6); }
+      15% { opacity: 1; transform: scale(1.05); }
+      80% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.15); }
+    }
+    .combo-banner-anim {
+      animation: comboFlash 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+      50% { box-shadow: 0 0 24px rgba(251, 191, 36, 0.9); }
+    }
+    .active-turn-glow {
+      animation: pulseGlow 1.5s infinite;
+      border-color: #fbbf24 !important;
+    }
+
+    /* Custom Attribute Badges */
+    .elem-風 { background: #065f46; color: #6ee7b7; border-color: #10b981; }
+    .elem-雷 { background: #3b0764; color: #d8b4fe; border-color: #a855f7; }
+    .elem-火 { background: #7f1d1d; color: #fca5a5; border-color: #ef4444; }
+    .elem-水 { background: #1e3a8a; color: #93c5fd; border-color: #3b82f6; }
+    .elem-土 { background: #78350f; color: #fcd34d; border-color: #d97706; }
+    .elem-體 { background: #14532d; color: #86efac; border-color: #22c55e; }
+    .elem-幻 { background: #4c1d95; color: #c4b5fd; border-color: #8b5cf6; }
+    .elem-醫 { background: #831843; color: #f9a8d4; border-color: #ec4899; }
+    .elem-陰 { background: #1e1b4b; color: #a5b4fc; border-color: #6366f1; }
+    .elem-陽 { background: #713f12; color: #fef08a; border-color: #eab308; }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-<div id="game-container">
-  <!-- 創角視窗 -->
-  <div id="modal-overlay">
-    <div class="modal-box">
-      <h2 style="color:var(--gold-color)">選擇職業進入《天堂 Lineage》</h2>
-      <div class="class-select">
-        <div class="class-card selected" onclick="selectClass('royal')">
-          <h3>王族</h3>
-          <p style="font-size:10px; color:#aaa; margin-top:5px;">全隊領袖<br>高防禦與經驗加成</p>
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-amber-800/50 px-3 sm:px-6 py-3 shadow-xl">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-700 to-amber-600 border-2 border-amber-400 flex items-center justify-center shadow-lg">
+          <svg viewBox="0 0 100 100" class="w-6 h-6 fill-amber-200">
+            <path d="M50 15 C70 15, 85 30, 85 50 C85 70, 70 85, 50 85 C35 85, 22 73, 22 57 C22 44, 32 34, 45 34 C55 34, 63 42, 63 52 C63 59, 57 65, 50 65 C45 65, 41 61, 41 56 C41 53, 43 50, 47 50 L50 56 C48 56, 47 57, 47 58 C47 60, 49 61, 51 61 C54 61, 57 58, 57 53 C57 46, 51 40, 44 40 C35 40, 28 48, 28 57 C28 70, 38 79, 50 79 C66 79, 79 66, 79 50 C79 34, 66 21, 50 21 L15 21 L25 15 Z"/>
+          </svg>
         </div>
-        <div class="class-card" onclick="selectClass('knight')">
-          <h3>騎士</h3>
-          <p style="font-size:10px; color:#aaa; margin-top:5px;">近戰王者<br>極高血量與爆擊</p>
-        </div>
-        <div class="class-card" onclick="selectClass('elf')">
-          <h3>妖精</h3>
-          <p style="font-size:10px; color:#aaa; margin-top:5px;">遠程霸主<br>高攻速與魔力恢復</p>
+        <div>
+          <h1 class="font-serif-tc text-lg sm:text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-red-400">
+            火影忍者：忍界小隊奧義對決
+          </h1>
+          <p class="text-[11px] text-slate-400 hidden sm:block">4v4 速度回合制 × 角色升星養成 × 屬性合體聯招</p>
         </div>
       </div>
-      <button class="btn btn-gold" style="padding:8px 20px; font-size:14px;" onclick="startGame()">踏入戰場</button>
+
+      <!-- Currency & Team Power -->
+      <div class="flex items-center gap-3 sm:gap-5">
+        <div class="bg-slate-900/90 border border-amber-700/50 px-3.5 py-1.5 rounded-xl flex items-center gap-2 shadow-inner">
+          <i class="fa-solid fa-coins text-amber-400"></i>
+          <span class="text-xs text-slate-400">資金:</span>
+          <span id="ui-ryo" class="font-bold text-amber-300 font-mono text-sm sm:text-base">500</span>
+          <span class="text-xs text-amber-500">元</span>
+        </div>
+
+        <button onclick="openComboCodex()" class="px-3 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-600/60 text-amber-300 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-book-journal-whills"></i>
+          <span>聯招圖鑑</span>
+        </button>
+      </div>
+
+      <!-- Main Tabs -->
+      <nav class="flex items-center gap-1.5 w-full sm:w-auto justify-center bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <button onclick="switchTab('roster')" id="tab-roster" class="tab-btn flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-amber-600 text-white shadow">
+          <i class="fa-solid fa-users-gear mr-1"></i>忍者與編隊
+        </button>
+        <button onclick="switchTab('gacha')" id="tab-gacha" class="tab-btn flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
+          <i class="fa-solid fa-scroll mr-1"></i>忍者招募
+        </button>
+        <button onclick="switchTab('stage')" id="tab-stage" class="tab-btn flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
+          <i class="fa-solid fa-khanda mr-1"></i>忍界對決 (4v4)
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6">
+
+    <!-- =========================================================
+         VIEW 1: ROSTER & 4-MAN SQUAD BUILDER
+         ========================================================= -->
+    <section id="view-roster" class="space-y-6">
+      <!-- Active 4-Ninja Squad Strip -->
+      <div class="scroll-panel rounded-2xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="font-serif-tc text-xl font-bold text-amber-300 flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-amber-500"></i> 出戰小隊編成（上限 4 人）
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">點擊下方忍者名冊加入或替換隊員。戰鬥中將依照各自 <span class="text-sky-400 font-bold">速度 (SPD)</span> 決定出手順序！</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl text-right">
+              <div class="text-[11px] text-slate-400">小隊總戰力</div>
+              <div id="ui-squad-power" class="text-lg font-black text-amber-400 font-mono">0</div>
+            </div>
+            <button onclick="switchTab('stage')" class="px-5 py-3 rounded-xl bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-bold text-sm shadow-lg transition flex items-center gap-2">
+              <span>前往出戰</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Squad Slots -->
+        <div id="squad-slots-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Active Synergies Bar -->
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
+          <span class="text-xs font-bold text-amber-400"><i class="fa-solid fa-sparkles mr-1"></i>當前陣容可觸發聯招：</span>
+          <div id="squad-synergy-tags" class="flex flex-wrap gap-2 text-xs">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Owned Shinobi Collection & Star Upgrade -->
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="font-serif-tc text-lg font-bold text-slate-200 flex items-center gap-2">
+            <i class="fa-solid fa-address-book text-amber-400"></i> 全忍界圖鑑與升星強化
+            <span id="ui-owned-count" class="text-xs bg-slate-800 text-amber-300 px-2.5 py-0.5 rounded-full font-mono">0 / 46</span>
+          </h3>
+          <div class="flex flex-wrap gap-1.5 text-xs">
+            <button onclick="filterRoster('ALL')" class="filter-btn px-3 py-1 rounded-lg bg-amber-600 text-white font-bold">全部 (46)</button>
+            <button onclick="filterRoster('UR')" class="filter-btn px-3 py-1 rounded-lg bg-slate-800 text-rose-400 hover:bg-slate-700">UR</button>
+            <button onclick="filterRoster('SSR')" class="filter-btn px-3 py-1 rounded-lg bg-slate-800 text-amber-400 hover:bg-slate-700">SSR</button>
+            <button onclick="filterRoster('SR')" class="filter-btn px-3 py-1 rounded-lg bg-slate-800 text-purple-400 hover:bg-slate-700">SR</button>
+            <button onclick="filterRoster('R')" class="filter-btn px-3 py-1 rounded-lg bg-slate-800 text-sky-400 hover:bg-slate-700">R</button>
+            <button onclick="filterRoster('N')" class="filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">N</button>
+          </div>
+        </div>
+
+        <div id="roster-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         VIEW 2: NINJA GACHA RECRUITMENT
+         ========================================================= -->
+    <section id="view-gacha" class="hidden space-y-6">
+      <div class="scroll-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        <!-- Decorative Watermark -->
+        <div class="absolute -right-8 -bottom-8 text-9xl text-amber-500/5 pointer-events-none font-serif-tc font-black">忍</div>
+
+        <div class="max-w-3xl mx-auto text-center space-y-4 relative z-10">
+          <span class="inline-block px-3 py-1 rounded-full bg-red-950/80 border border-red-700/60 text-red-300 text-xs font-bold tracking-widest">
+            通靈之術 · 全忍界超值招募
+          </span>
+          <h2 class="font-serif-tc text-2xl sm:text-4xl font-black text-amber-300">
+            僅需 1 元！召喚全火影 46 位傳說忍者！
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            每次招募僅花費 <span class="text-amber-400 font-bold">1 元</span>！收錄木葉十二忍、歷代火影、傳說三忍、五影、人柱力與曉組織全員。重複獲得的忍者將自動轉化為專屬 <span class="text-sky-400 font-bold">角色卡碎片</span>（每次重複獲得 <span class="text-emerald-400 font-bold">+25 張</span> 角色卡，集滿 <span class="text-amber-300 font-bold">100 張</span> 即可升 1 星，最高 5 星！）。
+          </p>
+
+          <!-- Drop Rates -->
+          <div class="flex flex-wrap justify-center gap-2 text-xs pt-1">
+            <span class="px-2.5 py-1 rounded-lg bg-rose-950/70 border border-rose-500/50 text-rose-300 font-bold">UR 神話級：5%</span>
+            <span class="px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-500/40 text-amber-300">SSR 傳說級：15%</span>
+            <span class="px-2.5 py-1 rounded-lg bg-purple-950/60 border border-purple-500/40 text-purple-300">SR 精英級：30%</span>
+            <span class="px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-500/40 text-sky-300">R 特別上忍：30%</span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-600 text-slate-300">N 中忍：20%</span>
+          </div>
+
+          <!-- Summon Buttons -->
+          <div class="flex flex-wrap justify-center gap-3 sm:gap-4 pt-4">
+            <button onclick="pullGacha(1)" class="px-6 py-3.5 rounded-xl bg-gradient-to-b from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border-2 border-amber-500/70 text-amber-200 font-bold shadow-lg transition transform hover:-translate-y-0.5 flex flex-col items-center min-w-[140px]">
+              <span class="text-base"><i class="fa-solid fa-scroll mr-1.5 text-amber-400"></i>招募 1 次</span>
+              <span class="text-xs text-amber-400 font-mono mt-0.5">1 元</span>
+            </button>
+
+            <button onclick="pullGacha(10)" class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-red-700 via-amber-600 to-amber-500 hover:from-red-600 hover:to-amber-400 text-slate-950 font-black shadow-xl transition transform hover:-translate-y-0.5 flex flex-col items-center min-w-[175px]">
+              <span class="text-base"><i class="fa-solid fa-fire mr-1.5"></i>十連通靈招募</span>
+              <span class="text-xs text-slate-900 font-mono font-bold mt-0.5">10 元（必出 SR 以上）</span>
+            </button>
+
+            <button onclick="pullGacha(100)" class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-rose-700 via-purple-700 to-indigo-700 hover:from-rose-600 hover:to-indigo-600 border border-rose-400/60 text-white font-black shadow-xl transition transform hover:-translate-y-0.5 flex flex-col items-center min-w-[185px]">
+              <span class="text-base"><i class="fa-solid fa-burst mr-1.5 text-amber-300"></i>百連狂歡通靈</span>
+              <span class="text-xs text-amber-200 font-mono font-bold mt-0.5">100 元（海量碎片升星）</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gacha Results Showcase -->
+      <div id="gacha-result-area" class="hidden scroll-panel rounded-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <h3 id="gacha-result-title" class="font-serif-tc text-lg font-bold text-amber-300">
+            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>通靈召喚結果
+          </h3>
+          <button onclick="document.getElementById('gacha-result-area').classList.add('hidden')" class="text-xs text-slate-400 hover:text-white">關閉結果</button>
+        </div>
+        <div id="gacha-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          <!-- Populated on summon -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         VIEW 3: STAGE SELECTION & 4v4 TACTICAL COMBAT
+         ========================================================= -->
+    <section id="view-stage" class="hidden space-y-6">
+      <!-- Stage Selector Panel (Shown when not in active battle) -->
+      <div id="stage-select-panel" class="space-y-4">
+        <div class="scroll-panel rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="font-serif-tc text-xl font-bold text-amber-300">選擇對決關卡（4v4 小隊戰）</h2>
+            <p class="text-xs text-slate-400 mt-1">擊敗敵方小隊可獲得豐厚資金與隨機角色卡包！</p>
+          </div>
+          <div class="text-xs text-slate-300 bg-slate-900 px-3 py-2 rounded-xl border border-slate-800">
+            目前出戰人數：<span id="stage-squad-count" class="font-bold text-amber-400">0</span> / 4 人
+          </div>
+        </div>
+
+        <div id="stages-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Active 4v4 Combat Arena -->
+      <div id="combat-arena-panel" class="hidden space-y-4">
+        <!-- Top Action Speed Timeline -->
+        <div class="scroll-panel rounded-2xl p-3 sm:p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded bg-red-900/80 border border-red-600 text-red-200 text-xs font-bold">
+                第 <span id="combat-round">1</span> 輪
+              </span>
+              <span class="text-xs text-slate-300 font-bold"><i class="fa-solid fa-gauge-high text-sky-400 mr-1"></i>速度行動條（由左至右依 SPD 出手）</span>
+            </div>
+
+            <!-- Combo Chain Tracker -->
+            <div class="flex items-center gap-2 bg-slate-950/90 border border-amber-700/50 px-3 py-1 rounded-xl">
+              <span class="text-[11px] text-slate-400">我方連續屬性軌跡:</span>
+              <div id="combat-chain-display" class="flex items-center gap-1 text-xs font-bold text-amber-300">
+                <span class="text-slate-600 italic">尚未出招</span>
+              </div>
+            </div>
+
+            <button onclick="retreatCombat()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-300 border border-slate-700 transition">
+              撤退
+            </button>
+          </div>
+
+          <!-- Speed Order Portraits -->
+          <div id="speed-timeline-bar" class="flex items-center gap-2 overflow-x-auto py-1.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Battlefield: Enemy 4 vs Player 4 -->
+        <div class="relative rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-950 via-[#111622] to-slate-950 p-4 sm:p-6 shadow-2xl overflow-hidden">
+          <!-- Combo Full-Screen Overlay Banner -->
+          <div id="combo-overlay" class="hidden absolute inset-0 z-30 pointer-events-none flex items-center justify-center bg-black/50 backdrop-blur-[2px]">
+            <div id="combo-overlay-card" class="px-8 py-5 rounded-2xl bg-gradient-to-r from-red-900/95 via-amber-800/95 to-red-900/95 border-2 border-amber-400 text-center shadow-[0_0_50px_rgba(251,191,36,0.8)]">
+              <div class="text-xs tracking-widest text-amber-300 font-bold uppercase">✨ 屬性合體聯招發動 ✨</div>
+              <div id="combo-overlay-title" class="font-serif-tc text-2xl sm:text-4xl font-black text-white mt-1 drop-shadow">【風助火勢·豪火螺旋丸】</div>
+              <div id="combo-overlay-desc" class="text-xs sm:text-sm text-amber-200 mt-1.5">造成全體額外追擊與灼燒！</div>
+            </div>
+          </div>
+
+          <!-- Enemy Squad Row (Top) -->
+          <div class="mb-6">
+            <div class="text-xs font-bold text-rose-400 mb-2 flex items-center justify-between">
+              <span><i class="fa-solid fa-skull mr-1"></i>敵方陣容（點擊敵方角色可鎖定集火目標）</span>
+              <span id="target-indicator" class="text-amber-300">當前鎖定：自動</span>
+            </div>
+            <div id="combat-enemy-row" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <!-- Enemy Cards -->
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="relative my-4 flex items-center justify-center">
+            <div class="border-t border-slate-800 w-full"></div>
+            <span class="bg-slate-900 px-4 py-1 rounded-full border border-amber-700/40 text-[11px] font-serif-tc text-amber-400 tracking-widest">
+              VS
+            </span>
+            <div class="border-t border-slate-800 w-full"></div>
+          </div>
+
+          <!-- Player Squad Row (Bottom) -->
+          <div>
+            <div class="text-xs font-bold text-sky-400 mb-2 flex items-center justify-between">
+              <span><i class="fa-solid fa-user-ninja mr-1"></i>木葉出戰小隊</span>
+              <span class="text-slate-400">查克拉上限 10 點（每回合自動回復）</span>
+            </div>
+            <div id="combat-player-row" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <!-- Player Cards -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Control Panel: Active Ninja's 4 Signature Jutsu + Battle Log -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <!-- 4 Jutsu Commands -->
+          <div class="lg:col-span-2 scroll-panel rounded-2xl p-4 flex flex-col justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-slate-800 pb-2">
+              <div class="flex items-center gap-2">
+                <span id="active-actor-badge" class="px-2.5 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-xs">行動中</span>
+                <h4 id="active-actor-name" class="font-bold text-base text-white">等待行動...</h4>
+                <span id="active-actor-elems" class="flex gap-1"></span>
+              </div>
+              <div class="flex items-center gap-1.5 bg-sky-950/90 border border-sky-700 px-3 py-1 rounded-lg">
+                <i class="fa-solid fa-bolt text-sky-400"></i>
+                <span class="text-xs text-sky-200">查克拉:</span>
+                <span id="active-actor-chakra" class="font-black text-sky-300 font-mono">0</span>
+                <span class="text-xs text-sky-500">/ 10</span>
+              </div>
+            </div>
+
+            <!-- 4 Jutsu Buttons Grid -->
+            <div id="jutsu-buttons-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <!-- Populated when it's player's turn -->
+            </div>
+          </div>
+
+          <!-- Combat Log -->
+          <div class="scroll-panel rounded-2xl p-4 flex flex-col h-64 lg:h-auto">
+            <div class="text-xs font-bold text-amber-400 border-b border-slate-800 pb-2 mb-2 flex items-center justify-between">
+              <span><i class="fa-solid fa-scroll mr-1"></i>第 <span id="log-round-badge">1</span> 回合 戰況實錄</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-amber-950/90 border border-amber-600/50 text-amber-300">僅顯示當下回合</span>
+            </div>
+            <div id="combat-log-box" class="flex-1 overflow-y-auto space-y-1.5 text-xs font-mono text-slate-300 pr-1">
+              <!-- Logs -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Shinobi Detail & Jutsu Preview Modal -->
+  <div id="modal-shinobi-detail" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="scroll-panel rounded-2xl max-w-xl w-full p-6 space-y-4 relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="detail-modal-content"></div>
     </div>
   </div>
 
-  <!-- 頂部欄 -->
-  <div id="top-bar">
-    <div class="char-info">
-      <div>
-        <span id="char-name" style="color:var(--gold-color); font-weight:bold;">角色名稱</span>
-        <span id="char-class" style="font-size:11px; color:#888;">[職業]</span>
-        <span id="char-rebirth" style="color:#e74c3c; font-weight:bold;"></span>
+  <!-- Combo Codex Modal -->
+  <div id="modal-combo-codex" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="scroll-panel rounded-2xl max-w-2xl w-full p-6 space-y-4 relative max-h-[88vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-serif-tc text-xl font-bold text-amber-300">
+          <i class="fa-solid fa-fire-flame-curved text-red-500 mr-2"></i>忍界合體聯招圖鑑（Combo 公式）
+        </h3>
+        <button onclick="document.getElementById('modal-combo-codex').classList.add('hidden')" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
-      <div style="font-size:12px;">Lv.<span id="char-lv">1</span></div>
-    </div>
-    <div class="status-bars">
-      <div class="bar-wrap">
-        <div id="hp-bar" class="bar-fill" style="background:var(--hp-color); width:100%;"></div>
-        <div id="hp-text" class="bar-text">HP: 100/100</div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        戰鬥中，當我方兩名忍者<span class="text-amber-400 font-bold">連續施放</span>符合以下屬性／特性組合的招式時，將立即觸發全場震撼的「合體聯招」，無需額外消耗查克拉！
+      </p>
+      <div id="codex-list" class="space-y-3">
+        <!-- Populated by JS -->
       </div>
-      <div class="bar-wrap">
-        <div id="mp-bar" class="bar-fill" style="background:var(--mp-color); width:100%;"></div>
-        <div id="mp-text" class="bar-text">MP: 50/50</div>
-      </div>
-      <div class="bar-wrap">
-        <div id="exp-bar" class="bar-fill" style="background:var(--exp-color); width:0%;"></div>
-        <div id="exp-text" class="bar-text">EXP: 0%</div>
-      </div>
-    </div>
-    <div style="font-size:12px;">
-      Adena: <span id="char-gold" style="color:var(--gold-color);">0</span> G
     </div>
   </div>
 
-  <!-- 遊戲畫布與 Log -->
-  <div id="canvas-container">
-    <canvas id="gameCanvas"></canvas>
-    <div id="game-log"></div>
-  </div>
+  <!-- Toast Notification -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-50 pointer-events-none flex flex-col gap-2"></div>
 
-  <!-- 底部控制面版 -->
-  <div id="bottom-bar">
-    <!-- 地圖與自動戰鬥面板 -->
-    <div class="panel-tab" style="max-width:220px;">
-      <div class="tab-title">狩獵場與掛機 AI</div>
-      <select id="map-select" style="background:#111; color:#fff; border:1px solid #444; padding:3px; font-size:11px;" onchange="changeMap()">
-        <option value="1">1. 歌唱之島 (Lv.1-15)</option>
-        <option value="2">2. 地底洞窟 (Lv.16-35)</option>
-        <option value="3">3. 龍之谷 (Lv.36-60)</option>
-        <option value="4">4. 火龍窟 (Lv.61-85)</option>
-        <option value="5">5. 神龍之谷 (Lv.86-100)</option>
-        <option value="boss">★ BOSS 狂暴獵場</option>
-        <option value="tower">🏰 試煉之塔 (1-100層)</option>
-      </select>
-      <div style="margin-top:10px; display:flex; flex-direction:column; gap:4px; font-size:11px;">
-        <label><input type="checkbox" id="auto-hp" checked> 自動吃大紅 (HP < 50%)</label>
-        <label><input type="checkbox" id="auto-mp" checked> 自動吃大藍 (MP < 30%)</label>
-        <label><input type="checkbox" id="auto-skill" checked> 自動釋放全屏/範圍技能</label>
-      </div>
-      <button class="btn btn-gold" style="margin-top:auto;" onclick="rebirthPlayer()">Lv.100 轉生/輪迴</button>
-    </div>
+  <!-- ==================== GAME SCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. MASTER DATA: COMPLETE NARUTO ROSTER (46 ICONIC CHARACTERS)
+       ========================================================================= */
+    const SHINOBI_DB = [
+      // --- UR MYTHIC TIER ---
+      {
+        id: 'naruto_sixpaths', name: '漩渦鳴人·六道仙人', title: '預言之子·九尾陽之力', rarity: 'UR', village: '木葉',
+        elements: ['風', '陽'], traits: ['第七班', '人柱力', '六道'], icon: 'fa-sun', avatarBg: 'from-yellow-500 to-amber-600',
+        baseStats: { hp: 1650, atk: 320, def: 160, spd: 138 },
+        jutsus: [
+          { name: '求道玉連擊', type: 'single', elem: '陽', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：操控陰陽遁求道玉重擊，造成 115% 傷害並回 3 氣。' },
+          { name: '仙法·熔遁螺旋手裏劍', type: 'aoe', elem: '火', cost: 3, mult: 1.65, desc: '借用四尾孫悟空之力，對全體敵人造成 165% 熔遁灼燒傷害。' },
+          { name: '九尾查克拉外衣庇護', type: 'buff_team', elem: '陽', cost: 3, mult: 0.65, desc: '分給全隊九尾查克拉，獲得 65% 攻擊力護盾並全隊回 1 氣。' },
+          { name: '奧義·六道超大玉螺旋手裏劍', type: 'aoe', elem: '風', cost: 7, mult: 2.75, desc: '毀天滅地的終極仙法！對敵方全體造成 275% 毀滅傷害。' }
+        ]
+      },
+      {
+        id: 'sasuke_rinnegan', name: '宇智波佐助·輪迴眼', title: '因陀羅轉世·陰之力', rarity: 'UR', village: '木葉',
+        elements: ['雷', '陰'], traits: ['第七班', '宇智波', '六道'], icon: 'fa-eye', avatarBg: 'from-purple-800 to-indigo-950',
+        baseStats: { hp: 1520, atk: 345, def: 145, spd: 144 },
+        jutsus: [
+          { name: '天手力·草薙瞬斬', type: 'single', elem: '陰', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：空間置換突襲，造成 115% 傷害並回 3 氣。' },
+          { name: '炎遁·加具土命', type: 'aoe', elem: '火', cost: 3, mult: 1.6, desc: '操控天照黑炎橫掃敵陣，造成 160% 全體炎遁傷害。' },
+          { name: '地爆天星·輪迴封印', type: 'stun', elem: '陰', cost: 4, mult: 1.85, desc: '製造引力核心封印目標，造成 185% 傷害並強制暈眩 1 回合。' },
+          { name: '奧義·因陀羅之矢', type: 'single', elem: '雷', cost: 7, mult: 3.3, desc: '匯聚尾獸雷霆的究極一箭！對單體造成 330% 必殺傷害。' }
+        ]
+      },
+      {
+        id: 'madara', name: '宇智波斑', title: '忍界修羅·傳說宇智波', rarity: 'UR', village: '曉',
+        elements: ['火', '陰'], traits: ['宇智波', '曉'], icon: 'fa-fan', avatarBg: 'from-red-900 to-slate-950',
+        baseStats: { hp: 1700, atk: 340, def: 170, spd: 136 },
+        jutsus: [
+          { name: '宇智波反彈', type: 'single', elem: '火', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：團扇揮擊反彈衝擊，造成 115% 傷害並回 3 氣。' },
+          { name: '火遁·豪火滅卻', type: 'aoe', elem: '火', cost: 3, mult: 1.7, desc: '鋪天蓋地的火海吞噬戰場，對全體敵人造成 170% 火遁傷害。' },
+          { name: '完全體須佐能乎·鎧', type: 'buff_team', elem: '陰', cost: 3, mult: 0.7, desc: '展開紫色查克拉武神，為全隊提供 70% 攻擊力超厚護盾。' },
+          { name: '奧義·天礙震星', type: 'aoe', elem: '陰', cost: 7, mult: 2.8, desc: '從天外召喚雙重隕石砸落！對敵方全體造成 280% 絕望打擊。' }
+        ]
+      },
+      {
+        id: 'hashirama', name: '千手柱間', title: '初代火影·忍者之神', rarity: 'UR', village: '木葉',
+        elements: ['土', '陽'], traits: ['火影', '木葉'], icon: 'fa-tree', avatarBg: 'from-emerald-800 to-amber-900',
+        baseStats: { hp: 1850, atk: 315, def: 185, spd: 130 },
+        jutsus: [
+          { name: '木遁·木錠壁突刺', type: 'single', elem: '土', cost: 0, mult: 1.1, chakraGain: 3, desc: '普攻：巨木穿刺敵人，造成 110% 傷害並回 3 氣。' },
+          { name: '木遁·花樹界降臨', type: 'aoe', elem: '土', cost: 4, mult: 1.65, desc: '森林瞬間覆蓋戰場，對全體敵人造成 165% 傷害。' },
+          { name: '仙法·明神門鎮壓', type: 'stun', elem: '陽', cost: 3, mult: 1.6, desc: '召喚赤紅鳥居封印敵人，造成 160% 傷害並暈眩 1 回合。' },
+          { name: '奧義·仙法木遁真數千手', type: 'aoe', elem: '陽', cost: 7, mult: 2.75, desc: '頂上化佛千手轟擊！對敵方全體造成 275% 毀滅傷害並全隊回血。' }
+        ]
+      },
+      {
+        id: 'kaguya_obito', name: '宇智波帶土·十尾人柱力', title: '六道仙人第二人', rarity: 'UR', village: '曉',
+        elements: ['陰', '陽'], traits: ['宇智波', '曉', '六道'], icon: 'fa-yin-yang', avatarBg: 'from-slate-700 to-purple-950',
+        baseStats: { hp: 1680, atk: 330, def: 165, spd: 135 },
+        jutsus: [
+          { name: '神威虛化突襲', type: 'single', elem: '陰', cost: 0, mult: 1.1, chakraGain: 3, desc: '普攻：穿透防禦的空間打擊，造成 110% 傷害並回 3 氣。' },
+          { name: '火遁·爆風亂舞', type: 'aoe', elem: '火', cost: 3, mult: 1.6, desc: '神威螺旋配合豪火，對全體敵人造成 160% 火遁傷害。' },
+          { name: '六赤陽陣結界', type: 'buff_team', elem: '陽', cost: 3, mult: 0.65, desc: '展開六道結界守護全隊，獲得 65% 攻擊力護盾。' },
+          { name: '奧義·天沼矛神劍', type: 'single', elem: '陰', cost: 7, mult: 3.2, desc: '心念凝結的創世神劍！對單體目標造成 320% 毀滅斬擊。' }
+        ]
+      },
 
-    <!-- 技能區 -->
-    <div class="panel-tab" style="max-width:260px;">
-      <div class="tab-title">
-        <span>技能天賦 (SP: <span id="sp-points">0</span>)</span>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; font-size:11px;">
-        <div style="display:flex; justify-between; align-items:center;">
-          <span>強攻(被動) Lv.<span id="sk-atk-lv">0</span></span>
-          <button class="btn" onclick="upgradeSkill('atk')">+1</button>
-        </div>
-        <div style="display:flex; justify-between; align-items:center;">
-          <span>狂暴覺醒(100%暴擊)</span>
-          <button class="btn" onclick="castBuff()">發動</button>
-        </div>
-        <div style="display:flex; justify-between; align-items:center;">
-          <span>範圍打擊(AOE)</span>
-          <button class="btn" onclick="castAOE()">發動</button>
-        </div>
-        <div style="display:flex; justify-between; align-items:center;">
-          <span style="color:#f1c40f;">末日審判(全屏)</span>
-          <button class="btn btn-gold" onclick="castScreenNuke()">發動</button>
-        </div>
-      </div>
-    </div>
+      // --- SSR LEGENDARY TIER ---
+      {
+        id: 'naruto', name: '漩渦鳴人', title: '九尾人柱力', rarity: 'SSR', village: '木葉',
+        elements: ['風', '體'], traits: ['第七班', '木葉', '人柱力'], icon: 'fa-fox', avatarBg: 'from-amber-600 to-orange-700',
+        baseStats: { hp: 1380, atk: 255, def: 135, spd: 120 },
+        jutsus: [
+          { name: '影分身連彈', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：體術連擊造成 100% 傷害，並回復 3 點查克拉。' },
+          { name: '風遁·螺旋丸', type: 'single', elem: '風', cost: 3, mult: 1.8, desc: '凝聚高密度風屬性查克拉，造成 180% 單體重擊。' },
+          { name: '多重影分身護陣', type: 'buff_team', elem: '體', cost: 2, mult: 0.45, desc: '為全隊附加相當於攻擊力 45% 的護盾。' },
+          { name: '奧義·風遁螺旋手裏劍', type: 'aoe', elem: '風', cost: 6, mult: 2.2, desc: '毀滅性風遁奧義！對敵方全體造成 220% 巨額傷害。' }
+        ]
+      },
+      {
+        id: 'sasuke', name: '宇智波佐助', title: '寫輪眼天才', rarity: 'SSR', village: '木葉',
+        elements: ['雷', '火'], traits: ['第七班', '宇智波', '木葉'], icon: 'fa-bolt', avatarBg: 'from-indigo-700 to-purple-800',
+        baseStats: { hp: 1220, atk: 280, def: 115, spd: 130 },
+        jutsus: [
+          { name: '草薙劍·迅斬', type: 'single', elem: '雷', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：雷電纏繞劍身斬擊，造成 105% 傷害並回 3 氣。' },
+          { name: '火遁·豪火球之術', type: 'aoe', elem: '火', cost: 3, mult: 1.4, desc: '噴吐巨大火球席捲敵陣，對全體造成 140% 火遁傷害。' },
+          { name: '雷遁·千鳥流', type: 'single', elem: '雷', cost: 4, mult: 2.05, desc: '高速突刺貫穿單體目標，造成 205% 雷遁穿刺傷害。' },
+          { name: '奧義·麒麟', type: 'aoe', elem: '雷', cost: 7, mult: 2.5, desc: '引動天雷降世！對敵方全體造成 250% 毀滅雷擊。' }
+        ]
+      },
+      {
+        id: 'itachi', name: '宇智波鼬', title: '曉之朱雀', rarity: 'SSR', village: '曉',
+        elements: ['火', '幻'], traits: ['曉', '宇智波'], icon: 'fa-crow', avatarBg: 'from-red-800 to-slate-900',
+        baseStats: { hp: 1200, atk: 285, def: 120, spd: 134 },
+        jutsus: [
+          { name: '烏鴉分身手裏劍', type: 'single', elem: '火', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：精準投擲造成 100% 傷害並回復 3 點查克拉。' },
+          { name: '魔幻·枷杭之術', type: 'stun', elem: '幻', cost: 3, mult: 1.3, desc: '瞳術幻覺束縛目標，造成 130% 傷害並使其暈眩 1 回合。' },
+          { name: '火遁·鳳仙花爪紅', type: 'aoe', elem: '火', cost: 4, mult: 1.55, desc: '火焰苦無齊射，對敵方全體造成 155% 火遁傷害。' },
+          { name: '奧義·月讀天照', type: 'single', elem: '火', cost: 6, mult: 2.85, desc: '萬花筒極致瞳術！對單體造成 285% 燃盡一切的傷害。' }
+        ]
+      },
+      {
+        id: 'minato', name: '波風水門', title: '四代火影·黃色閃光', rarity: 'SSR', village: '木葉',
+        elements: ['風', '陰'], traits: ['木葉', '火影'], icon: 'fa-wind', avatarBg: 'from-yellow-600 to-amber-700',
+        baseStats: { hp: 1250, atk: 270, def: 120, spd: 146 },
+        jutsus: [
+          { name: '飛雷神苦無閃擊', type: 'single', elem: '陰', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：神速瞬移斬擊，造成 105% 傷害並回 3 氣。' },
+          { name: '螺旋閃光超輪舞吼', type: 'single', elem: '風', cost: 3, mult: 1.9, desc: '時空間配合螺旋丸，造成 190% 單體高爆發傷害。' },
+          { name: '飛雷神·導雷結界', type: 'buff_team', elem: '陰', cost: 3, mult: 0.5, desc: '為全隊展開時空間護盾並回復全隊 1 點查克拉。' },
+          { name: '奧義·飛雷神二段', type: 'aoe', elem: '陰', cost: 6, mult: 2.3, desc: '全場瞬移連斬！對敵方全體造成 230% 無法閃避的傷害。' }
+        ]
+      },
+      {
+        id: 'tobirama', name: '千手扉間', title: '二代火影·水遁宗師', rarity: 'SSR', village: '木葉',
+        elements: ['水', '陰'], traits: ['木葉', '火影'], icon: 'fa-water', avatarBg: 'from-blue-700 to-cyan-800',
+        baseStats: { hp: 1320, atk: 265, def: 135, spd: 137 },
+        jutsus: [
+          { name: '飛雷神斬', type: 'single', elem: '陰', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：神速拔刀斬擊，造成 105% 傷害並回 3 氣。' },
+          { name: '水遁·水斷波', type: 'single', elem: '水', cost: 3, mult: 1.95, desc: '高壓水柱如利刃切割敵人，造成 195% 水遁傷害。' },
+          { name: '水遁·水陣壁', type: 'buff_team', elem: '水', cost: 3, mult: 0.55, desc: '築起旋轉水牆保護全隊，獲得 55% 攻擊力護盾。' },
+          { name: '奧義·互乘起爆符', type: 'aoe', elem: '火', cost: 6, mult: 2.35, desc: '無限連鎖爆破禁術！對敵方全體造成 235% 毀滅傷害。' }
+        ]
+      },
+      {
+        id: 'hiruzen', name: '猿飛日斬', title: '三代火影·忍術教授', rarity: 'SSR', village: '木葉',
+        elements: ['火', '土'], traits: ['木葉', '火影'], icon: 'fa-staff-snake', avatarBg: 'from-stone-700 to-red-900',
+        baseStats: { hp: 1340, atk: 260, def: 145, spd: 122 },
+        jutsus: [
+          { name: '金剛如意棒連擊', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：通靈猿魔化作如意棒重擊，造成 100% 傷害並回 3 氣。' },
+          { name: '土遁·土龍彈', type: 'single', elem: '土', cost: 3, mult: 1.85, desc: '泥龍口吐連發土彈轟擊，造成 185% 土遁傷害。' },
+          { name: '火遁·火龍炎彈', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '猛烈火龍席捲戰場，對敵方全體造成 145% 傷害。' },
+          { name: '奧義·五遁大連彈之術', type: 'aoe', elem: '火', cost: 6, mult: 2.4, desc: '影分身同時施放五屬性忍術！對全體造成 240% 傷害。' }
+        ]
+      },
+      {
+        id: 'jiraiya', name: '自來也', title: '妙木山蛤蟆仙人', rarity: 'SSR', village: '木葉',
+        elements: ['火', '水'], traits: ['木葉', '三忍'], icon: 'fa-fire-flame-curved', avatarBg: 'from-red-700 to-amber-800',
+        baseStats: { hp: 1400, atk: 260, def: 140, spd: 118 },
+        jutsus: [
+          { name: '亂獅子髮之術', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：白髮硬化突刺，造成 100% 傷害並回 3 氣。' },
+          { name: '火遁·大炎彈', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '口吐巨大火球，對敵方全體造成 145% 火遁傷害。' },
+          { name: '水遁·蛤蟆油彈', type: 'aoe', elem: '水', cost: 3, mult: 1.4, desc: '噴灑黏稠蛤蟆油衝擊全體敵人，造成 140% 水屬性傷害。' },
+          { name: '奧義·仙法五右衛門', type: 'aoe', elem: '火', cost: 6, mult: 2.4, desc: '仙人模式油火風合擊！對敵方全體造成 240% 毀滅傷害。' }
+        ]
+      },
+      {
+        id: 'orochimaru', name: '大蛇丸', title: '追求永生的冷血三忍', rarity: 'SSR', village: '音隱',
+        elements: ['風', '陰'], traits: ['三忍', '音隱'], icon: 'fa-worm', avatarBg: 'from-purple-900 to-slate-900',
+        baseStats: { hp: 1360, atk: 265, def: 135, spd: 126 },
+        jutsus: [
+          { name: '潛影多蛇手', type: 'single', elem: '陰', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：袖口竄出毒蛇咬擊，造成 100% 傷害並回 3 氣。' },
+          { name: '風遁·大突破', type: 'aoe', elem: '風', cost: 3, mult: 1.45, desc: '狂暴烈風吹飛敵陣，造成 145% 全體風遁傷害。' },
+          { name: '通靈·三重羅生門', type: 'buff_team', elem: '陰', cost: 3, mult: 0.6, desc: '召喚鬼面巨門抵禦攻擊，全隊獲得 60% 攻擊力護盾。' },
+          { name: '奧義·八岐之術', type: 'aoe', elem: '陰', cost: 6, mult: 2.35, desc: '化身八頭白蛇巨獸橫掃戰場，造成 235% 全體傷害。' }
+        ]
+      },
+      {
+        id: 'pain', name: '培因·天道', title: '曉之首領·神羅天徵', rarity: 'SSR', village: '曉',
+        elements: ['風', '陰'], traits: ['曉', '輪迴眼'], icon: 'fa-circle-dot', avatarBg: 'from-orange-800 to-slate-900',
+        baseStats: { hp: 1420, atk: 275, def: 145, spd: 129 },
+        jutsus: [
+          { name: '黑棒穿刺', type: 'single', elem: '陰', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：輪迴眼查克拉黑棒突刺，造成 105% 傷害並回 3 氣。' },
+          { name: '萬象天引', type: 'stun', elem: '陰', cost: 3, mult: 1.4, desc: '強力引力將敵人吸至面前重擊，造成 140% 傷害並暈眩 1 回合。' },
+          { name: '神羅天徵·斥力彈開', type: 'aoe', elem: '風', cost: 4, mult: 1.65, desc: '以自身為中心彈開一切，對敵方全體造成 165% 傷害。' },
+          { name: '奧義·超神羅天徵', type: 'aoe', elem: '風', cost: 7, mult: 2.55, desc: '一袋米要扛幾樓！毀滅木葉級別的斥力轟炸，造成 255% 全體傷害。' }
+        ]
+      },
+      {
+        id: 'killer_bee', name: '奇拉比', title: '八尾人柱力·說唱忍者', rarity: 'SSR', village: '雲隱',
+        elements: ['雷', '體'], traits: ['雲隱', '人柱力'], icon: 'fa-music', avatarBg: 'from-amber-700 to-purple-900',
+        baseStats: { hp: 1450, atk: 265, def: 140, spd: 127 },
+        jutsus: [
+          { name: '荒缲鷺舞·七刀流', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：超高速七把雷刀亂舞，造成 105% 傷害並回 3 氣。' },
+          { name: '雷犁熱刀', type: 'single', elem: '雷', cost: 3, mult: 1.95, desc: '纏繞尾獸查克拉的猛烈臂勾，造成 195% 單體重擊。' },
+          { name: '墨分身掩護', type: 'buff_team', elem: '水', cost: 2, mult: 0.45, desc: '八尾章魚墨汁掩護全隊，獲得 45% 攻擊力護盾。' },
+          { name: '奧義·尾獸八卷', type: 'aoe', elem: '雷', cost: 6, mult: 2.35, desc: '完全體八尾高速旋轉龍捲風！對全體敵人造成 235% 傷害。' }
+        ]
+      },
+      {
+        id: 'raikage_a', name: '艾·四代雷影', title: '雲隱最強之矛', rarity: 'SSR', village: '雲隱',
+        elements: ['雷', '體'], traits: ['雲隱', '五影'], icon: 'fa-bolt-lightning', avatarBg: 'from-blue-800 to-indigo-900',
+        baseStats: { hp: 1380, atk: 275, def: 135, spd: 141 },
+        jutsus: [
+          { name: '重流暴', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：雷遁查克拉模式下的神速肘擊，造成 105% 傷害並回 3 氣。' },
+          { name: '義雷沉怒雷斧', type: 'single', elem: '雷', cost: 3, mult: 1.95, desc: '高躍而下的雷電劈腿，造成 195% 單體破防重擊。' },
+          { name: '雷遁之鎧·活性化', type: 'buff_team', elem: '雷', cost: 3, mult: 0.5, desc: '雷電刺激神經反應，全隊獲得 50% 護盾並回 1 氣。' },
+          { name: '奧義·雷虐水平千代舞', type: 'single', elem: '雷', cost: 6, mult: 2.75, desc: '極致速度的手刀貫穿！對單體造成 275% 毀滅打擊。' }
+        ]
+      },
+      {
+        id: 'guy', name: '邁特凱', title: '木葉高傲的蒼藍猛獸', rarity: 'SSR', village: '木葉',
+        elements: ['體', '火'], traits: ['木葉', '凱班'], icon: 'fa-fire', avatarBg: 'from-green-700 to-red-800',
+        baseStats: { hp: 1390, atk: 285, def: 125, spd: 135 },
+        jutsus: [
+          { name: '木葉剛力旋風', type: 'single', elem: '體', cost: 0, mult: 1.1, chakraGain: 3, desc: '普攻：充滿青春熱血的迴旋踢，造成 110% 傷害並回 3 氣。' },
+          { name: '朝孔雀', type: 'aoe', elem: '火', cost: 3, mult: 1.55, desc: '六門開啟！高速正拳摩擦空氣產生火焰衝擊波，全體 155% 傷害。' },
+          { name: '晝虎', type: 'aoe', elem: '風', cost: 4, mult: 1.85, desc: '七門開啟！壓縮空氣化作巨虎轟炸敵陣，全體 185% 傷害。' },
+          { name: '奧義·夜凱·八門死門', type: 'single', elem: '體', cost: 6, mult: 3.0, desc: '燃燒生命的赤紅蒸氣龍！對單體造成 300% 踢歪空間的必殺一擊！' }
+        ]
+      },
 
-    <!-- 背包與裝備 -->
-    <div class="panel-tab">
-      <div class="tab-title">背包與裝備管理</div>
-      <div class="inventory-grid" id="inventory"></div>
-    </div>
-  </div>
-</div>
+      // --- SR ELITE TIER ---
+      {
+        id: 'kakashi', name: '旗木卡卡西', title: '拷貝忍者', rarity: 'SR', village: '木葉',
+        elements: ['雷', '水'], traits: ['第七班', '木葉'], icon: 'fa-eye', avatarBg: 'from-slate-600 to-sky-800',
+        baseStats: { hp: 1180, atk: 230, def: 125, spd: 126 },
+        jutsus: [
+          { name: '體術·千年殺突襲', type: 'single', elem: '雷', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：靈活突襲造成 100% 傷害並回復 3 點查克拉。' },
+          { name: '水遁·水龍彈之術', type: 'aoe', elem: '水', cost: 3, mult: 1.35, desc: '召喚巨型水龍衝擊敵陣，造成 135% 全體水遁傷害。' },
+          { name: '雷切', type: 'single', elem: '雷', cost: 4, mult: 2.0, desc: '將雷遁集中於掌心貫穿敵人，造成 200% 單體傷害。' },
+          { name: '奧義·神威空間扭曲', type: 'single', elem: '陰', cost: 6, mult: 2.55, desc: '萬花筒寫輪眼奧義！造成 255% 單體重創。' }
+        ]
+      },
+      {
+        id: 'sakura', name: '春野櫻', title: '百豪醫療忍者', rarity: 'SR', village: '木葉',
+        elements: ['醫', '體'], traits: ['第七班', '木葉'], icon: 'fa-heart-pulse', avatarBg: 'from-pink-600 to-rose-700',
+        baseStats: { hp: 1250, atk: 205, def: 135, spd: 114 },
+        jutsus: [
+          { name: '怪力重拳', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：查克拉集中拳頭揮擊，造成 100% 傷害並回 3 氣。' },
+          { name: '細患抽出·全隊治癒', type: 'heal_team', elem: '醫', cost: 3, mult: 1.35, desc: '釋放醫療查克拉，為全體隊友回復 135% 攻擊力的生命。' },
+          { name: '櫻花衝', type: 'aoe', elem: '體', cost: 3, mult: 1.35, desc: '猛擊地面震碎戰場，對全體敵人造成 135% 傷害。' },
+          { name: '奧義·百豪之術解封', type: 'heal_team', elem: '醫', cost: 5, mult: 2.1, desc: '解放額頭陰封印！大幅回復全隊 210% 攻擊力生命並附加護盾。' }
+        ]
+      },
+      {
+        id: 'gaara', name: '我愛羅', title: '五代風影·砂瀑守護', rarity: 'SR', village: '砂隱',
+        elements: ['土', '風'], traits: ['砂隱', '五影', '人柱力'], icon: 'fa-shield', avatarBg: 'from-amber-800 to-stone-800',
+        baseStats: { hp: 1450, atk: 210, def: 165, spd: 108 },
+        jutsus: [
+          { name: '砂時雨', type: 'single', elem: '土', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：操控砂礫射擊，造成 95% 傷害並回復 3 點查克拉。' },
+          { name: '絕對防禦·砂之鎧', type: 'buff_team', elem: '土', cost: 3, mult: 0.7, desc: '凝聚厚重砂壁，為全隊提供 70% 攻擊力的高額護盾。' },
+          { name: '砂縛柩', type: 'stun', elem: '土', cost: 3, mult: 1.3, desc: '用砂子緊緊束縛單體敵人，造成 130% 傷害並暈眩 1 回合。' },
+          { name: '奧義·砂瀑大葬', type: 'aoe', elem: '風', cost: 6, mult: 2.1, desc: '沙海吞沒全場！對敵方全體造成 210% 毀滅傷害。' }
+        ]
+      },
+      {
+        id: 'tsunade', name: '綱手', title: '五代火影·傳說三忍', rarity: 'SR', village: '木葉',
+        elements: ['醫', '體'], traits: ['木葉', '三忍', '火影'], icon: 'fa-hand-fist', avatarBg: 'from-emerald-700 to-teal-800',
+        baseStats: { hp: 1380, atk: 225, def: 140, spd: 112 },
+        jutsus: [
+          { name: '痛天腳', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：劈山裂地的一擊，造成 105% 傷害並回 3 氣。' },
+          { name: '掌仙術·活血', type: 'heal_team', elem: '醫', cost: 3, mult: 1.4, desc: '精準治療全隊傷勢，回復全隊 140% 攻擊力的生命值。' },
+          { name: '怪力·金剛破', type: 'single', elem: '體', cost: 4, mult: 2.0, desc: '凝聚查克拉的毀滅重拳，對單體造成 200% 傷害。' },
+          { name: '奧義·通靈蛞蝓遠距治療', type: 'heal_team', elem: '醫', cost: 6, mult: 2.2, desc: '召喚蛞蝓分裂治療，全隊大幅回血並獲得強效護盾。' }
+        ]
+      },
+      {
+        id: 'kisame', name: '干柿鬼鮫', title: '無尾尾獸·鮫肌狂人', rarity: 'SR', village: '曉',
+        elements: ['水', '體'], traits: ['曉', '霧隱'], icon: 'fa-shark', avatarBg: 'from-blue-800 to-slate-900',
+        baseStats: { hp: 1460, atk: 235, def: 145, spd: 115 },
+        jutsus: [
+          { name: '大刀·鮫肌削斬', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 4, desc: '普攻：鮫肌吞噬對手查克拉，造成 100% 傷害並額外回 4 氣！' },
+          { name: '水遁·爆水衝波', type: 'aoe', elem: '水', cost: 3, mult: 1.4, desc: '吐出湖泊般的水量淹沒戰場，全體造成 140% 水遁傷害。' },
+          { name: '水遁·五食鮫', type: 'single', elem: '水', cost: 4, mult: 1.95, desc: '五頭查克拉巨鯊撕咬目標，造成 195% 單體傷害。' },
+          { name: '奧義·水遁大鮫彈之術', type: 'aoe', elem: '水', cost: 6, mult: 2.25, desc: '吸食忍術壯大的超級巨鯊！對全體造成 225% 傷害。' }
+        ]
+      },
+      {
+        id: 'konan', name: '小南', title: '曉之白虎·神之天使', rarity: 'SR', village: '曉',
+        elements: ['風', '火'], traits: ['曉', '雨隱'], icon: 'fa-paper-plane', avatarBg: 'from-indigo-700 to-sky-900',
+        baseStats: { hp: 1180, atk: 235, def: 120, spd: 125 },
+        jutsus: [
+          { name: '式紙之舞·紙手裏劍', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：鋒利折紙飛射，造成 100% 傷害並回 3 氣。' },
+          { name: '紙雨連射', type: 'aoe', elem: '風', cost: 3, mult: 1.4, desc: '天使雙翼灑下無數紙矛，對全體敵人造成 140% 傷害。' },
+          { name: '紙分身防禦陣', type: 'buff_team', elem: '風', cost: 2, mult: 0.45, desc: '漫天紙片化為屏障，全隊獲得 45% 攻擊力護盾。' },
+          { name: '奧義·神之紙者之術', type: 'aoe', elem: '火', cost: 6, mult: 2.35, desc: '六千億張起爆符連續引爆！對敵方全體造成 235% 毀滅傷害。' }
+        ]
+      },
+      {
+        id: 'deidara', name: '迪達拉', title: '藝術就是爆炸！', rarity: 'SR', village: '曉',
+        elements: ['土', '火'], traits: ['曉', '岩隱'], icon: 'fa-bomb', avatarBg: 'from-amber-700 to-red-800',
+        baseStats: { hp: 1160, atk: 245, def: 110, spd: 124 },
+        jutsus: [
+          { name: '起爆黏土·蜘蛛', type: 'single', elem: '土', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：黏土蜘蛛潛行引爆，造成 105% 傷害並回 3 氣。' },
+          { name: '起爆黏土·雙翼鳥', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '空中俯衝連環爆破，對敵方全體造成 145% 傷害。' },
+          { name: 'C3·十八號巨型人偶', type: 'aoe', elem: '土', cost: 4, mult: 1.75, desc: '投下足以炸毀村莊的巨型黏土炸彈，全體 175% 傷害。' },
+          { name: '奧義·C0·究极自爆藝術', type: 'aoe', elem: '火', cost: 6, mult: 2.45, desc: '喝！藝術就是爆炸！全場無差別 245% 終極大爆炸！' }
+        ]
+      },
+      {
+        id: 'sasori', name: '赤砂之蠍', title: '天才傀儡造型師', rarity: 'SR', village: '曉',
+        elements: ['風', '土'], traits: ['曉', '砂隱'], icon: 'fa-robot', avatarBg: 'from-red-900 to-amber-900',
+        baseStats: { hp: 1220, atk: 235, def: 130, spd: 122 },
+        jutsus: [
+          { name: '緋琥珀·毒針連射', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：機關暗器連發，造成 100% 傷害並回 3 氣。' },
+          { name: '三代風影·砂鐵時雨', type: 'aoe', elem: '土', cost: 3, mult: 1.4, desc: '磁遁操控砂鐵化作暴雨貫穿敵陣，全體 140% 傷害。' },
+          { name: '砂鐵界法', type: 'stun', elem: '土', cost: 3, mult: 1.35, desc: '巨大砂鐵針刺束縛目標，造成 135% 傷害並暈眩 1 回合。' },
+          { name: '奧義·赤秘技百機操演', type: 'aoe', elem: '風', cost: 6, mult: 2.3, desc: '召喚百具傀儡大軍圍攻！對敵方全體造成 230% 傷害。' }
+        ]
+      },
+      {
+        id: 'mei', name: '照美冥', title: '五代水影·雙重血繼', rarity: 'SR', village: '霧隱',
+        elements: ['水', '火'], traits: ['霧隱', '五影'], icon: 'fa-droplet', avatarBg: 'from-teal-700 to-rose-800',
+        baseStats: { hp: 1240, atk: 235, def: 125, spd: 121 },
+        jutsus: [
+          { name: '水遁·水鞭擊', type: 'single', elem: '水', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：水流鞭打目標，造成 100% 傷害並回 3 氣。' },
+          { name: '溶遁·溶怪之術', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '噴吐高溫強酸熔岩，對全體敵人造成 145% 傷害。' },
+          { name: '沸遁·巧霧之術', type: 'aoe', elem: '水', cost: 3, mult: 1.4, desc: '釋放腐蝕性酸霧籠罩敵陣，造成 140% 傷害。' },
+          { name: '奧義·水遁大瀑布之術', type: 'aoe', elem: '水', cost: 6, mult: 2.25, desc: '滔天巨浪沖垮一切！對敵方全體造成 225% 水遁傷害。' }
+        ]
+      },
+      {
+        id: 'onoki', name: '大野木', title: '三代土影·兩天秤', rarity: 'SR', village: '岩隱',
+        elements: ['土', '風'], traits: ['岩隱', '五影'], icon: 'fa-cube', avatarBg: 'from-yellow-800 to-stone-900',
+        baseStats: { hp: 1260, atk: 245, def: 135, spd: 114 },
+        jutsus: [
+          { name: '土遁·岩石拳', type: 'single', elem: '土', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：加重岩之術強化重拳，造成 100% 傷害並回 3 氣。' },
+          { name: '土遁·剛隸式之術', type: 'buff_team', elem: '土', cost: 3, mult: 0.55, desc: '召喚岩石巨人守護我方，全隊獲得 55% 攻擊力護盾。' },
+          { name: '塵遁·原界剝離之術', type: 'single', elem: '風', cost: 4, mult: 2.15, desc: '超越血繼限界的血繼淘汰！單體造成 215% 分子分解傷害。' },
+          { name: '奧義·塵遁限界剝離·巨型', type: 'aoe', elem: '土', cost: 6, mult: 2.4, desc: '巨大光柱橫掃全場，將敵人化為塵埃！全體 240% 傷害。' }
+        ]
+      },
+      {
+        id: 'yamato', name: '大和', title: '暗部精英·木遁繼承者', rarity: 'SR', village: '木葉',
+        elements: ['土', '水'], traits: ['木葉', '第七班'], icon: 'fa-seedling', avatarBg: 'from-emerald-800 to-slate-800',
+        baseStats: { hp: 1340, atk: 205, def: 145, spd: 116 },
+        jutsus: [
+          { name: '木遁·木槌擊', type: 'single', elem: '土', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：木柱重擊敵人，造成 95% 傷害並回 3 氣。' },
+          { name: '木遁·四柱牢之術', type: 'stun', elem: '土', cost: 3, mult: 1.25, desc: '木牢困住敵方目標，造成 125% 傷害並暈眩 1 回合。' },
+          { name: '木遁·木錠壁', type: 'buff_team', elem: '水', cost: 3, mult: 0.6, desc: '圓弧木壁防護全隊，獲得 60% 攻擊力護盾。' },
+          { name: '奧義·木遁樹海降誕', type: 'aoe', elem: '土', cost: 6, mult: 2.05, desc: '巨木盤根錯節衝擊敵陣，對全體造成 205% 傷害。' }
+        ]
+      },
+      {
+        id: 'kabuto', name: '藥師兜·仙人模式', title: '繼承大蛇丸意志的龍地洞仙人', rarity: 'SR', village: '音隱',
+        elements: ['醫', '陰'], traits: ['音隱', '仙人'], icon: 'fa-staff-aesculapius', avatarBg: 'from-purple-800 to-emerald-900',
+        baseStats: { hp: 1260, atk: 230, def: 130, spd: 125 },
+        jutsus: [
+          { name: '查克拉手術刀', type: 'single', elem: '醫', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：精準切斷經絡，造成 100% 傷害並回 3 氣。' },
+          { name: '仙法·白激之術', type: 'stun', elem: '陰', cost: 3, mult: 1.35, desc: '強光與震動麻痺敵人感官，造成 135% 傷害並暈眩 1 回合。' },
+          { name: '陰癒傷滅·全隊再生', type: 'heal_team', elem: '醫', cost: 3, mult: 1.3, desc: '高速細胞活化，為全隊回復 130% 攻擊力的生命值。' },
+          { name: '奧義·仙法無機轉生', type: 'aoe', elem: '土', cost: 6, mult: 2.3, desc: '賦予周遭岩石生命發動突刺！對全體造成 230% 傷害。' }
+        ]
+      },
 
-<script>
-  // JS 核心遊戲引擎邏輯
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  
-  let selectedClass = 'royal';
-  let player = {
-    name: '冒險者',
-    class: 'royal',
-    lv: 1,
-    hp: 100, maxHp: 100,
-    mp: 50, maxMp: 50,
-    exp: 0, maxExp: 100,
-    gold: 1000,
-    sp: 0,
-    rebirthCount: 0,
-    baseAtk: 15,
-    equippedWeapon: null,
-    equippedArmor: null,
-    skills: { atk: 0, def: 0, hp: 0, mp: 0 }
-  };
+      // --- R SPECIAL JONIN TIER ---
+      {
+        id: 'neji', name: '日向寧次', title: '日向分家天才·八卦掌', rarity: 'R', village: '木葉',
+        elements: ['體', '風'], traits: ['木葉', '凱班', '日向'], icon: 'fa-yin-yang', avatarBg: 'from-slate-700 to-indigo-800',
+        baseStats: { hp: 1180, atk: 220, def: 125, spd: 128 },
+        jutsus: [
+          { name: '柔拳·八卦空掌', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：掌心射出真空查克拉波，造成 100% 傷害並回 3 氣。' },
+          { name: '八卦掌·回天', type: 'buff_team', elem: '風', cost: 2, mult: 0.5, desc: '高速旋轉彈開所有攻擊，全隊獲得 50% 攻擊力護盾。' },
+          { name: '柔拳法·八卦六十四掌', type: 'single', elem: '體', cost: 4, mult: 1.9, desc: '封閉全身六十四處穴道！造成 190% 單體連擊傷害。' },
+          { name: '奧義·八卦一百二十八掌', type: 'aoe', elem: '體', cost: 5, mult: 1.95, desc: '極限高速柔拳連打！對敵方全體造成 195% 傷害。' }
+        ]
+      },
+      {
+        id: 'lee', name: '李洛克', title: '努力的天才·八門遁甲', rarity: 'R', village: '木葉',
+        elements: ['體'], traits: ['木葉', '凱班'], icon: 'fa-person-running', avatarBg: 'from-green-700 to-emerald-800',
+        baseStats: { hp: 1160, atk: 225, def: 115, spd: 132 },
+        jutsus: [
+          { name: '木葉旋風', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：高速迴旋踢擊，造成 105% 傷害並回 3 氣。' },
+          { name: '木葉大旋風', type: 'aoe', elem: '體', cost: 3, mult: 1.35, desc: '連續高速踢擊橫掃敵陣，對全體造成 135% 體術傷害。' },
+          { name: '表蓮華', type: 'single', elem: '體', cost: 4, mult: 1.9, desc: '解開第一門高速抱摔，對單體造成 190% 猛烈傷害。' },
+          { name: '奧義·裏蓮華·五門全開', type: 'single', elem: '體', cost: 6, mult: 2.5, desc: '燃燒青春的極限連打！對單體造成 250% 毀滅暴擊。' }
+        ]
+      },
+      {
+        id: 'shikamaru', name: '奈良鹿丸', title: '木葉第一智囊', rarity: 'R', village: '木葉',
+        elements: ['陰', '土'], traits: ['木葉', '豬鹿蝶'], icon: 'fa-chess-knight', avatarBg: 'from-emerald-800 to-slate-800',
+        baseStats: { hp: 1120, atk: 195, def: 125, spd: 124 },
+        jutsus: [
+          { name: '起爆符苦無戰術', type: 'single', elem: '土', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：精準算計投擲，造成 95% 傷害並回 3 氣。' },
+          { name: '影子模仿術', type: 'stun', elem: '陰', cost: 3, mult: 1.2, desc: '延伸影子定住敵人！造成 120% 傷害並強制暈眩 1 回合。' },
+          { name: '戰術指揮·查克拉調度', type: 'buff_team', elem: '陰', cost: 2, mult: 0.4, desc: '全隊獲得 40% 護盾並額外回復全隊 1 點查克拉！' },
+          { name: '奧義·影子絞首術', type: 'single', elem: '陰', cost: 5, mult: 2.15, desc: '黑影化為利刃絞殺敵人，造成 215% 單體傷害。' }
+        ]
+      },
+      {
+        id: 'asuma', name: '猿飛阿斯瑪', title: '守護忍十二士·查克拉刀', rarity: 'R', village: '木葉',
+        elements: ['風', '火'], traits: ['木葉', '第十班'], icon: 'fa-khanda', avatarBg: 'from-amber-800 to-slate-800',
+        baseStats: { hp: 1260, atk: 220, def: 130, spd: 119 },
+        jutsus: [
+          { name: '飛燕·風之刃', type: 'single', elem: '風', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：風遁查克拉灌注拳刃斬擊，造成 105% 傷害並回 3 氣。' },
+          { name: '火遁·灰積燒', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '吐出高溫火藥煙灰引發大爆炸，全體造成 145% 傷害。' },
+          { name: '查克拉刀·真一文字', type: 'single', elem: '風', cost: 3, mult: 1.85, desc: '銳利風刃貫穿防禦，對單體造成 185% 傷害。' },
+          { name: '奧義·仙族之才·來迎千手殺', type: 'single', elem: '火', cost: 5, mult: 2.35, desc: '召喚千手觀音法相猛烈連擊！單體造成 235% 傷害。' }
+        ]
+      },
+      {
+        id: 'kurenai', name: '夕日紅', title: '木葉幻術專家', rarity: 'R', village: '木葉',
+        elements: ['幻'], traits: ['木葉', '第八班'], icon: 'fa-eye-low-vision', avatarBg: 'from-rose-800 to-purple-900',
+        baseStats: { hp: 1100, atk: 205, def: 115, spd: 123 },
+        jutsus: [
+          { name: '幻影苦無襲擊', type: 'single', elem: '幻', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：真假難辨的投擲，造成 95% 傷害並回 3 氣。' },
+          { name: '魔幻·樹縛殺', type: 'stun', elem: '幻', cost: 3, mult: 1.25, desc: '大樹纏繞束縛敵人！造成 125% 傷害並暈眩 1 回合。' },
+          { name: '幻術·霞從者之術', type: 'aoe', elem: '幻', cost: 3, mult: 1.35, desc: '無數幻影分身包圍敵陣，對全體造成 135% 精神傷害。' },
+          { name: '奧義·花瓣幻境·迷失', type: 'aoe', elem: '幻', cost: 5, mult: 2.05, desc: '漫天櫻花瓣瓦解敵方戰意，全體造成 205% 傷害。' }
+        ]
+      },
+      {
+        id: 'sai', name: '佐井', title: '根部精英·超獸偽畫', rarity: 'R', village: '木葉',
+        elements: ['陰', '風'], traits: ['木葉', '第七班'], icon: 'fa-paintbrush', avatarBg: 'from-slate-700 to-zinc-800',
+        baseStats: { hp: 1120, atk: 210, def: 115, spd: 125 },
+        jutsus: [
+          { name: '墨水短刀斬', type: 'single', elem: '陰', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：暗部短刀疾斬，造成 100% 傷害並回 3 氣。' },
+          { name: '忍法·超獸偽畫·雙獅', type: 'single', elem: '陰', cost: 3, mult: 1.75, desc: '卷軸躍出兩頭水墨猛獅撲殺目標，造成 175% 傷害。' },
+          { name: '墨霞護身術', type: 'buff_team', elem: '陰', cost: 2, mult: 0.4, desc: '水墨飛鳥掩護全隊，獲得 40% 攻擊力護盾。' },
+          { name: '奧義·超獸偽畫·甲子大蛇', type: 'aoe', elem: '陰', cost: 5, mult: 2.05, desc: '巨大水墨雙神威壓全場！對敵方全體造成 205% 傷害。' }
+        ]
+      },
+      {
+        id: 'zabuza', name: '桃地再不斬', title: '霧隱鬼人·斬首大刀', rarity: 'R', village: '霧隱',
+        elements: ['水', '體'], traits: ['霧隱', '忍刀七人眾'], icon: 'fa-skull-crossbones', avatarBg: 'from-slate-800 to-blue-950',
+        baseStats: { hp: 1280, atk: 225, def: 125, spd: 118 },
+        jutsus: [
+          { name: '斬首大刀·橫掃', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：巨刀揮砍造成 105% 傷害並回 3 氣。' },
+          { name: '霧隱之術·無聲殺人', type: 'single', elem: '水', cost: 3, mult: 1.85, desc: '濃霧中發動致命背刺，造成 185% 單體高暴擊傷害。' },
+          { name: '水遁·水牢之術', type: 'stun', elem: '水', cost: 3, mult: 1.25, desc: '水球禁錮單體敵人，造成 125% 傷害並暈眩 1 回合。' },
+          { name: '奧義·水遁大瀑布猛襲', type: 'aoe', elem: '水', cost: 5, mult: 2.1, desc: '狂暴巨浪衝擊全體敵人，造成 210% 水遁傷害。' }
+        ]
+      },
+      {
+        id: 'haku', name: '白', title: '水無月一族·冰遁血繼', rarity: 'R', village: '霧隱',
+        elements: ['水', '風'], traits: ['霧隱', '血繼限界'], icon: 'fa-snowflake', avatarBg: 'from-cyan-700 to-sky-900',
+        baseStats: { hp: 1100, atk: 215, def: 115, spd: 133 },
+        jutsus: [
+          { name: '單手結印·千本飛針', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：精準千本射擊，造成 100% 傷害並回 3 氣。' },
+          { name: '秘術·千殺水翔', type: 'aoe', elem: '水', cost: 3, mult: 1.4, desc: '水花凝結成無數冰針齊射，全體造成 140% 傷害。' },
+          { name: '冰遁·冰岩堂無', type: 'buff_team', elem: '水', cost: 2, mult: 0.45, desc: '堅硬冰壁守護我方，全隊獲得 45% 攻擊力護盾。' },
+          { name: '奧義·秘術魔鏡冰晶', type: 'aoe', elem: '風', cost: 5, mult: 2.15, desc: '冰鏡包圍戰場光速穿梭連擊！對全體造成 215% 傷害。' }
+        ]
+      },
+      {
+        id: 'hidan', name: '飛段', title: '邪神教不死狂信徒', rarity: 'R', village: '曉',
+        elements: ['陰', '體'], traits: ['曉', '湯隱'], icon: 'fa-scythe', avatarBg: 'from-red-950 to-slate-900',
+        baseStats: { hp: 1350, atk: 220, def: 110, spd: 117 },
+        jutsus: [
+          { name: '血腥三月鐮揮斬', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：三段大鐮刀橫掃，造成 105% 傷害並回 3 氣。' },
+          { name: '詛咒儀式·血契準備', type: 'buff_team', elem: '陰', cost: 2, mult: 0.4, desc: '畫出邪神法陣強化全隊氣勢，獲得 40% 護盾。' },
+          { name: '咒術·死司憑血', type: 'single', elem: '陰', cost: 4, mult: 2.15, desc: '貫穿心臟的詛咒反傷！對單體造成 215% 無視防禦傷害。' },
+          { name: '奧義·邪神祭壇審判', type: 'aoe', elem: '陰', cost: 5, mult: 2.0, desc: '瘋狂鐮刀亂舞席捲全場，造成 200% 全體傷害。' }
+        ]
+      },
+      {
+        id: 'kakuzu', name: '角都', title: '地怨虞·五顆心臟賞金獵人', rarity: 'R', village: '曉',
+        elements: ['土', '雷'], traits: ['曉', '瀧隱'], icon: 'fa-heart', avatarBg: 'from-stone-800 to-red-950',
+        baseStats: { hp: 1380, atk: 225, def: 135, spd: 116 },
+        jutsus: [
+          { name: '土遁·土矛重拳', type: 'single', elem: '土', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：硬化如鑽石的鐵拳重擊，造成 100% 傷害並回 3 氣。' },
+          { name: '雷遁·偽暗', type: 'single', elem: '雷', cost: 3, mult: 1.85, desc: '面具怪射出高壓雷槍貫穿目標，造成 185% 傷害。' },
+          { name: '火遁·頭刻苦', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '大範圍烈焰火海焚燒敵陣，全體造成 145% 傷害。' },
+          { name: '奧義·地怨虞·奇面爆炎', type: 'aoe', elem: '風', cost: 5, mult: 2.15, desc: '風火雙面具複合轟炸！對敵方全體造成 215% 傷害。' }
+        ]
+      },
+      {
+        id: 'temari', name: '手鞠', title: '砂隱大姊頭·三星扇', rarity: 'R', village: '砂隱',
+        elements: ['風'], traits: ['砂隱'], icon: 'fa-fan', avatarBg: 'from-purple-800 to-slate-800',
+        baseStats: { hp: 1120, atk: 215, def: 115, spd: 123 },
+        jutsus: [
+          { name: '鎌鼬之術', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：揮扇刮起真空風刃，造成 100% 傷害並回 3 氣。' },
+          { name: '風遁·大鎌鼬', type: 'aoe', elem: '風', cost: 3, mult: 1.45, desc: '狂暴龍捲風席捲敵陣，對全體造成 145% 風遁傷害。' },
+          { name: '風遁·掛網', type: 'aoe', elem: '風', cost: 3, mult: 1.4, desc: '交錯風網切割目標，造成 140% 全體傷害。' },
+          { name: '奧義·通靈斬斬舞', type: 'aoe', elem: '風', cost: 5, mult: 2.15, desc: '召喚鐮鼬多多的終極風暴！橫掃全場造成 215% 傷害。' }
+        ]
+      },
+      {
+        id: 'kankuro', name: '勘九郎', title: '砂隱傀儡師·烏鴉黑蟻', rarity: 'R', village: '砂隱',
+        elements: ['土', '幻'], traits: ['砂隱'], icon: 'fa-masks-theater', avatarBg: 'from-zinc-800 to-purple-950',
+        baseStats: { hp: 1180, atk: 205, def: 125, spd: 114 },
+        jutsus: [
+          { name: '烏鴉暗器連射', type: 'single', elem: '土', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：傀儡機關發射苦無，造成 95% 傷害並回 3 氣。' },
+          { name: '黑秘技·機機一發', type: 'stun', elem: '土', cost: 3, mult: 1.35, desc: '黑蟻困住敵人並由烏鴉刺擊！造成 135% 傷害並暈眩 1 回合。' },
+          { name: '山椒魚鐵壁防禦', type: 'buff_team', elem: '土', cost: 2, mult: 0.5, desc: '展開山椒魚裝甲掩護全隊，獲得 50% 護盾。' },
+          { name: '奧義·黑秘技機機三角', type: 'aoe', elem: '火', cost: 5, mult: 2.0, desc: '三具傀儡同時引爆火藥機關，全體造成 200% 傷害。' }
+        ]
+      },
 
-  let monsters = [];
-  let pets = [];
-  let drops = [];
+      // --- N CHUNIN TIER ---
+      {
+        id: 'hinata', name: '日向雛田', title: '白眼公主·守護柔拳', rarity: 'N', village: '木葉',
+        elements: ['體', '水'], traits: ['木葉', '第八班', '日向'], icon: 'fa-yin-yang', avatarBg: 'from-indigo-800 to-slate-800',
+        baseStats: { hp: 1140, atk: 195, def: 125, spd: 118 },
+        jutsus: [
+          { name: '柔拳·點穴', type: 'single', elem: '體', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：白眼看穿經絡點穴，造成 95% 傷害並回 3 氣。' },
+          { name: '守護八卦六十四掌', type: 'buff_team', elem: '水', cost: 2, mult: 0.5, desc: '查克拉化為細絲防禦全場，為全隊提供 50% 攻擊力護盾。' },
+          { name: '柔步雙獅拳', type: 'single', elem: '體', cost: 3, mult: 1.75, desc: '雙手凝聚獅子形態查克拉猛擊，造成 175% 單體傷害。' },
+          { name: '奧義·八卦空掌連擊', type: 'aoe', elem: '水', cost: 5, mult: 1.9, desc: '釋放真空查克拉衝擊波，對敵方全體造成 190% 傷害。' }
+        ]
+      },
+      {
+        id: 'ino', name: '山中井野', title: '心轉身術與感知醫療', rarity: 'N', village: '木葉',
+        elements: ['幻', '醫'], traits: ['木葉', '豬鹿蝶'], icon: 'fa-spa', avatarBg: 'from-purple-700 to-pink-800',
+        baseStats: { hp: 1060, atk: 185, def: 110, spd: 116 },
+        jutsus: [
+          { name: '花瓣手裏劍', type: 'single', elem: '幻', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：敏捷投擲造成 95% 傷害並回 3 氣。' },
+          { name: '心轉身之術', type: 'stun', elem: '幻', cost: 3, mult: 1.15, desc: '精神入侵控制敵方行動！造成 115% 傷害並暈眩 1 回合。' },
+          { name: '掌仙術·應急治療', type: 'heal_team', elem: '醫', cost: 3, mult: 1.2, desc: '為全隊回復 120% 攻擊力的生命值。' },
+          { name: '奧義·心亂身之術', type: 'aoe', elem: '幻', cost: 5, mult: 1.85, desc: '擾亂敵軍心智自相殘殺，對全體造成 185% 傷害。' }
+        ]
+      },
+      {
+        id: 'choji', name: '秋道丁次', title: '倍化之術·肉彈戰車', rarity: 'N', village: '木葉',
+        elements: ['體', '土'], traits: ['木葉', '豬鹿蝶'], icon: 'fa-drumstick-bite', avatarBg: 'from-orange-800 to-stone-800',
+        baseStats: { hp: 1360, atk: 205, def: 130, spd: 104 },
+        jutsus: [
+          { name: '倍化·超推手', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：巨大化手掌重拍，造成 100% 傷害並回 3 氣。' },
+          { name: '肉彈戰車', type: 'aoe', elem: '土', cost: 3, mult: 1.35, desc: '高速滾動碾壓敵陣，對全體造成 135% 傷害。' },
+          { name: '針刺肉彈戰車', type: 'single', elem: '體', cost: 3, mult: 1.8, desc: '苦無纏繞全身高速撞擊，造成 180% 單體傷害。' },
+          { name: '奧義·蝶化超倍化轟擊', type: 'single', elem: '陽', cost: 5, mult: 2.35, desc: '查克拉化為彩蝶雙翼！凝聚全身熱量一拳轟殺單體 235% 傷害。' }
+        ]
+      },
+      {
+        id: 'kiba', name: '犬塚牙', title: '人獸混合雙頭狼', rarity: 'N', village: '木葉',
+        elements: ['體', '風'], traits: ['木葉', '第八班'], icon: 'fa-paw', avatarBg: 'from-amber-800 to-zinc-800',
+        baseStats: { hp: 1120, atk: 205, def: 110, spd: 127 },
+        jutsus: [
+          { name: '通牙突襲', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：與赤丸同步高速旋轉突刺，造成 100% 傷害並回 3 氣。' },
+          { name: '牙通牙', type: 'single', elem: '風', cost: 3, mult: 1.8, desc: '雙重龍捲風撕裂目標，造成 180% 單體傷害。' },
+          { name: '擬獸忍法·四腳之術', type: 'buff_team', elem: '體', cost: 2, mult: 0.4, desc: '野性直覺提升全隊迴避氣勢，獲得 40% 護盾。' },
+          { name: '奧義·牙狼牙·超旋轉', type: 'aoe', elem: '風', cost: 5, mult: 2.0, desc: '化身為巨大雙頭巨狼橫掃敵陣，造成 200% 全體傷害。' }
+        ]
+      },
+      {
+        id: 'shino', name: '油女志乃', title: '寄壞蟲秘術使', rarity: 'N', village: '木葉',
+        elements: ['陰', '土'], traits: ['木葉', '第八班'], icon: 'fa-bug', avatarBg: 'from-slate-800 to-emerald-950',
+        baseStats: { hp: 1140, atk: 195, def: 120, spd: 115 },
+        jutsus: [
+          { name: '寄壞蟲·查克拉吸食', type: 'single', elem: '陰', cost: 0, mult: 0.95, chakraGain: 4, desc: '普攻：蟲群啃食敵人查克拉，造成 95% 傷害並額外回 4 氣！' },
+          { name: '秘術·蟲玉', type: 'aoe', elem: '陰', cost: 3, mult: 1.35, desc: '鋪天蓋地的黑蟲吞沒敵軍，造成 135% 全體傷害。' },
+          { name: '蟲繭防禦結界', type: 'buff_team', elem: '土', cost: 2, mult: 0.45, desc: '寄壞蟲織成護盾保護全隊，獲得 45% 攻擊力護盾。' },
+          { name: '奧義·秘術蟲龍捲', type: 'aoe', elem: '陰', cost: 5, mult: 1.95, desc: '狂暴蟲群龍捲風席捲全場，造成 195% 傷害。' }
+        ]
+      },
+      {
+        id: 'tenten', name: '天天', title: '忍具掌控大師', rarity: 'N', village: '木葉',
+        elements: ['風', '火'], traits: ['木葉', '凱班'], icon: 'fa-dharmachakra', avatarBg: 'from-rose-800 to-amber-900',
+        baseStats: { hp: 1080, atk: 200, def: 110, spd: 122 },
+        jutsus: [
+          { name: '連環苦無射擊', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：百發百中的暗器投擲，造成 100% 傷害並回 3 氣。' },
+          { name: '操具·天鎖災', type: 'aoe', elem: '風', cost: 3, mult: 1.4, desc: '卷軸中飛出無數忍具如暴雨降下，全體 140% 傷害。' },
+          { name: '爆龍擊', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '起爆符忍具連環轟炸，對敵方全體造成 145% 傷害。' },
+          { name: '奧義·芭蕉扇·五遁捲風', type: 'aoe', elem: '火', cost: 5, mult: 2.05, desc: '揮動六道忍具芭蕉扇刮起烈焰風暴！全體 205% 傷害。' }
+        ]
+      },
+      {
+        id: 'zetsu', name: '絕', title: '曉之玄武·陰陽雙面體', rarity: 'N', village: '曉',
+        elements: ['陰', '陽'], traits: ['曉'], icon: 'fa-circle-half-stroke', avatarBg: 'from-zinc-800 to-emerald-900',
+        baseStats: { hp: 1160, atk: 190, def: 120, spd: 118 },
+        jutsus: [
+          { name: '蜉蝣突襲', type: 'single', elem: '陰', cost: 0, mult: 0.95, chakraGain: 3, desc: '普攻：從地面浮出突刺，造成 95% 傷害並回 3 氣。' },
+          { name: '孢子之術·吸能', type: 'aoe', elem: '陽', cost: 3, mult: 1.25, desc: '白絕孢子附著敵軍吸取查克拉，全體 125% 傷害並為我方回 1 氣。' },
+          { name: '白絕分身替死', type: 'heal_team', elem: '陽', cost: 3, mult: 1.15, desc: '轉移生命能量為全隊回復 115% 攻擊力生命。' },
+          { name: '奧義·黑絕精神侵蝕', type: 'stun', elem: '陰', cost: 5, mult: 1.95, desc: '黑影完全支配目標行動！造成 195% 傷害並暈眩 1 回合。' }
+        ]
+      }
+    ];
 
-  function selectClass(cls) {
-    selectedClass = cls;
-    document.querySelectorAll('.class-card').forEach(c => c.classList.remove('selected'));
-    event.currentTarget.classList.add('selected');
-  }
+    /* =========================================================================
+       2. ELEMENT / TRAIT COMBO RECIPES (EXPANDED WITH 陰 / 陽)
+       ========================================================================= */
+    const COMBO_RECIPES = [
+      {
+        id: 'wind_fire',
+        name: '【風助火勢·豪火螺旋丸】',
+        req: ['風', '火'],
+        badge: '風 + 火',
+        desc: '風遁助長火勢席捲全場！對敵方全體追加 115% 烈焰追擊傷害。',
+        effectType: 'aoe_dmg',
+        power: 1.15
+      },
+      {
+        id: 'lightning_water',
+        name: '【感電麻痺·水雷陣】',
+        req: ['雷', '水'],
+        badge: '雷 + 水',
+        desc: '水流導引高壓雷電！對目標追加 125% 雷擊傷害並使其暈眩 1 回合。',
+        effectType: 'stun_dmg',
+        power: 1.25
+      },
+      {
+        id: 'yin_yang',
+        name: '【創世森羅·陰陽遁六道】',
+        req: ['陰', '陽'],
+        badge: '陰 + 陽',
+        desc: '陰陽之力交匯產生六道奇蹟！全場敵人受到 145% 無視防禦轟擊，且全隊回復 2 點查克拉！',
+        effectType: 'yin_yang_miracle',
+        power: 1.45
+      },
+      {
+        id: 'genjutsu_tai',
+        name: '【影縛連彈·八門表蓮華】',
+        req: ['幻', '體'],
+        badge: '幻 + 體',
+        desc: '趁敵人陷入幻術硬直發動必殺連打！對目標追加 165% 暴擊重擊。',
+        effectType: 'single_dmg',
+        power: 1.65
+      },
+      {
+        id: 'medical_any',
+        name: '【百豪應援·查克拉共鳴】',
+        req: ['醫', 'ANY'],
+        badge: '醫 + 任意忍術',
+        desc: '醫療查克拉活化全隊經絡！全隊回復生命並額外回復 2 點查克拉。',
+        effectType: 'team_heal_chakra',
+        power: 0.85
+      },
+      {
+        id: 'earth_water',
+        name: '【血繼限界·木遁樹界降誕】',
+        req: ['土', '水'],
+        badge: '土 + 水',
+        desc: '土與水融合誕生生命巨木！對敵方全體造成 120% 傷害並使目標暈眩。',
+        effectType: 'stun_dmg',
+        power: 1.2
+      },
+      {
+        id: 'earth_fire',
+        name: '【血繼限界·熔遁灼熱岩漿】',
+        req: ['土', '火'],
+        badge: '土 + 火',
+        desc: '高溫將砂土化為灼熱熔岩！對敵方全體造成 125% 傷害。',
+        effectType: 'aoe_dmg',
+        power: 1.25
+      },
+      {
+        id: 'double_lightning',
+        name: '【雷霆萬鈞·雙千鳥雷切】',
+        req: ['雷', '雷'],
+        badge: '雷 + 雷',
+        desc: '雙重雷遁查克拉共鳴！對單體造成 175% 極致貫穿雷擊。',
+        effectType: 'single_dmg',
+        power: 1.75
+      }
+    ];
 
-  function startGame() {
-    player.class = selectedClass;
-    document.getElementById('modal-overlay').style.display = 'none';
-    initCanvas();
-    spawnMonsters();
-    gameLoop();
-    log("歡迎來到《天堂 Lineage》隨機寶物世界！");
-  }
+    /* =========================================================================
+       2. ELEMENT / TRAIT COMBO RECIPES
+       ========================================================================= */
+    const COMBO_RECIPES = [
+      {
+        id: 'wind_fire',
+        name: '【風助火勢·豪火螺旋丸】',
+        req: ['風', '火'],
+        badge: '風遁 + 火遁',
+        desc: '風遁助長火勢席捲全場！對敵方全體追加 110% 烈焰追擊傷害。',
+        effectType: 'aoe_dmg',
+        power: 1.1
+      },
+      {
+        id: 'lightning_water',
+        name: '【感電麻痺·水雷陣】',
+        req: ['雷', '水'],
+        badge: '雷遁 + 水遁',
+        desc: '水流導引高壓雷電！對目標追加 120% 雷擊傷害並使其暈眩 1 回合。',
+        effectType: 'stun_dmg',
+        power: 1.2
+      },
+      {
+        id: 'genjutsu_tai',
+        name: '【影縛連彈·表蓮華】',
+        req: ['幻術', '體術'],
+        badge: '幻術 + 體術',
+        desc: '趁敵人陷入幻術硬直發動必殺連打！對目標追加 160% 暴擊重擊。',
+        effectType: 'single_dmg',
+        power: 1.6
+      },
+      {
+        id: 'medical_any',
+        name: '【百豪應援·查克拉共鳴】',
+        req: ['醫療', 'ANY'],
+        badge: '醫療 + 任意忍術',
+        desc: '醫療查克拉活化全隊經絡！全隊回復生命並額外回復 2 點查克拉。',
+        effectType: 'team_heal_chakra',
+        power: 0.75
+      },
+      {
+        id: 'spacetime_wind',
+        name: '【飛雷神·螺旋閃光超輪舞】',
+        req: ['時空間', '風'],
+        badge: '時空間 + 風遁',
+        desc: '超越光速的師徒合擊！對敵方全體造成 135% 無視防禦追擊。',
+        effectType: 'aoe_dmg',
+        power: 1.35
+      },
+      {
+        id: 'earth_fire',
+        name: '【熔遁·灼熱砂瀑葬】',
+        req: ['土', '火'],
+        badge: '土遁 + 火遁',
+        desc: '高溫將砂土化為灼熱熔岩！對敵方全體造成 115% 傷害並為我方加盾。',
+        effectType: 'aoe_dmg',
+        power: 1.15
+      },
+      {
+        id: 'double_lightning',
+        name: '【雷霆萬鈞·雙千鳥雷切】',
+        req: ['雷', '雷'],
+        badge: '雷遁 + 雷遁',
+        desc: '雙重雷遁查克拉共鳴！對單體造成 170% 極致貫穿雷擊。',
+        effectType: 'single_dmg',
+        power: 1.7
+      }
+    ];
 
-  function initCanvas() {
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
-  }
+    /* =========================================================================
+       3. ENEMY STAGES (4v4 SQUADS)
+       ========================================================================= */
+    const STAGES_DB = [
+      {
+        id: 'stage_1',
+        name: '第一關：木葉中忍考試演習',
+        diff: '普通 ★☆☆☆',
+        rewardRyo: 1500,
+        rewardCards: 60,
+        desc: '與同期木葉下忍進行 4v4 實戰演練，熟悉速度條與屬性合體聯招。',
+        enemies: [
+          { name: '犬塚牙', elements: ['體術'], hp: 950, atk: 155, def: 90, spd: 114, icon: 'fa-paw' },
+          { name: '油女志乃', elements: ['幻術'], hp: 1000, atk: 150, def: 105, spd: 108, icon: 'fa-bug' },
+          { name: '山中井野', elements: ['醫療'], hp: 900, atk: 140, def: 95, spd: 110, icon: 'fa-spa' },
+          { name: '秋道丁次', elements: ['體術', '土'], hp: 1250, atk: 165, def: 110, spd: 96, icon: 'fa-drumstick-bite' }
+        ]
+      },
+      {
+        id: 'stage_2',
+        name: '第二關：砂隱村精銳小隊',
+        diff: '進階 ★★☆☆',
+        rewardRyo: 2400,
+        rewardCards: 100,
+        desc: '來自風之國的強敵，擅長風遁與傀儡術的高速攻防。',
+        enemies: [
+          { name: '手鞠', elements: ['風'], hp: 1350, atk: 215, def: 120, spd: 121, icon: 'fa-fan' },
+          { name: '勘九郎', elements: ['幻術', '土'], hp: 1450, atk: 210, def: 135, spd: 112, icon: 'fa-masks-theater' },
+          { name: '馬基', elements: ['風'], hp: 1550, atk: 230, def: 130, spd: 119, icon: 'fa-wind' },
+          { name: '守鶴暴走體', elements: ['風', '土'], hp: 1950, atk: 245, def: 150, spd: 104, icon: 'fa-dragon' }
+        ]
+      },
+      {
+        id: 'stage_3',
+        name: '第三關：音忍四人眾結界陣',
+        diff: '困難 ★★★☆',
+        rewardRyo: 3500,
+        rewardCards: 150,
+        desc: '大蛇丸麾下咒印戰士，擁有極高血量與控制技能。',
+        enemies: [
+          { name: '鬼童丸', elements: ['雷'], hp: 1750, atk: 270, def: 145, spd: 125, icon: 'fa-spider' },
+          { name: '多由也', elements: ['幻術'], hp: 1650, atk: 265, def: 140, spd: 123, icon: 'fa-music' },
+          { name: '左近右近', elements: ['體術'], hp: 1850, atk: 285, def: 155, spd: 118, icon: 'fa-people-arrows' },
+          { name: '次郎坊', elements: ['土'], hp: 2300, atk: 275, def: 180, spd: 102, icon: 'fa-mountain' }
+        ]
+      },
+      {
+        id: 'stage_4',
+        name: '最終決戰：曉組織夢幻組合',
+        diff: '修羅 ★★★★',
+        rewardRyo: 6000,
+        rewardCards: 250,
+        desc: '忍界最強叛忍集團！極致的速度與毀滅性奧義，考驗你的五星陣容與聯招策略！',
+        enemies: [
+          { name: '宇智波鼬·曉', elements: ['火', '幻術'], hp: 2300, atk: 350, def: 175, spd: 136, icon: 'fa-crow' },
+          { name: '干柿鬼鮫', elements: ['水'], hp: 2800, atk: 330, def: 190, spd: 117, icon: 'fa-water' },
+          { name: '迪達拉', elements: ['土', '火'], hp: 2200, atk: 365, def: 160, spd: 129, icon: 'fa-bomb' },
+          { name: '培因·天道', elements: ['風', '時空間'], hp: 3100, atk: 390, def: 200, spd: 134, icon: 'fa-sun' }
+        ]
+      }
+    ];
 
-  function spawnMonsters() {
-    monsters = [];
-    for(let i=0; i<10; i++) {
-      monsters.push({
-        x: Math.random() * (canvas.width - 50) + 25,
-        y: Math.random() * (canvas.height - 50) + 25,
-        hp: 50 * player.lv,
-        maxHp: 50 * player.lv,
-        name: `地下骷髏 Lv.${player.lv}`
+    /* =========================================================================
+       4. PLAYER STATE & STAR SCALING LOGIC (STARTING 500 元)
+       ========================================================================= */
+    let state = {
+      ryo: 500,
+      // owned: { [shinobiId]: { stars: 1..5, cards: 0..999 } }
+      owned: {
+        naruto: { stars: 1, cards: 50 },
+        sasuke: { stars: 1, cards: 50 },
+        sakura: { stars: 1, cards: 75 },
+        shikamaru: { stars: 1, cards: 75 }
+      },
+      squad: ['naruto', 'sasuke', 'sakura', 'shikamaru'],
+      rosterFilter: 'ALL',
+      combat: null
+    };
+
+    // Calculate stats scaled by Star Level (1 to 5 stars)
+    function getShinobiStats(shinobiId) {
+      const base = SHINOBI_DB.find(s => s.id === shinobiId);
+      const ownedInfo = state.owned[shinobiId] || { stars: 1, cards: 0 };
+      const star = ownedInfo.stars;
+      // Each star adds +22% HP/ATK/DEF and +5 SPD
+      const mult = 1 + (star - 1) * 0.22;
+      const spdBonus = (star - 1) * 5;
+      // Jutsu power bonus per star
+      const jutsuBonus = 1 + (star - 1) * 0.12;
+
+      return {
+        ...base,
+        stars: star,
+        cards: ownedInfo.cards,
+        hp: Math.round(base.baseStats.hp * mult),
+        atk: Math.round(base.baseStats.atk * mult),
+        def: Math.round(base.baseStats.def * mult),
+        spd: Math.round(base.baseStats.spd + spdBonus),
+        jutsuBonus,
+        power: Math.round((base.baseStats.hp * 0.35 + base.baseStats.atk * 2.5 + base.baseStats.def * 1.8 + base.baseStats.spd * 3) * mult)
+      };
+    }
+
+    function renderStars(count) {
+      let html = '';
+      for (let i = 1; i <= 5; i++) {
+        if (i <= count) {
+          html += `<i class="fa-solid fa-star text-amber-400 text-xs drop-shadow"></i>`;
+        } else {
+          html += `<i class="fa-regular fa-star text-slate-600 text-xs"></i>`;
+        }
+      }
+      return html;
+    }
+
+    function showToast(msg, type = 'info') {
+      const box = document.getElementById('toast-box');
+      const el = document.createElement('div');
+      const colors = {
+        info: 'bg-slate-900 border-amber-500 text-amber-200',
+        success: 'bg-emerald-950 border-emerald-500 text-emerald-200',
+        error: 'bg-rose-950 border-rose-500 text-rose-200'
+      };
+      el.className = `px-4 py-2.5 rounded-xl border shadow-2xl text-xs sm:text-sm font-bold transition-all transform translate-y-0 ${colors[type]}`;
+      el.innerHTML = msg;
+      box.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+      }, 2400);
+    }
+
+    function updateTopBar() {
+      document.getElementById('ui-ryo').innerText = state.ryo.toLocaleString();
+      document.getElementById('ui-owned-count').innerText = `${Object.keys(state.owned).length} / ${SHINOBI_DB.length}`;
+    }
+
+    /* =========================================================================
+       5. NAVIGATION & ROSTER / SQUAD BUILDER UI
+       ========================================================================= */
+    function switchTab(tabName) {
+      ['roster', 'gacha', 'stage'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`tab-${t}`);
+        btn.classList.remove('bg-amber-600', 'text-white', 'shadow');
+        btn.classList.add('text-slate-300');
+      });
+
+      document.getElementById(`view-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      activeBtn.classList.add('bg-amber-600', 'text-white', 'shadow');
+      activeBtn.classList.remove('text-slate-300');
+
+      if (tabName === 'roster') renderRosterAndSquad();
+      if (tabName === 'stage') renderStages();
+    }
+
+    function filterRoster(rarity) {
+      state.rosterFilter = rarity;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('bg-amber-600', 'text-white', 'font-bold');
+        b.classList.add('bg-slate-800');
+      });
+      event.target.classList.add('bg-amber-600', 'text-white', 'font-bold');
+      event.target.classList.remove('bg-slate-800');
+      renderRosterAndSquad();
+    }
+
+    function renderRosterAndSquad() {
+      updateTopBar();
+      const slotsGrid = document.getElementById('squad-slots-grid');
+      slotsGrid.innerHTML = '';
+
+      let totalPower = 0;
+      let squadElems = new Set();
+
+      for (let i = 0; i < 4; i++) {
+        const sId = state.squad[i];
+        if (sId) {
+          const s = getShinobiStats(sId);
+          totalPower += s.power;
+          s.elements.forEach(e => squadElems.add(e));
+
+          slotsGrid.innerHTML += `
+            <div class="relative rounded-xl bg-slate-900/90 border-2 border-amber-500/70 p-3 flex flex-col justify-between shadow-lg group">
+              <button onclick="toggleSquadMember('${s.id}')" title="移出小隊" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-rose-950 hover:bg-rose-700 text-rose-300 text-xs flex items-center justify-center transition">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <div class="flex items-center gap-2.5">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br ${s.avatarBg} border border-amber-300/60 flex items-center justify-center text-white text-lg shadow">
+                  <i class="fa-solid ${s.icon}"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1">
+                    <span class="text-[10px] font-black px-1.5 rounded bg-amber-500/20 text-amber-300">${s.rarity}</span>
+                    <span class="font-bold text-sm text-white">${s.name}</span>
+                  </div>
+                  <div class="mt-0.5">${renderStars(s.stars)}</div>
+                </div>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between text-[11px] bg-slate-950/80 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                <span class="text-sky-400 font-bold"><i class="fa-solid fa-gauge-high mr-1"></i>速度 ${s.spd}</span>
+                <div class="flex gap-1">
+                  ${s.elements.map(e => `<span class="px-1.5 py-0.2 rounded border text-[10px] elem-${e}">${e}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          slotsGrid.innerHTML += `
+            <div class="rounded-xl border-2 border-dashed border-slate-700 bg-slate-950/40 p-4 flex flex-col items-center justify-center text-slate-500 min-h-[108px]">
+              <i class="fa-solid fa-user-plus text-xl mb-1"></i>
+              <span class="text-xs">空缺位置 (${i + 1}/4)</span>
+            </div>
+          `;
+        }
+      }
+
+      document.getElementById('ui-squad-power').innerText = totalPower.toLocaleString();
+
+      // Check active possible combos in current squad
+      const synergyContainer = document.getElementById('squad-synergy-tags');
+      const activeCombos = COMBO_RECIPES.filter(c => {
+        if (c.req[1] === 'ANY') return squadElems.has(c.req[0]);
+        if (c.req[0] === c.req[1]) {
+          // Count how many members have this element
+          let cnt = 0;
+          state.squad.forEach(id => {
+            if (getShinobiStats(id).elements.includes(c.req[0])) cnt++;
+          });
+          return cnt >= 2;
+        }
+        return squadElems.has(c.req[0]) && squadElems.has(c.req[1]);
+      });
+
+      if (activeCombos.length === 0) {
+        synergyContainer.innerHTML = `<span class="text-slate-500">目前陣容尚未湊齊屬性合體聯招（試著搭配 風+火 或 雷+水）</span>`;
+      } else {
+        synergyContainer.innerHTML = activeCombos.map(c => `
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-950/90 border border-amber-500/60 text-amber-300 font-bold">
+            ${c.name} (${c.badge})
+          </span>
+        `).join('');
+      }
+
+      // Render Roster Cards
+      const rosterGrid = document.getElementById('roster-grid');
+      rosterGrid.innerHTML = '';
+
+      const filtered = SHINOBI_DB.filter(s => state.rosterFilter === 'ALL' || s.rarity === state.rosterFilter);
+
+      filtered.forEach(base => {
+        const isOwned = !!state.owned[base.id];
+        const s = getShinobiStats(base.id);
+        const inSquad = state.squad.includes(base.id);
+        const canUpgrade = isOwned && s.stars < 5 && s.cards >= 100;
+        const progressPct = isOwned ? (s.stars >= 5 ? 100 : Math.min(100, s.cards)) : 0;
+
+        const rarityClass = base.rarity === 'UR' ? 'border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' :
+                            (base.rarity === 'SSR' ? 'rarity-ssr' : (base.rarity === 'SR' ? 'rarity-sr' : 'rarity-r'));
+        const badgeBg = base.rarity === 'UR' ? 'bg-gradient-to-r from-rose-600 to-amber-500 text-white' :
+                        (base.rarity === 'SSR' ? 'bg-amber-500 text-slate-950' :
+                        (base.rarity === 'SR' ? 'bg-purple-600 text-white' :
+                        (base.rarity === 'R' ? 'bg-sky-600 text-white' : 'bg-slate-600 text-white')));
+
+        const card = document.createElement('div');
+        card.className = `scroll-panel rounded-2xl p-4 flex flex-col justify-between transition ${isOwned ? rarityClass : 'opacity-55 grayscale border-slate-800'}`;
+
+        card.innerHTML = `
+          <div>
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${base.avatarBg} border border-amber-300/50 flex items-center justify-center text-white text-xl shadow-md">
+                  <i class="fa-solid ${base.icon}"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black px-1.5 py-0.5 rounded ${badgeBg}">${base.rarity}</span>
+                    <h4 class="font-bold text-sm sm:text-base text-white">${base.name}</h4>
+                  </div>
+                  <div class="text-[11px] text-slate-400">${base.title}</div>
+                  <div class="mt-0.5">${isOwned ? renderStars(s.stars) : '<span class="text-[10px] text-slate-500">尚未招募</span>'}</div>
+                </div>
+              </div>
+              <button onclick="openDetailModal('${base.id}')" title="查看4種招牌忍術" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs flex items-center justify-center">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+
+            <!-- Elements & Traits -->
+            <div class="flex flex-wrap gap-1 mt-3">
+              ${base.elements.map(e => `<span class="px-2 py-0.5 rounded border text-[10px] font-bold elem-${e}">${e}屬性</span>`).join('')}
+              ${base.traits.map(t => `<span class="px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 text-[10px]">${t}</span>`).join('')}
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-4 gap-1.5 mt-3 bg-slate-950/80 p-2 rounded-xl border border-slate-800/80 text-center text-[11px]">
+              <div>
+                <div class="text-slate-500 text-[10px]">生命</div>
+                <div class="font-bold text-emerald-400 font-mono">${s.hp}</div>
+              </div>
+              <div>
+                <div class="text-slate-500 text-[10px]">攻擊</div>
+                <div class="font-bold text-rose-400 font-mono">${s.atk}</div>
+              </div>
+              <div>
+                <div class="text-slate-500 text-[10px]">防禦</div>
+                <div class="font-bold text-amber-400 font-mono">${s.def}</div>
+              </div>
+              <div>
+                <div class="text-slate-500 text-[10px]">速度</div>
+                <div class="font-bold text-sky-400 font-mono">${s.spd}</div>
+              </div>
+            </div>
+
+            <!-- Star Shard Progress Bar -->
+            <div class="mt-3 space-y-1">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-400">專屬角色卡進度</span>
+                <span class="font-mono font-bold ${canUpgrade ? 'text-amber-400 animate-pulse' : 'text-slate-300'}">
+                  ${!isOwned ? '0 / 100' : (s.stars >= 5 ? '已達最高 5 星 MAX' : `${s.cards} / 100 張`)}
+                </span>
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                <div class="h-full bg-gradient-to-r from-amber-600 to-yellow-400 transition-all duration-300" style="width: ${progressPct}%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex gap-2">
+            ${isOwned ? `
+              <button onclick="toggleSquadMember('${base.id}')" class="flex-1 py-2 rounded-xl text-xs font-bold transition ${inSquad ? 'bg-rose-950/90 hover:bg-rose-900 text-rose-300 border border-rose-700' : 'bg-sky-900/80 hover:bg-sky-800 text-sky-200 border border-sky-600'}">
+                ${inSquad ? '<i class="fa-solid fa-user-minus mr-1"></i>下陣' : '<i class="fa-solid fa-user-plus mr-1"></i>上陣'}
+              </button>
+              ${s.stars < 5 ? `
+                <button onclick="upgradeShinobiStar('${base.id}')" class="flex-1 py-2 rounded-xl text-xs font-bold transition ${canUpgrade ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow-lg animate-bounce' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">
+                  <i class="fa-solid fa-arrow-up mr-1"></i>升星 (${s.stars + 1}★)
+                </button>
+              ` : `
+                <span class="flex-1 py-2 rounded-xl text-xs font-bold text-center bg-amber-950/50 text-amber-400 border border-amber-700/40">五星圓滿</span>
+              `}
+            ` : `
+              <button onclick="switchTab('gacha')" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">
+                前往忍者招募獲取
+              </button>
+            `}
+          </div>
+        `;
+        rosterGrid.appendChild(card);
       });
     }
-  }
 
-  function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // 繪製背景與怪物
-    monsters.forEach(m => {
-      ctx.fillStyle = '#e74c3c';
-      ctx.beginPath();
-      ctx.arc(m.x, m.y, 15, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // HP條
-      ctx.fillStyle = '#000';
-      ctx.fillRect(m.x - 15, m.y - 25, 30, 4);
-      ctx.fillStyle = '#2ecc71';
-      ctx.fillRect(m.x - 15, m.y - 25, (m.hp / m.maxHp) * 30, 4);
-    });
-
-    requestAnimationFrame(gameLoop);
-  }
-
-  function log(msg) {
-    const l = document.getElementById('game-log');
-    const div = document.createElement('div');
-    div.className = 'log-line';
-    div.innerText = msg;
-    l.insertBefore(div, l.firstChild);
-  }
-
-  function castScreenNuke() {
-    monsters.forEach(m => {
-      m.hp -= 999;
-      log(`末日審判對 ${m.name} 造成 999 點全屏毀滅傷害！`);
-    });
-    monsters = monsters.filter(m => m.hp > 0);
-    if(monsters.length === 0) setTimeout(spawnMonsters, 1000);
-  }
-
-  function rebirthPlayer() {
-    if(player.lv >= 100) {
-      player.lv = 1;
-      player.rebirthCount++;
-      document.getElementById('char-rebirth').innerText = `[${player.rebirthCount} 轉]`;
-      log("恭喜突破極限！達成轉生！");
-    } else {
-      log("等級未滿 Lv.100 無法轉生！");
+    function toggleSquadMember(id) {
+      const idx = state.squad.indexOf(id);
+      if (idx > -1) {
+        state.squad.splice(idx, 1);
+      } else {
+        if (state.squad.length >= 4) {
+          showToast('出戰小隊最多只能編入 4 名忍者！', 'error');
+          return;
+        }
+        state.squad.push(id);
+      }
+      renderRosterAndSquad();
     }
-  }
-</script>
+
+    function upgradeShinobiStar(id) {
+      const owned = state.owned[id];
+      if (!owned || owned.stars >= 5) return;
+      if (owned.cards < 100) {
+        showToast('角色卡不足 100 張，無法升星！可透過招募重複角色獲得。', 'error');
+        return;
+      }
+      owned.cards -= 100;
+      owned.stars += 1;
+      const s = getShinobiStats(id);
+      showToast(`✨ 突破成功！【${s.name}】晉升為 ${s.stars} 星！全屬性大幅提升！`, 'success');
+      renderRosterAndSquad();
+    }
+
+    function openDetailModal(id) {
+      const s = getShinobiStats(id);
+      const box = document.getElementById('detail-modal-content');
+      box.innerHTML = `
+        <div class="flex items-center gap-4 border-b border-slate-800 pb-4">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${s.avatarBg} border-2 border-amber-400 flex items-center justify-center text-white text-3xl shadow-lg">
+            <i class="fa-solid ${s.icon}"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-xs">${s.rarity}</span>
+              <h3 class="font-serif-tc text-2xl font-bold text-white">${s.name}</h3>
+            </div>
+            <p class="text-xs text-amber-300 mt-0.5">${s.title} · ${renderStars(s.stars)}</p>
+            <div class="flex gap-1.5 mt-1.5">
+              ${s.elements.map(e => `<span class="px-2 py-0.5 rounded border text-[10px] font-bold elem-${e}">${e}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2.5 mt-4">
+          <h4 class="text-sm font-bold text-amber-300"><i class="fa-solid fa-fire mr-1.5"></i>四大招牌忍術一覽（當前星級威力加成：+${Math.round((s.jutsuBonus - 1) * 100)}%）</h4>
+          ${s.jutsus.map((j, idx) => `
+            <div class="bg-slate-950/90 border border-slate-800 p-3 rounded-xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono text-slate-500">#${idx + 1}</span>
+                  <span class="font-bold text-sm text-white">${j.name}</span>
+                  <span class="px-1.5 py-0.5 rounded border text-[10px] elem-${j.elem}">${j.elem}</span>
+                </div>
+                <span class="text-xs font-mono font-bold text-sky-400">消耗查克拉: ${j.cost}</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1.5">${j.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById('modal-shinobi-detail').classList.remove('hidden');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('modal-shinobi-detail').classList.add('hidden');
+    }
+
+    function openComboCodex() {
+      const list = document.getElementById('codex-list');
+      list.innerHTML = COMBO_RECIPES.map(c => `
+        <div class="bg-slate-950/90 border border-amber-800/50 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="font-serif-tc font-bold text-base text-amber-300">${c.name}</div>
+            <div class="text-xs text-slate-300 mt-1">${c.desc}</div>
+          </div>
+          <span class="shrink-0 px-3 py-1 rounded-lg bg-amber-950 border border-amber-500/50 text-amber-200 text-xs font-bold text-center">
+            觸發條件：${c.badge}
+          </span>
+        </div>
+      `).join('');
+      document.getElementById('modal-combo-codex').classList.remove('hidden');
+    }
+
+    /* =========================================================================
+       6. GACHA RECRUITMENT SYSTEM (1 元 PER PULL!)
+       ========================================================================= */
+    function pullGacha(times) {
+      const cost = times * 1;
+      if (state.ryo < cost) {
+        showToast(`資金不足！需要 ${cost.toLocaleString()} 元（可透過對決獲勝賺取資金）。`, 'error');
+        return;
+      }
+
+      state.ryo -= cost;
+      updateTopBar();
+
+      const urPool = SHINOBI_DB.filter(s => s.rarity === 'UR');
+      const ssrPool = SHINOBI_DB.filter(s => s.rarity === 'SSR');
+      const srPool = SHINOBI_DB.filter(s => s.rarity === 'SR');
+      const rPool = SHINOBI_DB.filter(s => s.rarity === 'R');
+      const nPool = SHINOBI_DB.filter(s => s.rarity === 'N');
+
+      const results = [];
+      for (let i = 0; i < times; i++) {
+        let roll = Math.random();
+        // Guarantee at least SR on every 10th pull
+        if (times >= 10 && (i + 1) % 10 === 0 && roll >= 0.50) {
+          roll = 0.35;
+        }
+
+        let chosen;
+        if (roll < 0.05) {
+          chosen = urPool[Math.floor(Math.random() * urPool.length)];
+        } else if (roll < 0.20) {
+          chosen = ssrPool[Math.floor(Math.random() * ssrPool.length)];
+        } else if (roll < 0.50) {
+          chosen = srPool[Math.floor(Math.random() * srPool.length)];
+        } else if (roll < 0.80) {
+          chosen = rPool[Math.floor(Math.random() * rPool.length)];
+        } else {
+          chosen = nPool[Math.floor(Math.random() * nPool.length)];
+        }
+
+        const isNew = !state.owned[chosen.id];
+        const shardGain = 25;
+
+        if (isNew) {
+          state.owned[chosen.id] = { stars: 1, cards: 0 };
+        } else {
+          state.owned[chosen.id].cards += shardGain;
+        }
+
+        results.push({ shinobi: chosen, isNew, shardGain });
+      }
+
+      // Sort display so UR/SSR show first when doing 100x
+      const rankOrder = { UR: 5, SSR: 4, SR: 3, R: 2, N: 1 };
+      const displayList = [...results].sort((a, b) => rankOrder[b.shinobi.rarity] - rankOrder[a.shinobi.rarity]).slice(0, 25);
+
+      const resultArea = document.getElementById('gacha-result-area');
+      const grid = document.getElementById('gacha-cards-grid');
+      document.getElementById('gacha-result-title').innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-2"></i>通靈召喚結果（共 ${times} 抽${times > 25 ? '，展示前 25 位高稀有度忍者' : ''}）`;
+      resultArea.classList.remove('hidden');
+      grid.innerHTML = '';
+
+      displayList.forEach(item => {
+        const s = item.shinobi;
+        const borderClass = s.rarity === 'UR' ? 'border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.45)]' :
+                            (s.rarity === 'SSR' ? 'border-amber-400 shadow-[0_0_16px_rgba(251,191,36,0.35)]' :
+                            (s.rarity === 'SR' ? 'border-purple-400' : 'border-sky-500'));
+        const badgeBg = s.rarity === 'UR' ? 'bg-gradient-to-r from-rose-600 to-amber-500 text-white' :
+                        (s.rarity === 'SSR' ? 'bg-amber-500 text-slate-950' :
+                        (s.rarity === 'SR' ? 'bg-purple-600 text-white' :
+                        (s.rarity === 'R' ? 'bg-sky-600 text-white' : 'bg-slate-600 text-white')));
+
+        grid.innerHTML += `
+          <div class="rounded-2xl bg-slate-950 border-2 ${borderClass} p-3 flex flex-col items-center text-center space-y-1.5">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${badgeBg}">
+              ${s.rarity}
+            </span>
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${s.avatarBg} border border-white/30 flex items-center justify-center text-white text-xl shadow-lg">
+              <i class="fa-solid ${s.icon}"></i>
+            </div>
+            <div class="font-bold text-sm text-white truncate w-full">${s.name}</div>
+            <div class="flex gap-1">
+              ${s.elements.map(e => `<span class="px-1.5 py-0.2 rounded border text-[9px] elem-${e}">${e}</span>`).join('')}
+            </div>
+            ${item.isNew ? `
+              <span class="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] font-bold">
+                🎉 新忍者加入！
+              </span>
+            ` : `
+              <span class="px-2 py-0.5 rounded bg-amber-950/90 border border-amber-600/60 text-amber-300 text-[10px] font-bold">
+                +${item.shardGain} 角色卡
+              </span>
+            `}
+          </div>
+        `;
+      });
+
+      updateTopBar();
+      showToast(`完成 ${times} 次招募！已獲得所有新忍者與角色升星碎片！`, 'success');
+    }
+
+      state.ryo -= cost;
+      updateTopBar();
+
+      const ssrPool = SHINOBI_DB.filter(s => s.rarity === 'SSR');
+      const srPool = SHINOBI_DB.filter(s => s.rarity === 'SR');
+      const rPool = SHINOBI_DB.filter(s => s.rarity === 'R');
+
+      const results = [];
+      for (let i = 0; i < times; i++) {
+        let roll = Math.random();
+        // Guarantee at least SR on the 5th pull of a 5-pull
+        if (times === 5 && i === 4 && !results.some(r => r.shinobi.rarity !== 'R')) {
+          roll = 0.25;
+        }
+
+        let chosen;
+        if (roll < 0.15) {
+          chosen = ssrPool[Math.floor(Math.random() * ssrPool.length)];
+        } else if (roll < 0.50) {
+          chosen = srPool[Math.floor(Math.random() * srPool.length)];
+        } else {
+          chosen = rPool[Math.floor(Math.random() * rPool.length)];
+        }
+
+        const isNew = !state.owned[chosen.id];
+        const shardGain = chosen.rarity === 'SSR' ? 60 : (chosen.rarity === 'SR' ? 50 : 50);
+
+        if (isNew) {
+          state.owned[chosen.id] = { stars: 1, cards: 0 };
+        } else {
+          state.owned[chosen.id].cards += shardGain;
+        }
+
+        results.push({ shinobi: chosen, isNew, shardGain });
+      }
+
+      // Render Gacha Result Cards
+      const resultArea = document.getElementById('gacha-result-area');
+      const grid = document.getElementById('gacha-cards-grid');
+      resultArea.classList.remove('hidden');
+      grid.innerHTML = '';
+
+      results.forEach(item => {
+        const s = item.shinobi;
+        const borderClass = s.rarity === 'SSR' ? 'border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.4)]' : (s.rarity === 'SR' ? 'border-purple-400' : 'border-sky-500');
+        grid.innerHTML += `
+          <div class="rounded-2xl bg-slate-950 border-2 ${borderClass} p-4 flex flex-col items-center text-center space-y-2 animate-fadeIn">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-black ${s.rarity === 'SSR' ? 'bg-amber-500 text-slate-950' : (s.rarity === 'SR' ? 'bg-purple-600 text-white' : 'bg-sky-600 text-white')}">
+              ${s.rarity}
+            </span>
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${s.avatarBg} border border-white/30 flex items-center justify-center text-white text-2xl shadow-lg my-1">
+              <i class="fa-solid ${s.icon}"></i>
+            </div>
+            <div class="font-bold text-base text-white">${s.name}</div>
+            <div class="flex gap-1">
+              ${s.elements.map(e => `<span class="px-1.5 py-0.5 rounded border text-[10px] elem-${e}">${e}</span>`).join('')}
+            </div>
+            ${item.isNew ? `
+              <span class="mt-1 px-2.5 py-1 rounded-lg bg-emerald-950 border border-emerald-500 text-emerald-300 text-xs font-bold">
+                🎉 新忍者加入！
+              </span>
+            ` : `
+              <span class="mt-1 px-2.5 py-1 rounded-lg bg-amber-950/90 border border-amber-600/60 text-amber-300 text-xs font-bold">
+                重複轉化：+${item.shardGain} 角色卡
+              </span>
+            `}
+          </div>
+        `;
+      });
+
+      updateTopBar();
+      showToast(`招募完成！可前往「忍者與編隊」查看新忍者或進行升星！`, 'success');
+    }
+
+    /* =========================================================================
+       7. 4v4 SPEED TURN-BASED COMBAT ENGINE & COMBO SYSTEM
+       ========================================================================= */
+    function renderStages() {
+      document.getElementById('stage-select-panel').classList.remove('hidden');
+      document.getElementById('combat-arena-panel').classList.add('hidden');
+      document.getElementById('stage-squad-count').innerText = state.squad.length;
+
+      const grid = document.getElementById('stages-grid');
+      grid.innerHTML = STAGES_DB.map(st => `
+        <div class="scroll-panel rounded-2xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="font-serif-tc text-lg font-bold text-amber-300">${st.name}</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-red-950 border border-red-700 text-red-300 font-bold">${st.diff}</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1.5">${st.desc}</p>
+
+            <!-- Enemy Preview -->
+            <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+              ${st.enemies.map(e => `
+                <div class="bg-slate-950/90 border border-slate-800 p-2 rounded-xl text-center">
+                  <div class="text-rose-400 text-sm mb-0.5"><i class="fa-solid ${e.icon}"></i></div>
+                  <div class="text-xs font-bold text-slate-200 truncate">${e.name}</div>
+                  <div class="text-[10px] text-sky-400 font-mono">SPD ${e.spd}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+            <div class="text-xs space-x-3">
+              <span class="text-amber-400 font-bold"><i class="fa-solid fa-coins mr-1"></i>+${st.rewardRyo.toLocaleString()} 元</span>
+              <span class="text-sky-400 font-bold"><i class="fa-solid fa-layer-group mr-1"></i>+${st.rewardCards} 張隨機角色卡</span>
+            </div>
+            <button onclick="startBattle('${st.id}')" class="px-5 py-2 rounded-xl bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-bold text-xs sm:text-sm shadow-lg transition">
+              開始對決 <i class="fa-solid fa-khanda ml-1"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function startBattle(stageId) {
+      if (state.squad.length === 0) {
+        showToast('請至少編入 1 名忍者再出戰！', 'error');
+        switchTab('roster');
+        return;
+      }
+
+      const stage = STAGES_DB.find(s => s.id === stageId);
+
+      // Build Player Combatants
+      const players = state.squad.map((id, idx) => {
+        const s = getShinobiStats(id);
+        return {
+          uid: `p_${idx}`,
+          side: 'player',
+          id: s.id,
+          name: s.name,
+          stars: s.stars,
+          icon: s.icon,
+          avatarBg: s.avatarBg,
+          elements: s.elements,
+          maxHp: s.hp,
+          hp: s.hp,
+          atk: s.atk,
+          def: s.def,
+          spd: s.spd,
+          chakra: 4, // Start with 4 chakra
+          shield: 0,
+          stunned: false,
+          jutsus: s.jutsus,
+          jutsuBonus: s.jutsuBonus
+        };
+      });
+
+      // Build Enemy Combatants
+      const enemies = stage.enemies.map((e, idx) => ({
+        uid: `e_${idx}`,
+        side: 'enemy',
+        name: e.name,
+        icon: e.icon,
+        avatarBg: 'from-rose-900 to-slate-900',
+        elements: e.elements,
+        maxHp: e.hp,
+        hp: e.hp,
+        atk: e.atk,
+        def: e.def,
+        spd: e.spd,
+        shield: 0,
+        stunned: false
+      }));
+
+      state.combat = {
+        stage,
+        round: 1,
+        players,
+        enemies,
+        turnQueue: [],
+        currentActorUid: null,
+        selectedTargetUid: enemies[0].uid,
+        playerElementChain: [], // Stores consecutive elements used by player team
+        lastActorUid: null,
+        busy: false
+      };
+
+      document.getElementById('stage-select-panel').classList.add('hidden');
+      document.getElementById('combat-arena-panel').classList.remove('hidden');
+      clearCurrentRoundLog(1);
+
+      addCombatLog(`⚔️ 【${stage.name}】第 1 回合開始！雙方小隊依速度 (SPD) 展開交鋒！`, 'text-amber-300 font-bold');
+      buildRoundQueue();
+      nextTurn();
+    }
+
+    function clearCurrentRoundLog(roundNum) {
+      const badge = document.getElementById('log-round-badge');
+      if (badge) badge.innerText = roundNum;
+      const box = document.getElementById('combat-log-box');
+      if (box) box.innerHTML = '';
+    }
+
+    function buildRoundQueue() {
+      const c = state.combat;
+      const aliveAll = [...c.players, ...c.enemies].filter(u => u.hp > 0);
+      // Sort descending by SPD
+      aliveAll.sort((a, b) => b.spd - a.spd);
+      c.turnQueue = aliveAll.map(u => u.uid);
+    }
+
+    function getUnit(uid) {
+      const c = state.combat;
+      return [...c.players, ...c.enemies].find(u => u.uid === uid);
+    }
+
+    function nextTurn() {
+      const c = state.combat;
+      if (!c) return;
+
+      // Check Win / Loss
+      const alivePlayers = c.players.filter(p => p.hp > 0);
+      const aliveEnemies = c.enemies.filter(e => e.hp > 0);
+
+      if (aliveEnemies.length === 0) {
+        handleVictory();
+        return;
+      }
+      if (alivePlayers.length === 0) {
+        handleDefeat();
+        return;
+      }
+
+      // Ensure target is alive
+      const curTarget = getUnit(c.selectedTargetUid);
+      if (!curTarget || curTarget.hp <= 0) {
+        c.selectedTargetUid = aliveEnemies[0].uid;
+      }
+
+      // Remove dead units from queue
+      c.turnQueue = c.turnQueue.filter(uid => {
+        const u = getUnit(uid);
+        return u && u.hp > 0;
+      });
+      // If queue is empty, advance to next Round & CLEAR Combat Log for current round only!
+      if (c.turnQueue.length === 0) {
+        c.round++;
+        clearCurrentRoundLog(c.round);
+        // Passive +1 chakra per round for players
+        alivePlayers.forEach(p => { p.chakra = Math.min(10, p.chakra + 1); });
+        addCombatLog(`🔔 第 ${c.round} 回合開始（全員速度重新排序，我方回復 1 點查克拉）`, 'text-sky-300 font-bold');
+        buildRoundQueue();
+      }
+
+      const nextUid = c.turnQueue.shift();
+      c.currentActorUid = nextUid;
+      const actor = getUnit(nextUid);
+
+      renderCombatField();
+
+      // Check Stunned
+      if (actor.stunned) {
+        actor.stunned = false;
+        addCombatLog(`💫 【${actor.name}】處於暈眩/束縛狀態，跳過本回合行動！`, 'text-purple-300');
+        setTimeout(() => nextTurn(), 850);
+        return;
+      }
+
+      if (actor.side === 'player') {
+        c.busy = false;
+        renderPlayerJutsuControls(actor);
+      } else {
+        c.busy = true;
+        renderEnemyWaitingControls(actor);
+        setTimeout(() => executeEnemyTurn(actor), 900);
+      }
+    }
+
+    function selectEnemyTarget(uid) {
+      const target = getUnit(uid);
+      if (target && target.side === 'enemy' && target.hp > 0) {
+        state.combat.selectedTargetUid = uid;
+        renderCombatField();
+      }
+    }
+
+    function renderCombatField() {
+      const c = state.combat;
+      document.getElementById('combat-round').innerText = c.round;
+
+      // Render Combo Chain Display
+      const chainBox = document.getElementById('combat-chain-display');
+      if (c.playerElementChain.length === 0) {
+        chainBox.innerHTML = `<span class="text-slate-600 italic">等待首招</span>`;
+      } else {
+        chainBox.innerHTML = c.playerElementChain.map(el => `<span class="px-2 py-0.5 rounded border text-[10px] elem-${el}">${el}</span>`).join(' <i class="fa-solid fa-angle-right text-slate-500"></i> ');
+      }
+
+      // Render Speed Timeline
+      const timelineBox = document.getElementById('speed-timeline-bar');
+      const upcomingUids = [c.currentActorUid, ...c.turnQueue].filter(Boolean);
+      timelineBox.innerHTML = upcomingUids.map((uid, index) => {
+        const u = getUnit(uid);
+        if (!u || u.hp <= 0) return '';
+        const isCurrent = index === 0;
+        const isPlayer = u.side === 'player';
+        return `
+          <div class="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-xl border ${isCurrent ? 'bg-amber-950/90 border-amber-400 scale-105 shadow' : 'bg-slate-900/90 border-slate-700 opacity-80'}">
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white ${isPlayer ? 'bg-sky-600' : 'bg-rose-700'}">
+              <i class="fa-solid ${u.icon}"></i>
+            </span>
+            <div class="leading-tight">
+              <div class="text-[11px] font-bold ${isPlayer ? 'text-sky-200' : 'text-rose-200'}">${u.name}</div>
+              <div class="text-[9px] font-mono text-slate-400">SPD ${u.spd}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Target Label
+      const lockedEnemy = getUnit(c.selectedTargetUid);
+      document.getElementById('target-indicator').innerText = lockedEnemy ? `當前鎖定：【${lockedEnemy.name}】` : '';
+
+      // Render Enemy Cards
+      const enemyRow = document.getElementById('combat-enemy-row');
+      enemyRow.innerHTML = c.enemies.map(e => {
+        const isDead = e.hp <= 0;
+        const isCurrent = c.currentActorUid === e.uid;
+        const isTarget = c.selectedTargetUid === e.uid && !isDead;
+        const hpPct = Math.max(0, (e.hp / e.maxHp) * 100);
+
+        return `
+          <div id="unit-card-${e.uid}" onclick="selectEnemyTarget('${e.uid}')" class="relative rounded-xl p-3 border-2 transition cursor-pointer ${
+            isDead ? 'opacity-30 grayscale bg-slate-950 border-slate-800' :
+            (isCurrent ? 'bg-rose-950/50 active-turn-glow' :
+            (isTarget ? 'bg-slate-900 border-red-500 shadow-lg' : 'bg-slate-900/80 border-slate-800 hover:border-slate-600'))
+          }">
+            ${isTarget ? `<span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-black shadow"><i class="fa-solid fa-crosshairs mr-1"></i>集火目標</span>` : ''}
+            ${e.stunned ? `<span class="absolute -top-2.5 left-2 px-2 py-0.5 rounded bg-purple-600 text-white text-[10px] font-bold">💫 暈眩</span>` : ''}
+
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${e.avatarBg} border border-rose-400/50 flex items-center justify-center text-white text-base">
+                <i class="fa-solid ${e.icon}"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-xs sm:text-sm text-white truncate">${e.name}</div>
+                <div class="flex items-center gap-1 mt-0.5">
+                  ${e.elements.map(el => `<span class="px-1.5 rounded border text-[9px] elem-${el}">${el}</span>`).join('')}
+                  <span class="text-[10px] text-sky-400 font-mono ml-auto">SPD ${e.spd}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2.5 space-y-1">
+              <div class="flex justify-between text-[10px] font-mono">
+                <span class="text-rose-300">HP ${e.hp}/${e.maxHp}</span>
+                ${e.shield > 0 ? `<span class="text-amber-300"><i class="fa-solid fa-shield"></i> ${e.shield}</span>` : ''}
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-rose-600 to-red-400 transition-all duration-300" style="width: ${hpPct}%"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Render Player Cards
+      const playerRow = document.getElementById('combat-player-row');
+      playerRow.innerHTML = c.players.map(p => {
+        const isDead = p.hp <= 0;
+        const isCurrent = c.currentActorUid === p.uid;
+        const hpPct = Math.max(0, (p.hp / p.maxHp) * 100);
+
+        return `
+          <div id="unit-card-${p.uid}" class="relative rounded-xl p-3 border-2 transition ${
+            isDead ? 'opacity-30 grayscale bg-slate-950 border-slate-800' :
+            (isCurrent ? 'bg-sky-950/60 active-turn-glow' : 'bg-slate-900/90 border-slate-800')
+          }">
+            ${isCurrent ? `<span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded bg-amber-400 text-slate-950 text-[10px] font-black shadow">行動中</span>` : ''}
+            ${p.stunned ? `<span class="absolute -top-2.5 left-2 px-2 py-0.5 rounded bg-purple-600 text-white text-[10px] font-bold">💫 暈眩</span>` : ''}
+
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${p.avatarBg} border border-amber-300/60 flex items-center justify-center text-white text-base">
+                <i class="fa-solid ${p.icon}"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-xs sm:text-sm text-white truncate">${p.name}</div>
+                <div class="flex items-center gap-1 mt-0.5">
+                  ${p.elements.map(el => `<span class="px-1.5 rounded border text-[9px] elem-${el}">${el}</span>`).join('')}
+                  <span class="text-[10px] text-sky-400 font-mono ml-auto">SPD ${p.spd}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2.5 space-y-1">
+              <div class="flex justify-between text-[10px] font-mono">
+                <span class="text-emerald-300">HP ${p.hp}/${p.maxHp}</span>
+                <span class="text-sky-300"><i class="fa-solid fa-bolt"></i> ${p.chakra}</span>
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300" style="width: ${hpPct}%"></div>
+              </div>
+              ${p.shield > 0 ? `<div class="text-[10px] text-amber-300 font-mono"><i class="fa-solid fa-shield-halved mr-1"></i>護盾: ${p.shield}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPlayerJutsuControls(actor) {
+      document.getElementById('active-actor-badge').innerText = '我方回合';
+      document.getElementById('active-actor-badge').className = 'px-2.5 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-xs';
+      document.getElementById('active-actor-name').innerText = `${actor.name}（${actor.stars}★）`;
+      document.getElementById('active-actor-chakra').innerText = actor.chakra;
+      document.getElementById('active-actor-elems').innerHTML = actor.elements.map(e => `<span class="px-1.5 py-0.5 rounded border text-[10px] elem-${e}">${e}</span>`).join('');
+
+      const grid = document.getElementById('jutsu-buttons-grid');
+      const prevElem = state.combat.playerElementChain.length > 0
+        ? state.combat.playerElementChain[state.combat.playerElementChain.length - 1]
+        : null;
+
+      grid.innerHTML = actor.jutsus.map((j, idx) => {
+        const canAfford = actor.chakra >= j.cost;
+        // Check if using this jutsu will trigger a combo with prevElem!
+        const willCombo = prevElem && COMBO_RECIPES.some(r =>
+          (r.req[0] === prevElem && (r.req[1] === j.elem || r.req[1] === 'ANY')) ||
+          (r.req[1] === prevElem && r.req[0] === j.elem)
+        );
+
+        return `
+          <button onclick="castPlayerJutsu(${idx})" ${!canAfford ? 'disabled' : ''} class="text-left p-3 rounded-xl border transition flex flex-col justify-between ${
+            !canAfford ? 'bg-slate-950/60 border-slate-800 opacity-45 cursor-not-allowed' :
+            (willCombo ? 'bg-gradient-to-r from-amber-950/90 to-red-950/80 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.35)] hover:scale-[1.01]' : 'bg-slate-900 hover:bg-slate-800 border-slate-700 hover:border-sky-400')
+          }">
+            <div class="flex items-center justify-between gap-1">
+              <div class="flex items-center gap-1.5">
+                <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold elem-${j.elem}">${j.elem}</span>
+                <span class="font-bold text-xs sm:text-sm text-white">${j.name}</span>
+              </div>
+              <span class="text-xs font-mono font-bold ${j.cost === 0 ? 'text-emerald-400' : 'text-sky-400'}">
+                ${j.cost === 0 ? '+3 氣' : `-${j.cost} 氣`}
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-300 mt-1 leading-snug">${j.desc}</p>
+            ${willCombo ? `<div class="mt-1.5 text-[10px] font-black text-amber-300 animate-pulse"><i class="fa-solid fa-fire mr-1"></i>可接續【${prevElem}】發動合體聯招！</div>` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderEnemyWaitingControls(actor) {
+      document.getElementById('active-actor-badge').innerText = '敵方行動';
+      document.getElementById('active-actor-badge').className = 'px-2.5 py-0.5 rounded bg-rose-600 text-white font-black text-xs';
+      document.getElementById('active-actor-name').innerText = `${actor.name} 正在結印...`;
+      document.getElementById('active-actor-elems').innerHTML = '';
+      document.getElementById('jutsu-buttons-grid').innerHTML = `
+        <div class="col-span-2 py-8 text-center text-slate-400 text-xs">
+          <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg mb-2"></i>
+          <div>敵方忍者準備施放忍術，請注意防禦...</div>
+        </div>
+      `;
+    }
+
+    function applyDamage(attacker, target, rawDmg) {
+      if (!target || target.hp <= 0) return 0;
+      const mitigated = Math.max(Math.round(rawDmg * 0.25), Math.round(rawDmg - target.def * 0.45));
+      let dmgLeft = mitigated;
+
+      if (target.shield > 0) {
+        const absorbed = Math.min(target.shield, dmgLeft);
+        target.shield -= absorbed;
+        dmgLeft -= absorbed;
+      }
+
+      target.hp = Math.max(0, target.hp - dmgLeft);
+
+      // Visual Hit Shake & Floating Popup
+      const el = document.getElementById(`unit-card-${target.uid}`);
+      if (el) {
+        el.classList.remove('anim-shake');
+        void el.offsetWidth;
+        el.classList.add('anim-shake');
+
+        const pop = document.createElement('div');
+        pop.className = 'dmg-popup absolute top-1 left-1/2 -translate-x-1/2 z-20 font-black text-base text-rose-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] pointer-events-none';
+        pop.innerText = `-${mitigated}`;
+        el.appendChild(pop);
+        setTimeout(() => pop.remove(), 1100);
+      }
+
+      return mitigated;
+    }
+
+    function castPlayerJutsu(jutsuIndex) {
+      const c = state.combat;
+      if (!c || c.busy) return;
+      const actor = getUnit(c.currentActorUid);
+      if (!actor || actor.side !== 'player') return;
+
+      const jutsu = actor.jutsus[jutsuIndex];
+      if (actor.chakra < jutsu.cost) return;
+
+      c.busy = true;
+      actor.chakra -= jutsu.cost;
+      if (jutsu.chakraGain) {
+        actor.chakra = Math.min(10, actor.chakra + jutsu.chakraGain);
+      }
+
+      const scaledAtk = actor.atk * actor.jutsuBonus;
+      const target = getUnit(c.selectedTargetUid) || c.enemies.find(e => e.hp > 0);
+      const aliveEnemies = c.enemies.filter(e => e.hp > 0);
+      const alivePlayers = c.players.filter(p => p.hp > 0);
+
+      // Execute Primary Jutsu Effect
+      if (jutsu.type === 'single' || jutsu.type === 'stun') {
+        const dmg = applyDamage(actor, target, scaledAtk * jutsu.mult);
+        if (jutsu.type === 'stun' && target.hp > 0) {
+          target.stunned = true;
+        }
+        addCombatLog(`🔥 【${actor.name}】施展《${jutsu.name}》，對【${target.name}】造成 ${dmg} 點傷害${jutsu.type === 'stun' ? '並使其暈眩' : ''}！`, 'text-amber-200');
+      } else if (jutsu.type === 'aoe') {
+        let total = 0;
+        aliveEnemies.forEach(e => {
+          total += applyDamage(actor, e, scaledAtk * jutsu.mult);
+        });
+        addCombatLog(`🌪️ 【${actor.name}】施展全體忍術《${jutsu.name}》，共造成 ${total} 點範圍傷害！`, 'text-orange-300');
+      } else if (jutsu.type === 'heal_team') {
+        const healAmt = Math.round(scaledAtk * jutsu.mult);
+        alivePlayers.forEach(p => {
+          p.hp = Math.min(p.maxHp, p.hp + healAmt);
+        });
+        addCombatLog(`💚 【${actor.name}】施展《${jutsu.name}》，全隊回復 ${healAmt} 點生命值！`, 'text-emerald-300');
+      } else if (jutsu.type === 'buff_team') {
+        const shieldAmt = Math.round(scaledAtk * jutsu.mult);
+        alivePlayers.forEach(p => {
+          p.shield += shieldAmt;
+          if (jutsu.elem === '時空間' || jutsu.elem === '幻術') {
+            p.chakra = Math.min(10, p.chakra + 1);
+          }
+        });
+        addCombatLog(`🛡️ 【${actor.name}】展開《${jutsu.name}》，全隊獲得 ${shieldAmt} 點護盾！`, 'text-sky-300');
+      }
+
+      // Check Element Combo Chain!
+      const prevElem = c.playerElementChain.length > 0
+        ? c.playerElementChain[c.playerElementChain.length - 1]
+        : null;
+
+      c.playerElementChain.push(jutsu.elem);
+      if (c.playerElementChain.length > 3) c.playerElementChain.shift();
+
+      let triggeredCombo = null;
+      if (prevElem) {
+        triggeredCombo = COMBO_RECIPES.find(r =>
+          (r.req[0] === prevElem && (r.req[1] === jutsu.elem || r.req[1] === 'ANY')) ||
+          (r.req[1] === prevElem && r.req[0] === jutsu.elem)
+        );
+      }
+
+      renderCombatField();
+
+      if (triggeredCombo) {
+        // Trigger Combo Bonus Effect!
+        triggerComboEffect(actor, triggeredCombo);
+        // Reset chain after combo triggers so it feels like a clean cycle
+        c.playerElementChain = [];
+        setTimeout(() => {
+          renderCombatField();
+          nextTurn();
+        }, 1750);
+      } else {
+        setTimeout(() => nextTurn(), 750);
+      }
+    }
+
+    function triggerComboEffect(actor, combo) {
+      const c = state.combat;
+      const aliveEnemies = c.enemies.filter(e => e.hp > 0);
+      const alivePlayers = c.players.filter(p => p.hp > 0);
+      const target = getUnit(c.selectedTargetUid) || aliveEnemies[0];
+
+      // Show Full-Screen Combo Banner
+      const overlay = document.getElementById('combo-overlay');
+      const card = document.getElementById('combo-overlay-card');
+      document.getElementById('combo-overlay-title').innerText = combo.name;
+      document.getElementById('combo-overlay-desc').innerText = combo.desc;
+
+      overlay.classList.remove('hidden');
+      card.classList.remove('combo-banner-anim');
+      void card.offsetWidth;
+      card.classList.add('combo-banner-anim');
+
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 1700);
+
+      // Apply Combo Bonus
+      if (combo.effectType === 'aoe_dmg') {
+        aliveEnemies.forEach(e => applyDamage(actor, e, actor.atk * combo.power));
+      } else if (combo.effectType === 'stun_dmg' && target) {
+        applyDamage(actor, target, actor.atk * combo.power);
+        if (target.hp > 0) target.stunned = true;
+      } else if (combo.effectType === 'single_dmg' && target) {
+        applyDamage(actor, target, actor.atk * combo.power);
+      } else if (combo.effectType === 'team_heal_chakra') {
+        const healAmt = Math.round(actor.atk * combo.power);
+        alivePlayers.forEach(p => {
+          p.hp = Math.min(p.maxHp, p.hp + healAmt);
+          p.chakra = Math.min(10, p.chakra + 2);
+        });
+      } else if (combo.effectType === 'yin_yang_miracle') {
+        aliveEnemies.forEach(e => applyDamage(actor, e, actor.atk * combo.power));
+        alivePlayers.forEach(p => {
+          p.chakra = Math.min(10, p.chakra + 2);
+        });
+      }
+
+      addCombatLog(`✨ 【合體聯招發動】${combo.name}！${combo.desc}`, 'text-amber-400 font-black');
+    }
+
+    function executeEnemyTurn(enemy) {
+      const c = state.combat;
+      const alivePlayers = c.players.filter(p => p.hp > 0);
+      if (alivePlayers.length === 0) {
+        nextTurn();
+        return;
+      }
+
+      // 30% chance AOE attack, 70% single target attack
+      const isAoe = Math.random() < 0.3;
+      if (isAoe) {
+        let total = 0;
+        alivePlayers.forEach(p => {
+          total += applyDamage(enemy, p, enemy.atk * 0.75);
+        });
+        addCombatLog(`💀 敵方【${enemy.name}】發動全體忍術猛攻，對我方全隊共造成 ${total} 點傷害！`, 'text-rose-300');
+      } else {
+        const target = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
+        const dmg = applyDamage(enemy, target, enemy.atk * 1.15);
+        addCombatLog(`🗡️ 敵方【${enemy.name}】突襲【${target.name}】，造成 ${dmg} 點傷害！`, 'text-rose-200');
+      }
+
+      renderCombatField();
+      setTimeout(() => nextTurn(), 800);
+    }
+
+    function addCombatLog(msg, colorClass = 'text-slate-300') {
+      const box = document.getElementById('combat-log-box');
+      const div = document.createElement('div');
+      div.className = colorClass;
+      div.innerText = msg;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function handleVictory() {
+      const stage = state.combat.stage;
+      state.ryo += stage.rewardRyo;
+
+      // Distribute random character shards among owned shinobi
+      const ownedIds = Object.keys(state.owned);
+      const luckyId = ownedIds[Math.floor(Math.random() * ownedIds.length)];
+      state.owned[luckyId].cards += stage.rewardCards;
+      const luckyShinobi = getShinobiStats(luckyId);
+
+      updateTopBar();
+      showToast(`🏆 對決大獲全勝！獲得 +${stage.rewardRyo.toLocaleString()} 元 與【${luckyShinobi.name}】角色卡 +${stage.rewardCards} 張！`, 'success');
+      state.combat = null;
+      renderStages();
+    }
+
+    function handleDefeat() {
+      showToast(`💀 我方小隊全軍覆沒！請前往「忍者招募」或「升星強化」提升戰力！`, 'error');
+      state.combat = null;
+      renderStages();
+    }
+
+    function retreatCombat() {
+      state.combat = null;
+      renderStages();
+    }
+
+    /* =========================================================================
+       8. INITIALIZE GAME
+       ========================================================================= */
+    window.onload = () => {
+      renderRosterAndSquad();
+    };
+  </script>
 </body>
 </html>
