@@ -84,26 +84,26 @@
     }
     .combo-flash-overlay { animation: screenFlash 0.55s ease-out forwards; }
 
-    /* Element Badges */
+    /* 11 大忍術屬性徽章配色 */
     .elem-風 { background: #065f46; color: #6ee7b7; border-color: #10b981; }
     .elem-雷 { background: #3b0764; color: #d8b4fe; border-color: #a855f7; }
     .elem-火 { background: #7f1d1d; color: #fca5a5; border-color: #ef4444; }
     .elem-水 { background: #1e3a8a; color: #93c5fd; border-color: #3b82f6; }
     .elem-土 { background: #78350f; color: #fcd34d; border-color: #d97706; }
     .elem-體 { background: #14532d; color: #86efac; border-color: #22c55e; }
-    .elem-幻 { background: #4c1d95; color: #c4b5fd; border-color: #8b5cf6; }
+    .elem-瞳 { background: #4c1d95; color: #c4b5fd; border-color: #8b5cf6; }
+    .elem-仙 { background: #064e3b; color: #a7f3d0; border-color: #34d399; }
     .elem-醫 { background: #831843; color: #f9a8d4; border-color: #ec4899; }
     .elem-陰 { background: #1e1b4b; color: #a5b4fc; border-color: #6366f1; }
     .elem-陽 { background: #713f12; color: #fef08a; border-color: #eab308; }
-    .elem-木 { background: #064e3b; color: #a7f3d0; border-color: #34d399; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- ==================== TOP NAVIGATION BAR ==================== -->
-  <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-amber-800/50 px-3 sm:px-6 py-3 shadow-xl">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <!-- Brand -->
+  <!-- ==================== 頂部導覽列 ==================== -->
+  <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-amber-800/50 px-3 sm:px-6 py-2.5 shadow-xl">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
+      <!-- 品牌標題 -->
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-700 to-amber-600 border-2 border-amber-400 flex items-center justify-center shadow-lg shrink-0">
           <svg viewBox="0 0 100 100" class="w-6 h-6 fill-amber-200">
@@ -114,11 +114,11 @@
           <h1 class="font-serif-tc text-base sm:text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-red-400">
             火影忍者：忍界小隊奧義對決
           </h1>
-          <p class="text-[11px] text-slate-400 hidden sm:block">全型態覺醒錄 × 6大忍法陣型相剋 × 12章動漫主線 × 4v4 屬性連擊戰</p>
+          <p class="text-[11px] text-slate-400 hidden sm:block">62+全型態覺醒 × 六大忍法陣型 × 雙槽軌道高連擊 × 12章動漫主線</p>
         </div>
       </div>
 
-      <!-- Currency & Utility Buttons -->
+      <!-- 資金與功能按鈕 -->
       <div class="flex items-center gap-2">
         <div class="bg-slate-900/90 border border-amber-700/50 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-inner">
           <i class="fa-solid fa-coins text-amber-400"></i>
@@ -127,7 +127,7 @@
           <span class="text-xs text-amber-500">元</span>
         </div>
 
-        <button onclick="claimSubsidy()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-600/60 text-emerald-300 text-xs font-bold flex items-center gap-1 transition" title="領取每日修煉軍費補助">
+        <button onclick="claimSubsidy()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-600/60 text-emerald-300 text-xs font-bold flex items-center gap-1 transition" title="領取修煉軍費補助">
           <i class="fa-solid fa-hand-holding-dollar"></i>
           <span class="hidden md:inline">修煉補助</span>
         </button>
@@ -142,7 +142,7 @@
         </button>
       </div>
 
-      <!-- 5 Main Tabs -->
+      <!-- 五大主選單分頁 -->
       <nav class="flex items-center gap-1 w-full xl:w-auto justify-center bg-slate-900 p-1 rounded-xl border border-slate-800">
         <button onclick="switchTab('story')" id="tab-story" class="tab-btn flex-1 xl:flex-none px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-amber-600 text-white shadow">
           <i class="fa-solid fa-book-open mr-1"></i>動漫劇情
@@ -163,24 +163,24 @@
     </div>
   </header>
 
-  <!-- ==================== MAIN WORKSPACE ==================== -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6">
+  <!-- ==================== 主內容工作區 ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5">
 
     <!-- =========================================================
-         VIEW 0: ANIME MAIN STORY CAMPAIGN (12 CHAPTERS)
+         分頁 0：動漫主線劇情（12 大經典戰役）
          ========================================================= -->
     <section id="view-story" class="space-y-5">
       <div class="scroll-panel rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-red-900/90 border border-red-500 text-red-200 text-xs font-bold">疾風傳 & 少年篇全收錄</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-red-900/90 border border-red-500 text-red-200 text-xs font-bold">少年篇 & 疾風傳全收錄</span>
             <span id="ui-story-progress" class="text-xs font-mono text-amber-400 font-bold">通關進度：0 / 12 章</span>
             <span id="ui-story-active-formation" class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/60 text-indigo-300 font-bold">當前陣型：鋒矢強攻陣</span>
           </div>
           <h2 class="font-serif-tc text-xl sm:text-2xl font-black text-amber-300 mt-1">
             火影忍者動漫主線劇情（12 大經典戰役）
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">重溫波之國、中忍考試、曉組織激戰、第四次忍界大戰直至大筒木輝夜降臨！觀察敵軍陣型並切換相剋陣型可獲得 <span class="text-emerald-400 font-bold">1.20x 陣型剋制增傷</span>！</p>
+          <p class="text-xs text-slate-400 mt-0.5">重溫波之國、中忍考試、曉組織激戰、第四次忍界大戰直至大筒木輝夜降臨！切換剋制陣型可享 <span class="text-emerald-400 font-bold">1.20x 陣型剋制增傷</span>！</p>
         </div>
         <div class="flex items-center gap-2">
           <button onclick="switchTab('squad')" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/60 text-amber-300 text-xs font-bold transition">
@@ -189,16 +189,14 @@
         </div>
       </div>
 
-      <div id="story-chapters-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Rendered by JS -->
-      </div>
+      <div id="story-chapters-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </section>
 
     <!-- =========================================================
-         VIEW 1: SQUAD FORMATION TACTICAL CENTER
+         分頁 1：小隊編制與六大陣型戰術中心
          ========================================================= -->
     <section id="view-squad" class="hidden space-y-6">
-      <!-- 1. Ninja Formation Selector & Counter Wheel -->
+      <!-- 1. 六大忍法陣型選擇與相剋關係 -->
       <div class="scroll-panel rounded-2xl p-4 sm:p-6 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -206,27 +204,23 @@
               <i class="fa-solid fa-chess-board text-amber-500"></i> 忍法陣型戰術配置（六大陣型循環相剋）
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">
-              陣型決定 <span class="text-rose-400 font-bold">前排（1~2號位）</span> 與 <span class="text-sky-400 font-bold">後排（3~4號位）</span> 屬性加成，剋制敵方陣型可造成 <span class="text-emerald-400 font-black">1.20x 傷害</span>（被剋則為 0.85x）！
+              陣型決定 <span class="text-rose-400 font-bold">前排（1~2號位）</span> 與 <span class="text-sky-400 font-bold">後排（3~4號位）</span> 屬性加成，剋制敵方陣型造成 <span class="text-emerald-400 font-black">1.20x 傷害</span>（被剋則為 0.85x）！
             </p>
           </div>
-          <div id="formation-counter-badge" class="px-3 py-1.5 rounded-xl bg-slate-950/90 border border-amber-600/50 text-xs text-amber-200 font-bold">
-            <!-- Filled by JS -->
-          </div>
+          <div id="formation-counter-badge" class="px-3 py-1.5 rounded-xl bg-slate-950/90 border border-amber-600/50 text-xs text-amber-200 font-bold"></div>
         </div>
 
-        <div id="formation-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <!-- 6 Formations rendered by JS -->
-        </div>
+        <div id="formation-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
       </div>
 
-      <!-- 2. 4-Slot Active Squad Positions (Front 1-2 / Back 3-4) -->
+      <!-- 2. 4人出戰站位與前後排加成預覽 -->
       <div class="scroll-panel rounded-2xl p-4 sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
             <h2 class="font-serif-tc text-lg sm:text-xl font-bold text-amber-300 flex items-center gap-2">
               <i class="fa-solid fa-shield-halved text-amber-500"></i> 出戰小隊站位編成（1~2號前排 / 3~4號後排）
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">點擊左右箭頭可調整站位順序以套用不同前後排加成；戰鬥仍依各自 <span class="text-sky-400 font-bold">速度 (SPD)</span> 決定先後出手！</p>
+            <p class="text-xs text-slate-400 mt-0.5">點擊左右箭頭調整站位順序以套用前後排加成；戰鬥仍依各自 <span class="text-sky-400 font-bold">速度 (SPD)</span> 決定先後出手！</p>
           </div>
           <div class="flex items-center gap-3">
             <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl text-right">
@@ -242,20 +236,20 @@
 
         <div id="squad-slots-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
 
-        <!-- Speed Order & Combo Compatibility Analyzer -->
+        <!-- 隊內速度順位與屬性聯招預覽 -->
         <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-2.5">
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-xs font-bold text-sky-400"><i class="fa-solid fa-gauge-high mr-1"></i>隊內出手速度順位：</span>
             <div id="squad-speed-preview" class="flex flex-wrap items-center gap-1.5 text-xs"></div>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs font-bold text-amber-400"><i class="fa-solid fa-sparkles mr-1"></i>陣容屬性聯招相性預覽：</span>
+            <span class="text-xs font-bold text-amber-400"><i class="fa-solid fa-sparkles mr-1"></i>陣容屬性聯招相性預覽（含同屬性共鳴與異屬性融合）：</span>
             <div id="squad-synergy-tags" class="flex flex-wrap gap-2 text-xs"></div>
           </div>
         </div>
       </div>
 
-      <!-- 3. Tactical Roster Filter, Search & Sort Selector -->
+      <!-- 3. 已招募忍者戰術名冊（分類篩選 + 搜尋 + 多維度排序） -->
       <div class="scroll-panel rounded-2xl p-4 sm:p-6 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -280,7 +274,6 @@
           </div>
         </div>
 
-        <!-- Faction / Form Filter Tabs -->
         <div id="squad-faction-tabs" class="flex flex-wrap gap-1.5 text-xs">
           <button onclick="setSquadFactionFilter('ALL', this)" class="sq-filter-btn px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold">全部已招募</button>
           <button onclick="setSquadFactionFilter('木葉', this)" class="sq-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-emerald-300 hover:bg-slate-700">木葉隱村</button>
@@ -296,7 +289,7 @@
     </section>
 
     <!-- =========================================================
-         VIEW 2: NINJA GACHA RECRUITMENT (1元招募)
+         分頁 2：忍者招募（1 元超值抽卡）
          ========================================================= -->
     <section id="view-gacha" class="hidden space-y-6">
       <div class="scroll-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden">
@@ -304,13 +297,13 @@
 
         <div class="max-w-3xl mx-auto text-center space-y-4 relative z-10">
           <span class="inline-block px-3 py-1 rounded-full bg-red-950/80 border border-red-700/60 text-red-300 text-xs font-bold tracking-widest">
-            通靈之術 · 全忍界 62 型態 1 元超值招募
+            通靈之術 · 全忍界 64 型態 1 元超值招募
           </span>
           <h2 class="font-serif-tc text-2xl sm:text-4xl font-black text-amber-300">
-            僅需 1 元！召喚全火影 62 位忍者與覺醒型態！
+            僅需 1 元！召喚全火影 64 位忍者與覺醒型態！
           </h2>
           <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            收錄<span class="text-amber-300 font-bold">鳴人（仙人／九喇嘛／六道／重粒子）、佐助（咒印二／萬花筒／永恆／輪迴眼）、卡卡西（暗部／雙神威須佐）、鼬（暗部／穢土）、斑（終結谷／穢土／六道）、八門死門凱、培因六道、九大人柱力、鷹小隊、音忍五人眾、大筒木一族</span>！重複獲得自動轉化為 <span class="text-emerald-400 font-bold">+25 張角色卡</span>（每 100 張升 1 星，最高 5 星）。
+            收錄<span class="text-amber-300 font-bold">鳴人（仙人／九喇嘛／六道／重粒子）、佐助（咒印二／萬花筒／永恆／輪迴眼）、卡卡西（暗部／雙神威須佐）、鼬（暗部／穢土）、斑（終結谷／穢土／六道）、八門死門凱、培因六道、九大人柱力、鷹小隊、音忍五人眾、大筒木一式／桃式／輝夜／羽衣</span>！重複獲得自動轉化為 <span class="text-emerald-400 font-bold">+25 張角色卡</span>（每 100 張升 1 星，最高 5 星）。
           </p>
 
           <div class="flex flex-wrap justify-center gap-2 text-xs pt-1">
@@ -355,7 +348,7 @@
     </section>
 
     <!-- =========================================================
-         VIEW 3: FREE DUEL & RANDOM 5★ CHALLENGE
+         分頁 3：忍界自由對決 & 隨機 5★ 滿星夢幻挑戰
          ========================================================= -->
     <section id="view-stage" class="hidden space-y-6">
       <div id="stage-select-panel" class="space-y-5">
@@ -374,7 +367,7 @@
           </div>
         </div>
 
-        <!-- RANDOM 5-STAR DREAM TEAM CHALLENGE -->
+        <!-- 隨機 5★ 滿星夢幻挑戰 -->
         <div class="rounded-2xl p-5 sm:p-6 bg-gradient-to-r from-rose-950/90 via-amber-950/85 to-purple-950/90 border-2 border-amber-400/80 shadow-[0_0_30px_rgba(245,158,11,0.25)] relative overflow-hidden">
           <div class="absolute -right-6 -top-6 text-8xl text-amber-400/10 pointer-events-none font-serif-tc font-black">修羅</div>
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
@@ -391,7 +384,7 @@
                 隨機挑戰 5★ 滿星夢幻組合（Random 5-Star Challenge）
               </h3>
               <p class="text-xs sm:text-sm text-amber-100/90 leading-relaxed">
-                從全忍界 62 名忍者與終極型態中隨機選出 4 位 <span class="text-amber-300 font-black">★★★★★ 5星滿級</span> 夢幻陣容（重粒子鳴人、輪迴眼佐助、六道斑、雙神威卡卡西、八門凱等）！勝利獲得 <span class="text-amber-300 font-black">10,000 元</span> 與 <span class="text-sky-300 font-bold">+200 張 SSR 角色卡</span>！
+                從全忍界 64 名忍者與終極型態中隨機選出 4 位 <span class="text-amber-300 font-black">★★★★★ 5星滿級</span> 夢幻陣容（重粒子鳴人、輪迴眼佐助、六道斑、大筒木一式、八門凱等）！勝利獲得 <span class="text-amber-300 font-black">10,000 元</span> 與 <span class="text-sky-300 font-bold">+200 張 SSR 角色卡</span>！
               </p>
             </div>
 
@@ -413,22 +406,23 @@
     </section>
 
     <!-- =========================================================
-         SHARED 4v4 COMBAT ARENA (USED BY BOTH STORY & FREE DUEL)
+         共用 4v4 戰鬥競技場（緊湊單畫面設計 + 下拉式回合實況抽屜）
          ========================================================= -->
-    <section id="combat-arena-panel" class="hidden space-y-4">
-      <!-- Top Action Speed Timeline & Formation Clash Banner -->
-      <div class="scroll-panel rounded-2xl p-3 sm:p-4 space-y-2.5">
+    <section id="combat-arena-panel" class="hidden space-y-3">
+      <!-- 頂部行動條、雙槽屬性軌道、陣型相剋與「下拉式回合實況」 -->
+      <div class="scroll-panel rounded-2xl p-3 space-y-2 relative z-30">
         <div class="flex flex-wrap items-center justify-between gap-2">
+          <!-- 左側：回合數與速度行動條標籤 -->
           <div class="flex items-center gap-2">
             <span class="px-2.5 py-0.5 rounded bg-red-900/80 border border-red-600 text-red-200 text-xs font-bold">
               第 <span id="combat-round">1</span> 回合
             </span>
-            <span class="text-xs text-slate-300 font-bold"><i class="fa-solid fa-gauge-high text-sky-400 mr-1"></i>速度行動條（依 SPD 出手）</span>
+            <span class="text-xs text-slate-300 font-bold hidden sm:inline"><i class="fa-solid fa-gauge-high text-sky-400 mr-1"></i>速度行動條</span>
           </div>
 
-          <!-- Combo Chain Tracker & Multiplier -->
+          <!-- 中央：雙槽屬性軌道記憶 & 連擊計數徽章 -->
           <div class="flex flex-wrap items-center gap-2 bg-slate-950/90 border border-amber-700/50 px-3 py-1 rounded-xl">
-            <span class="text-[11px] text-slate-400">當回合連攜軌跡:</span>
+            <span class="text-[11px] text-slate-400">雙槽屬性軌道:</span>
             <div id="combat-chain-display" class="flex items-center gap-1 text-xs font-bold text-amber-300">
               <span class="text-slate-600 italic">尚未出招</span>
             </div>
@@ -437,38 +431,67 @@
             </span>
           </div>
 
+          <!-- 右側：下拉式回合實況抽屜按鈕 + 1x/2x 速度切換 + 撤退 -->
           <div class="flex items-center gap-1.5">
-            <button onclick="toggleBattleSpeed()" id="btn-battle-speed" class="text-xs px-3 py-1 rounded-lg bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-700 font-mono font-bold transition">
-              <i class="fa-solid fa-forward mr-1"></i>1x 速度
+            <!-- 下拉式回合實況視窗容器 -->
+            <div id="log-dropdown-wrapper" class="relative">
+              <button onclick="toggleCombatLogDropdown(event)" id="btn-toggle-log-dropdown" class="text-xs px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-600/60 font-bold flex items-center gap-1.5 transition shadow">
+                <i class="fa-solid fa-scroll text-amber-400"></i>
+                <span id="log-dropdown-btn-label">回合實況（第 1 回合・0 條）</span>
+                <i id="log-dropdown-chevron" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+              </button>
+
+              <!-- 懸浮式下拉視窗（預設收合，展開時不拉長頁面） -->
+              <div id="combat-log-dropdown-panel" class="hidden absolute right-0 mt-2 w-[90vw] sm:w-[440px] max-h-72 rounded-2xl bg-slate-950/95 backdrop-blur-md border-2 border-amber-500/70 shadow-[0_20px_50px_rgba(0,0,0,0.95)] p-3.5 z-50 flex flex-col">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                  <span class="text-xs font-black text-amber-300">
+                    <i class="fa-solid fa-list-ul mr-1"></i>第 <span id="log-round-badge">1</span> 回合 戰況實錄（僅顯示當下回合）
+                  </span>
+                  <button onclick="closeCombatLogDropdown()" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                <div id="combat-log-box" class="flex-1 overflow-y-auto space-y-1.5 text-xs font-mono text-slate-300 pr-1 max-h-52"></div>
+              </div>
+            </div>
+
+            <button onclick="toggleBattleSpeed()" id="btn-battle-speed" class="text-xs px-2.5 py-1 rounded-lg bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-700 font-mono font-bold transition">
+              <i class="fa-solid fa-forward mr-1"></i>1x
             </button>
-            <button onclick="retreatCombat()" class="text-xs px-3 py-1 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-300 border border-slate-700 transition">
+            <button onclick="retreatCombat()" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-300 border border-slate-700 transition">
               撤退
             </button>
           </div>
         </div>
 
-        <!-- Formation Matchup Strip -->
-        <div id="combat-formation-strip" class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-xl text-xs">
-          <!-- Filled by JS -->
+        <!-- 陣型相剋與最新一條戰況即時跑馬摘要 -->
+        <div id="combat-formation-strip" class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/80 border border-slate-800 px-3 py-1 rounded-xl text-[11px]"></div>
+
+        <div class="flex items-center gap-2 bg-slate-950/70 border border-slate-800/80 px-3 py-1 rounded-xl text-[11px] overflow-hidden">
+          <span class="text-amber-400 font-bold shrink-0"><i class="fa-solid fa-bolt-lightning mr-1"></i>最新動態:</span>
+          <div id="latest-log-ticker" class="text-slate-300 truncate flex-1 font-mono">等待忍者出招...</div>
+          <button onclick="toggleCombatLogDropdown(event)" class="text-amber-400 hover:text-amber-300 underline shrink-0 font-bold">展開明細</button>
         </div>
 
-        <div id="speed-timeline-bar" class="flex items-center gap-2 overflow-x-auto py-1"></div>
+        <!-- 速度行動條佇列 -->
+        <div id="speed-timeline-bar" class="flex items-center gap-2 overflow-x-auto py-0.5"></div>
       </div>
 
-      <!-- Battlefield: Enemy 4 vs Player 4 -->
-      <div id="battlefield-container" class="relative rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-950 via-[#111622] to-slate-950 p-4 sm:p-6 shadow-2xl overflow-hidden">
+      <!-- 4v4 戰場中央區 -->
+      <div id="battlefield-container" class="relative rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-950 via-[#111622] to-slate-950 p-3.5 sm:p-5 shadow-2xl overflow-hidden">
         <div id="combo-screen-flash" class="hidden absolute inset-0 z-20 pointer-events-none bg-gradient-to-tr from-amber-500/40 via-red-500/30 to-yellow-300/40"></div>
 
+        <!-- 合體聯招全螢幕特效橫幅 -->
         <div id="combo-overlay" class="hidden absolute inset-0 z-30 pointer-events-none flex items-center justify-center bg-black/55 backdrop-blur-[2px]">
-          <div id="combo-overlay-card" class="px-8 py-5 rounded-2xl bg-gradient-to-r from-red-900/95 via-amber-800/95 to-red-900/95 border-2 border-amber-400 text-center shadow-[0_0_50px_rgba(251,191,36,0.85)]">
+          <div id="combo-overlay-card" class="px-7 py-4 rounded-2xl bg-gradient-to-r from-red-900/95 via-amber-800/95 to-red-900/95 border-2 border-amber-400 text-center shadow-[0_0_50px_rgba(251,191,36,0.85)]">
             <div id="combo-overlay-side" class="text-xs tracking-widest text-amber-300 font-bold uppercase">✨ 屬性合體聯招發動 ✨</div>
-            <div id="combo-overlay-title" class="font-serif-tc text-2xl sm:text-4xl font-black text-white mt-1 drop-shadow">【風火燎原·豪火螺旋丸】</div>
-            <div id="combo-overlay-desc" class="text-xs sm:text-sm text-amber-200 mt-1.5">造成全體額外追擊！</div>
+            <div id="combo-overlay-title" class="font-serif-tc text-xl sm:text-3xl font-black text-white mt-1 drop-shadow">【風火燎原·豪火螺旋丸】</div>
+            <div id="combo-overlay-desc" class="text-xs sm:text-sm text-amber-200 mt-1">造成全體額外追擊！</div>
           </div>
         </div>
 
-        <!-- Enemy Squad Row -->
-        <div class="mb-6">
+        <!-- 敵方小隊列 -->
+        <div class="mb-4">
           <div class="text-xs font-bold text-rose-400 mb-2 flex flex-wrap items-center justify-between gap-2">
             <span id="enemy-squad-header"><i class="fa-solid fa-skull mr-1"></i>敵方陣容（點擊敵方角色可鎖定集火目標）</span>
             <div class="flex items-center gap-3">
@@ -476,57 +499,47 @@
               <span id="target-indicator" class="text-amber-300">當前鎖定：自動</span>
             </div>
           </div>
-          <div id="combat-enemy-row" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+          <div id="combat-enemy-row" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
         </div>
 
-        <div class="relative my-4 flex items-center justify-center">
+        <div class="relative my-3 flex items-center justify-center">
           <div class="border-t border-slate-800 w-full"></div>
-          <span class="bg-slate-900 px-4 py-1 rounded-full border border-amber-700/40 text-[11px] font-serif-tc text-amber-400 tracking-widest">VS</span>
+          <span class="bg-slate-900 px-3.5 py-0.5 rounded-full border border-amber-700/40 text-[11px] font-serif-tc text-amber-400 tracking-widest">VS</span>
           <div class="border-t border-slate-800 w-full"></div>
         </div>
 
-        <!-- Player Squad Row -->
+        <!-- 我方小隊列 -->
         <div>
           <div class="text-xs font-bold text-sky-400 mb-2 flex items-center justify-between">
             <span><i class="fa-solid fa-user-ninja mr-1"></i>我方出戰小隊（1~2號前排 / 3~4號後排）</span>
-            <span class="text-slate-400">查克拉上限 10 點（每回合自動回復）</span>
+            <span class="text-slate-400 hidden sm:inline">雙槽軌道保留最近 2 招屬性，同系共鳴或異系融合皆可觸發聯招！</span>
           </div>
-          <div id="combat-player-row" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+          <div id="combat-player-row" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
         </div>
       </div>
 
-      <!-- Bottom Control Panel: Active Ninja's 4 Signature Jutsu + Current-Round Battle Log -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="lg:col-span-2 scroll-panel rounded-2xl p-4 flex flex-col justify-between">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-slate-800 pb-2">
-            <div class="flex items-center gap-2">
-              <span id="active-actor-badge" class="px-2.5 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-xs">行動中</span>
-              <h4 id="active-actor-name" class="font-bold text-base text-white">等待行動...</h4>
-              <span id="active-actor-elems" class="flex gap-1"></span>
-            </div>
-            <div class="flex items-center gap-1.5 bg-sky-950/90 border border-sky-700 px-3 py-1 rounded-lg">
-              <i class="fa-solid fa-bolt text-sky-400"></i>
-              <span class="text-xs text-sky-200">查克拉:</span>
-              <span id="active-actor-chakra" class="font-black text-sky-300 font-mono">0</span>
-              <span class="text-xs text-sky-500">/ 10</span>
-            </div>
+      <!-- 底部全寬控制面板：行動中忍者的四大招牌忍術（含即時聯招高亮提示） -->
+      <div class="scroll-panel rounded-2xl p-3.5 sm:p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5 border-b border-slate-800 pb-2">
+          <div class="flex items-center gap-2">
+            <span id="active-actor-badge" class="px-2.5 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-xs">行動中</span>
+            <h4 id="active-actor-name" class="font-bold text-sm sm:text-base text-white">等待行動...</h4>
+            <span id="active-actor-elems" class="flex gap-1"></span>
           </div>
-
-          <div id="jutsu-buttons-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+          <div class="flex items-center gap-1.5 bg-sky-950/90 border border-sky-700 px-3 py-1 rounded-lg">
+            <i class="fa-solid fa-bolt text-sky-400"></i>
+            <span class="text-xs text-sky-200">查克拉:</span>
+            <span id="active-actor-chakra" class="font-black text-sky-300 font-mono">0</span>
+            <span class="text-xs text-sky-500">/ 10</span>
+          </div>
         </div>
 
-        <!-- Combat Log (Current Round Only) -->
-        <div class="scroll-panel rounded-2xl p-4 flex flex-col h-64 lg:h-auto">
-          <div class="text-xs font-bold text-amber-400 border-b border-slate-800 pb-2 mb-2 flex items-center justify-between">
-            <span><i class="fa-solid fa-scroll mr-1"></i>第 <span id="log-round-badge">1</span> 回合 戰況實錄（僅顯示當下回合）</span>
-          </div>
-          <div id="combat-log-box" class="flex-1 overflow-y-auto space-y-1.5 text-xs font-mono text-slate-300 pr-1"></div>
-        </div>
+        <div id="jutsu-buttons-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
       </div>
     </section>
 
     <!-- =========================================================
-         VIEW 4: FULL MULTI-FORM SHINOBI CODEX & STAR-UP
+         分頁 4：全忍界多型態圖鑑與升星強化
          ========================================================= -->
     <section id="view-roster" class="hidden space-y-6">
       <div class="space-y-3">
@@ -534,9 +547,9 @@
           <div>
             <h3 class="font-serif-tc text-lg font-bold text-amber-300 flex items-center gap-2">
               <i class="fa-solid fa-address-book text-amber-400"></i> 全忍界多型態圖鑑與升星強化
-              <span id="ui-owned-count" class="text-xs bg-slate-800 text-amber-300 px-2.5 py-0.5 rounded-full font-mono">0 / 62</span>
+              <span id="ui-owned-count" class="text-xs bg-slate-800 text-amber-300 px-2.5 py-0.5 rounded-full font-mono">0 / 64</span>
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">收錄全部 62 位忍者與終極型態！每收集 100 張重複角色卡可升 1 星（最高 5 星），全屬性與忍術威力暴增！</p>
+            <p class="text-xs text-slate-400 mt-0.5">收錄全部 64 位忍者與終極型態！每收集 100 張重複角色卡可升 1 星（最高 5 星），全屬性與忍術威力暴增！</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <input type="text" id="roster-search" oninput="renderRosterCodex()" placeholder="搜尋忍者名稱或型態..." class="px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:border-amber-400 focus:outline-none">
@@ -548,7 +561,7 @@
         </div>
 
         <div class="flex flex-wrap gap-1.5 text-xs">
-          <button onclick="filterRoster('ALL', this)" class="filter-btn px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold">全部 (62)</button>
+          <button onclick="filterRoster('ALL', this)" class="filter-btn px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold">全部 (64)</button>
           <button onclick="filterRoster('OWNED', this)" class="filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-emerald-400 hover:bg-slate-700">已招募</button>
           <button onclick="filterRoster('UPGRADABLE', this)" class="filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-yellow-300 hover:bg-slate-700">可升星 ★</button>
           <button onclick="filterRoster('AWAKENED', this)" class="filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-rose-400 hover:bg-slate-700">覺醒/六道/尾獸型態</button>
@@ -563,9 +576,9 @@
 
   </main>
 
-  <!-- ==================== MODALS ==================== -->
+  <!-- ==================== 彈出視窗 MODALS ==================== -->
 
-  <!-- Shinobi Detail & Jutsu Preview Modal -->
+  <!-- 忍者詳情與四大忍術預覽視窗 -->
   <div id="modal-shinobi-detail" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="scroll-panel rounded-2xl max-w-xl w-full p-6 space-y-4 relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
@@ -575,25 +588,26 @@
     </div>
   </div>
 
-  <!-- Combo Codex Modal -->
+  <!-- 忍界合體聯招圖鑑（全 11 屬性同系共鳴 + 異系融合） -->
   <div id="modal-combo-codex" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="scroll-panel rounded-2xl max-w-2xl w-full p-6 space-y-4 relative max-h-[88vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="font-serif-tc text-xl font-bold text-amber-300">
-          <i class="fa-solid fa-fire-flame-curved text-red-500 mr-2"></i>忍界合體聯招圖鑑（Combo 公式）
+          <i class="fa-solid fa-fire-flame-curved text-red-500 mr-2"></i>忍界合體聯招圖鑑（雙槽軌道 & 全 11 屬性共鳴）
         </h3>
         <button onclick="document.getElementById('modal-combo-codex').classList.add('hidden')" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <p class="text-xs text-slate-300 leading-relaxed">
-        戰鬥中，當我方兩名忍者<span class="text-amber-400 font-bold">連續施放</span>符合以下屬性組合的招式時，將立即觸發全場震撼的「合體聯招」，無需額外消耗查克拉！同一回合連續觸發聯招還可疊加最高 +75% 連擊增傷！
-      </p>
-      <div id="codex-list" class="space-y-3"></div>
+      <div class="p-3 rounded-xl bg-amber-950/50 border border-amber-500/40 text-xs text-amber-100 space-y-1">
+        <div>⚡ <strong>雙槽屬性軌道記憶</strong>：系統會同時保留「最近 2 招」的屬性！只要新忍術能與前兩招任一屬性配對即可觸發聯招！</div>
+        <div>🔥 <strong>高連擊追擊機制</strong>：達成 <strong>2 連擊以上</strong>自動追加「忍具連攜追擊」；達成 <strong>4 連擊以上</strong>額外引爆「奧義共鳴全體震盪」！</div>
+      </div>
+      <div id="codex-list" class="space-y-2.5"></div>
     </div>
   </div>
 
-  <!-- Custom Reset Confirmation Modal (No browser confirm/alert) -->
+  <!-- 重置進度確認視窗 -->
   <div id="modal-reset-confirm" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="scroll-panel rounded-2xl max-w-md w-full p-6 space-y-4 text-center">
       <div class="w-12 h-12 rounded-full bg-rose-950 border border-rose-500 text-rose-400 flex items-center justify-center mx-auto text-xl">
@@ -614,13 +628,13 @@
     </div>
   </div>
 
-  <!-- Toast Notification -->
+  <!-- 浮動訊息通知 -->
   <div id="toast-box" class="fixed bottom-5 right-5 z-50 pointer-events-none flex flex-col gap-2"></div>
 
-  <!-- ==================== GAME SCRIPT ==================== -->
+  <!-- ==================== 遊戲核心腳本 ==================== -->
   <script>
     /* =========================================================================
-       1. SIX NINJA FORMATIONS & CIRCULAR COUNTER SYSTEM
+       1. 六大忍法陣型與循環相剋系統
        ========================================================================= */
     const FORMATIONS = [
       {
@@ -720,10 +734,10 @@
     }
 
     /* =========================================================================
-       2. MASTER DATA: COMPLETE NARUTO MULTI-FORM ROSTER (62 SHINOBI & FORMS)
+       2. 全忍界 64 位忍者與多型態資料庫（涵蓋 11 大屬性：風雷火水土體瞳仙醫陰陽）
        ========================================================================= */
     const SHINOBI_DB = [
-      // --- ULTIMATE & SIX PATHS / AWAKENED FORMS (SSR) ---
+      // --- 終極與六道/覺醒型態 (SSR) ---
       {
         id: 'naruto_baryon', name: '漩渦鳴人(重粒子模式)', title: '燃燒生命的終極神力', rarity: 'SSR', village: '木葉', formTag: '覺醒型態',
         elements: ['陽', '體'], traits: ['木葉', '人柱力', '覺醒型態'], icon: 'fa-sun', avatarBg: 'from-red-600 via-orange-600 to-amber-500',
@@ -741,7 +755,7 @@
         baseStats: { hp: 8900, atk: 345, def: 175, spd: 146 },
         jutsus: [
           { name: '求道玉錫杖突擊', type: 'single', elem: '陽', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：操縱求道玉猛擊，造成 115% 傷害並回 3 氣。' },
-          { name: '仙法·磁遁螺旋丸', type: 'stun', elem: '土', cost: 3, mult: 1.65, desc: '借助一尾守鶴之力封印目標！造成 165% 傷害並暈眩 1 回合。' },
+          { name: '仙法·磁遁螺旋丸', type: 'stun', elem: '仙', cost: 3, mult: 1.65, desc: '借助一尾守鶴與仙術封印目標！造成 165% 傷害並暈眩 1 回合。' },
           { name: '仙法·熔遁螺旋手裏劍', type: 'aoe', elem: '火', cost: 4, mult: 1.85, desc: '四尾孫悟空熔岩之力橫掃敵陣，全體造成 185% 傷害。' },
           { name: '奧義·六道超大玉螺旋手裏劍', type: 'aoe', elem: '風', cost: 7, mult: 2.85, desc: '自然能量與九大尾獸共鳴！對全體造成 285% 毀滅打擊。' }
         ]
@@ -759,10 +773,10 @@
       },
       {
         id: 'naruto_sage', name: '漩渦鳴人(妙木山仙人)', title: '仙人模式·終結培因之英雄', rarity: 'SR', village: '木葉', formTag: '覺醒型態',
-        elements: ['風', '體'], traits: ['木葉', '仙人', '覺醒型態'], icon: 'fa-frog', avatarBg: 'from-orange-600 to-red-800',
+        elements: ['風', '仙'], traits: ['木葉', '仙人', '覺醒型態'], icon: 'fa-frog', avatarBg: 'from-orange-600 to-red-800',
         baseStats: { hp: 7200, atk: 275, def: 145, spd: 131 },
         jutsus: [
-          { name: '蛙組手·無形氣勁', type: 'single', elem: '體', cost: 0, mult: 1.1, chakraGain: 3, desc: '普攻：自然能量延伸拳勁，造成 110% 傷害並回 3 氣。' },
+          { name: '蛙組手·無形氣勁', type: 'single', elem: '仙', cost: 0, mult: 1.1, chakraGain: 3, desc: '普攻：仙術自然能量延伸拳勁，造成 110% 傷害並回 3 氣。' },
           { name: '仙法·螺旋連丸', type: 'single', elem: '風', cost: 3, mult: 1.95, desc: '雙手同時凝聚螺旋丸猛擊，造成 195% 單體傷害。' },
           { name: '通靈·蛤蟆文太協戰', type: 'aoe', elem: '水', cost: 3, mult: 1.45, desc: '召喚蛤蟆老大鐵砲玉轟炸全體敵人，造成 145% 傷害。' },
           { name: '奧義·仙法風遁螺旋手裏劍', type: 'aoe', elem: '風', cost: 6, mult: 2.45, desc: '投擲高速旋轉風之手裏劍！對全體造成 245% 切割傷害。' }
@@ -781,11 +795,11 @@
       },
       {
         id: 'sasuke_rinnegan', name: '宇智波佐助(六道輪迴眼)', title: '陰之力·因陀羅轉世', rarity: 'SSR', village: '木葉', formTag: '覺醒型態',
-        elements: ['雷', '陰'], traits: ['第七班', '宇智波', '六道', '覺醒型態'], icon: 'fa-bolt', avatarBg: 'from-indigo-800 via-purple-900 to-slate-950',
+        elements: ['雷', '瞳'], traits: ['第七班', '宇智波', '六道', '覺醒型態'], icon: 'fa-bolt', avatarBg: 'from-indigo-800 via-purple-900 to-slate-950',
         baseStats: { hp: 8600, atk: 360, def: 165, spd: 150 },
         jutsus: [
           { name: '天手力·瞬身雷斬', type: 'single', elem: '雷', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：空間置換發動必中斬擊，造成 115% 傷害並回 3 氣。' },
-          { name: '輪迴眼·地爆天星封印', type: 'stun', elem: '陰', cost: 3, mult: 1.7, desc: '瞬間製造引力黑球封印敵人！造成 170% 傷害並暈眩 1 回合。' },
+          { name: '輪迴眼·地爆天星封印', type: 'stun', elem: '瞳', cost: 3, mult: 1.7, desc: '輪迴眼製造引力黑球封印敵人！造成 170% 傷害並暈眩 1 回合。' },
           { name: '炎遁·須佐能乎加具土命', type: 'aoe', elem: '火', cost: 4, mult: 1.85, desc: '須佐射出天照黑炎巨箭，對全體敵人造成 185% 傷害。' },
           { name: '奧義·因陀羅之矢', type: 'aoe', elem: '雷', cost: 7, mult: 2.9, desc: '融合九大尾獸雷霆的終極神箭！對全體造成 290% 毀滅傷害。' }
         ]
@@ -797,7 +811,7 @@
         jutsus: [
           { name: '黑炎草薙劍斬', type: 'single', elem: '火', cost: 0, mult: 1.1, chakraGain: 3, desc: '普攻：纏繞天照黑炎的劍擊，造成 110% 傷害並回 3 氣。' },
           { name: '炎遁·八坂之勾玉', type: 'aoe', elem: '火', cost: 3, mult: 1.6, desc: '須佐能乎投擲黑炎勾玉，對全體造成 160% 傷害。' },
-          { name: '須佐能乎·武神護鎧', type: 'buff_team', elem: '陰', cost: 3, mult: 1.3, desc: '展開紫色須佐骨架守護全隊，獲得 130% 攻擊力護盾。' },
+          { name: '須佐能乎·武神護鎧', type: 'buff_team', elem: '瞳', cost: 3, mult: 1.3, desc: '展開紫色須佐骨架守護全隊，獲得 130% 攻擊力護盾。' },
           { name: '奧義·威裝·須佐能乎斬', type: 'aoe', elem: '雷', cost: 6, mult: 2.55, desc: '雷炎交織的巨劍橫掃戰場！對全體造成 255% 毀滅傷害。' }
         ]
       },
@@ -807,7 +821,7 @@
         baseStats: { hp: 6800, atk: 280, def: 130, spd: 136 },
         jutsus: [
           { name: '千鳥銳槍', type: 'single', elem: '雷', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：延伸五公尺的雷電長槍穿刺，造成 105% 傷害並回 3 氣。' },
-          { name: '萬花筒·天照黑炎', type: 'single', elem: '火', cost: 3, mult: 2.0, desc: '視線焦點燃起永不熄滅的黑炎，造成 200% 單體重創。' },
+          { name: '萬花筒·天照黑炎', type: 'single', elem: '瞳', cost: 3, mult: 2.0, desc: '萬花筒瞳術燃起永不熄滅的黑炎，造成 200% 單體重創。' },
           { name: '千鳥流·全身放電', type: 'aoe', elem: '雷', cost: 3, mult: 1.45, desc: '向四周釋放高壓電流，對全體敵人造成 145% 傷害。' },
           { name: '奧義·雷遁麒麟', type: 'aoe', elem: '雷', cost: 6, mult: 2.45, desc: '引導天際雷神化作麒麟轟落！對全體造成 245% 雷擊。' }
         ]
@@ -825,11 +839,11 @@
       },
       {
         id: 'kakashi_dms', name: '旗木卡卡西(雙神威須佐)', title: '帶土託付·完全體雙神威', rarity: 'SSR', village: '木葉', formTag: '覺醒型態',
-        elements: ['雷', '陰'], traits: ['第七班', '木葉', '覺醒型態'], icon: 'fa-eye', avatarBg: 'from-sky-700 via-indigo-800 to-slate-900',
+        elements: ['雷', '瞳'], traits: ['第七班', '木葉', '覺醒型態'], icon: 'fa-eye', avatarBg: 'from-sky-700 via-indigo-800 to-slate-900',
         baseStats: { hp: 8300, atk: 345, def: 160, spd: 147 },
         jutsus: [
           { name: '神威虛化·瞬移雷切', type: 'single', elem: '雷', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：穿透一切攻擊的雙神威突襲，造成 115% 傷害並回 3 氣。' },
-          { name: '神威手裏劍', type: 'aoe', elem: '陰', cost: 4, mult: 1.85, desc: '完全體須佐投擲空間扭曲手裏劍，全體造成 185% 傷害。' },
+          { name: '神威手裏劍', type: 'aoe', elem: '瞳', cost: 4, mult: 1.85, desc: '完全體須佐投擲空間扭曲手裏劍，全體造成 185% 傷害。' },
           { name: '雙神威·時空間守護', type: 'buff_team', elem: '陰', cost: 3, mult: 1.35, desc: '利用神威虛化保護全隊，獲得 135% 攻擊力護盾並回 1 氣。' },
           { name: '奧義·神威雷切', type: 'single', elem: '雷', cost: 7, mult: 3.15, desc: '結合時空間之力的終極雷切！對單體造成 315% 毀滅打擊。' }
         ]
@@ -842,7 +856,7 @@
           { name: '體術·千年殺突襲', type: 'single', elem: '雷', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：靈活突襲造成 105% 傷害並回復 3 點查克拉。' },
           { name: '水遁·水龍彈之術', type: 'aoe', elem: '水', cost: 3, mult: 1.4, desc: '召喚巨型水龍衝擊敵陣，造成 140% 全體水遁傷害。' },
           { name: '雷切', type: 'single', elem: '雷', cost: 4, mult: 2.05, desc: '將雷遁集中於掌心貫穿敵人，造成 205% 單體傷害。' },
-          { name: '奧義·神威空間扭曲', type: 'single', elem: '陰', cost: 6, mult: 2.6, desc: '萬花筒寫輪眼奧義！造成 260% 單體重創。' }
+          { name: '奧義·神威空間扭曲', type: 'single', elem: '瞳', cost: 6, mult: 2.6, desc: '萬花筒寫輪眼奧義！造成 260% 單體重創。' }
         ]
       },
       {
@@ -858,34 +872,34 @@
       },
       {
         id: 'itachi_edo', name: '宇智波鼬(穢土轉生)', title: '無限查克拉·伊邪那美', rarity: 'SSR', village: '木葉', formTag: '覺醒型態',
-        elements: ['火', '幻'], traits: ['宇智波', '穢土轉生', '覺醒型態'], icon: 'fa-crow', avatarBg: 'from-red-900 via-purple-950 to-slate-950',
+        elements: ['火', '瞳'], traits: ['宇智波', '穢土轉生', '覺醒型態'], icon: 'fa-crow', avatarBg: 'from-red-900 via-purple-950 to-slate-950',
         baseStats: { hp: 8100, atk: 335, def: 155, spd: 143 },
         jutsus: [
-          { name: '烏鴉幻影連擊', type: 'single', elem: '幻', cost: 0, mult: 1.15, chakraGain: 4, desc: '普攻：穢土不死之身快速回氣，造成 115% 傷害並回 4 氣！' },
-          { name: '禁術·伊邪那美', type: 'stun', elem: '幻', cost: 3, mult: 1.65, desc: '將敵人困入無限命運循環！造成 165% 傷害並暈眩 1 回合。' },
+          { name: '烏鴉幻影連擊', type: 'single', elem: '瞳', cost: 0, mult: 1.15, chakraGain: 4, desc: '普攻：穢土不死之身快速回氣，造成 115% 傷害並回 4 氣！' },
+          { name: '禁術·伊邪那美', type: 'stun', elem: '瞳', cost: 3, mult: 1.65, desc: '將敵人困入無限命運循環！造成 165% 傷害並暈眩 1 回合。' },
           { name: '須佐能乎·八坂之勾玉', type: 'aoe', elem: '火', cost: 4, mult: 1.8, desc: '最強遠距離須佐忍具轟炸，全體造成 180% 傷害。' },
           { name: '奧義·十拳劍·八咫鏡封印', type: 'single', elem: '陰', cost: 6, mult: 3.0, desc: '神器十拳劍永久封印目標！造成 300% 毀滅單體傷害。' }
         ]
       },
       {
         id: 'itachi', name: '宇智波鼬(曉之朱雀)', title: '萬花筒天才·月讀天照', rarity: 'SSR', village: '曉',
-        elements: ['火', '幻'], traits: ['曉', '宇智波'], icon: 'fa-crow', avatarBg: 'from-red-800 to-slate-900',
+        elements: ['火', '瞳'], traits: ['曉', '宇智波'], icon: 'fa-crow', avatarBg: 'from-red-800 to-slate-900',
         baseStats: { hp: 7000, atk: 315, def: 140, spd: 139 },
         jutsus: [
           { name: '烏鴉分身手裏劍', type: 'single', elem: '火', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：精準投擲造成 105% 傷害並回復 3 點查克拉。' },
-          { name: '魔幻·枷杭之術', type: 'stun', elem: '幻', cost: 3, mult: 1.45, desc: '瞳術幻覺束縛目標，造成 145% 傷害並使其暈眩 1 回合。' },
+          { name: '魔幻·枷杭之術', type: 'stun', elem: '瞳', cost: 3, mult: 1.45, desc: '瞳術幻覺束縛目標，造成 145% 傷害並使其暈眩 1 回合。' },
           { name: '火遁·鳳仙花爪紅', type: 'aoe', elem: '火', cost: 4, mult: 1.6, desc: '火焰苦無齊射，對敵方全體造成 160% 火遁傷害。' },
-          { name: '奧義·月讀天照', type: 'single', elem: '火', cost: 6, mult: 2.9, desc: '萬花筒極致瞳術！對單體造成 290% 燃盡一切的傷害。' }
+          { name: '奧義·月讀天照', type: 'single', elem: '瞳', cost: 6, mult: 2.9, desc: '萬花筒極致瞳術！對單體造成 290% 燃盡一切的傷害。' }
         ]
       },
       {
         id: 'itachi_anbu', name: '宇智波鼬(暗部雙勾玉)', title: '十三歲暗部分隊長', rarity: 'SR', village: '木葉', formTag: '覺醒型態',
-        elements: ['火', '幻'], traits: ['木葉', '暗部', '宇智波', '覺醒型態'], icon: 'fa-crow', avatarBg: 'from-slate-800 to-red-950',
+        elements: ['火', '瞳'], traits: ['木葉', '暗部', '宇智波', '覺醒型態'], icon: 'fa-crow', avatarBg: 'from-slate-800 to-red-950',
         baseStats: { hp: 6300, atk: 260, def: 130, spd: 138 },
         jutsus: [
           { name: '暗部手裏劍操術', type: 'single', elem: '火', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：死角彈射苦無，造成 105% 傷害並回 3 氣。' },
           { name: '火遁·豪火球連彈', type: 'aoe', elem: '火', cost: 3, mult: 1.45, desc: '瞬間結印噴射猛烈火球，全體造成 145% 傷害。' },
-          { name: '魔幻·鏡天地轉', type: 'buff_team', elem: '幻', cost: 2, mult: 1.15, desc: '反彈敵方幻術並守護全隊，獲得 115% 攻擊力護盾。' },
+          { name: '魔幻·鏡天地轉', type: 'buff_team', elem: '瞳', cost: 2, mult: 1.15, desc: '反彈敵方幻術並守護全隊，獲得 115% 攻擊力護盾。' },
           { name: '奧義·暗部月夜瞬殺', type: 'single', elem: '陰', cost: 5, mult: 2.45, desc: '月光下的絕命一刀，對單體造成 245% 高暴擊傷害。' }
         ]
       },
@@ -913,13 +927,13 @@
       },
       {
         id: 'madara_sixpaths', name: '宇智波斑(六道仙人模式)', title: '無限月讀·輪墓邊獄', rarity: 'SSR', village: '曉', formTag: '覺醒型態',
-        elements: ['陰', '風'], traits: ['宇智波', '六道', '輪迴眼', '覺醒型態'], icon: 'fa-yin-yang', avatarBg: 'from-red-900 via-slate-800 to-purple-950',
+        elements: ['陰', '瞳'], traits: ['宇智波', '六道', '輪迴眼', '覺醒型態'], icon: 'fa-yin-yang', avatarBg: 'from-red-900 via-slate-800 to-purple-950',
         baseStats: { hp: 9200, atk: 365, def: 185, spd: 148 },
         jutsus: [
           { name: '輪墓·邊獄無形重擊', type: 'single', elem: '陰', cost: 0, mult: 1.2, chakraGain: 3, desc: '普攻：平行世界的影子同時出拳，造成 120% 傷害並回 3 氣。' },
           { name: '仙法·陰遁雷派', type: 'aoe', elem: '雷', cost: 4, mult: 1.85, desc: '釋放紫黑色六道閃電風暴，對全體敵人造成 185% 傷害。' },
-          { name: '仙法·嵐遁光牙', type: 'single', elem: '水', cost: 3, mult: 2.15, desc: '光速切斷求道玉的雷射光束，造成 215% 單體破防傷害。' },
-          { name: '奧義·地爆天星·隕石雨', type: 'aoe', elem: '陰', cost: 7, mult: 3.0, desc: '製造數十顆巨型隕石如雨墜落！對全體造成 300% 絕望轟炸。' }
+          { name: '仙法·嵐遁光牙', type: 'single', elem: '仙', cost: 3, mult: 2.15, desc: '光速切斷求道玉的雷射光束，造成 215% 單體破防傷害。' },
+          { name: '奧義·地爆天星·隕石雨', type: 'aoe', elem: '瞳', cost: 7, mult: 3.0, desc: '製造數十顆巨型隕石如雨墜落！對全體造成 300% 絕望轟炸。' }
         ]
       },
       {
@@ -930,17 +944,17 @@
           { name: '宇智波反彈', type: 'single', elem: '火', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：團扇揮擊反彈衝擊，造成 115% 傷害並回 3 氣。' },
           { name: '火遁·豪火滅卻', type: 'aoe', elem: '火', cost: 3, mult: 1.7, desc: '鋪天蓋地的火海吞噬戰場，對全體敵人造成 170% 火遁傷害。' },
           { name: '完全體須佐能乎·鎧', type: 'buff_team', elem: '陰', cost: 3, mult: 1.4, desc: '展開紫色查克拉武神，為全隊提供 140% 攻擊力超厚護盾。' },
-          { name: '奧義·天礙震星', type: 'aoe', elem: '陰', cost: 7, mult: 2.8, desc: '從天外召喚雙重隕石砸落！對敵方全體造成 280% 絕望打擊。' }
+          { name: '奧義·天礙震星', type: 'aoe', elem: '瞳', cost: 7, mult: 2.8, desc: '從天外召喚雙重隕石砸落！對敵方全體造成 280% 絕望打擊。' }
         ]
       },
       {
         id: 'hashirama', name: '千手柱間(仙人模式)', title: '初代火影·忍者之神', rarity: 'SSR', village: '木葉',
-        elements: ['土', '陽'], traits: ['五影', '木葉', '仙人'], icon: 'fa-tree', avatarBg: 'from-emerald-800 to-amber-900',
+        elements: ['土', '仙'], traits: ['五影', '木葉', '仙人'], icon: 'fa-tree', avatarBg: 'from-emerald-800 to-amber-900',
         baseStats: { hp: 9250, atk: 325, def: 185, spd: 132 },
         jutsus: [
           { name: '木遁·木錠壁突刺', type: 'single', elem: '土', cost: 0, mult: 1.1, chakraGain: 3, desc: '普攻：巨木穿刺敵人，造成 110% 傷害並回 3 氣。' },
           { name: '木遁·花樹界降臨', type: 'aoe', elem: '土', cost: 4, mult: 1.65, desc: '森林瞬間覆蓋戰場，對全體敵人造成 165% 傷害。' },
-          { name: '仙法·明神門鎮壓', type: 'stun', elem: '陽', cost: 3, mult: 1.6, desc: '召喚赤紅鳥居封印敵人，造成 160% 傷害並暈眩 1 回合。' },
+          { name: '仙法·明神門鎮壓', type: 'stun', elem: '仙', cost: 3, mult: 1.6, desc: '召喚赤紅鳥居封印敵人，造成 160% 傷害並暈眩 1 回合。' },
           { name: '奧義·仙法木遁真數千手', type: 'aoe', elem: '陽', cost: 7, mult: 2.85, desc: '頂上化佛千手轟擊！對敵方全體造成 285% 毀滅傷害。' }
         ]
       },
@@ -1007,28 +1021,50 @@
           { name: '仙人錫杖·求道連擊', type: 'single', elem: '陽', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：揮動陰陽錫杖重擊敵人，造成 115% 傷害並回 3 氣。' },
           { name: '仙法·雷陰派', type: 'aoe', elem: '雷', cost: 3, mult: 1.65, desc: '引動天地神雷劈落敵陣，對全體敵人造成 165% 雷遁傷害。' },
           { name: '陰陽遁·萬物創造庇護', type: 'buff_team', elem: '陽', cost: 3, mult: 1.4, desc: '賦予全隊六道查克拉護盾（140% 攻擊力）並全隊回復 1 點查克拉。' },
-          { name: '奧義·六道地爆天星', type: 'aoe', elem: '陰', cost: 7, mult: 2.85, desc: '創世級封印奧義！對敵方全體造成 285% 毀滅打擊。' }
+          { name: '奧義·六道地爆天星', type: 'aoe', elem: '瞳', cost: 7, mult: 2.85, desc: '創世級封印奧義！對敵方全體造成 285% 毀滅打擊。' }
         ]
       },
       {
         id: 'kaguya', name: '大筒木輝夜', title: '查克拉之祖·卯之女神', rarity: 'SSR', village: '大筒木',
-        elements: ['陰', '風'], traits: ['六道', '大筒木'], icon: 'fa-crown', avatarBg: 'from-indigo-900 to-rose-950',
+        elements: ['瞳', '陰'], traits: ['六道', '大筒木'], icon: 'fa-crown', avatarBg: 'from-indigo-900 to-rose-950',
         baseStats: { hp: 9300, atk: 355, def: 175, spd: 143 },
         jutsus: [
-          { name: '兔毛針·白眼點穴', type: 'single', elem: '陰', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：白髮化為無數利針射擊，造成 115% 傷害並回 3 氣。' },
+          { name: '兔毛針·白眼點穴', type: 'single', elem: '瞳', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：白髮化為無數利針射擊，造成 115% 傷害並回 3 氣。' },
           { name: '八十神空擊', type: 'aoe', elem: '風', cost: 4, mult: 1.85, desc: '無數巨大查克拉拳影轟炸全場，對全體造成 185% 傷害。' },
           { name: '天之御中·冰雪空間', type: 'stun', elem: '水', cost: 3, mult: 1.55, desc: '瞬間切換至極寒冰世界凍結目標，造成 155% 傷害並暈眩 1 回合。' },
           { name: '奧義·膨脹求道玉', type: 'aoe', elem: '陰', cost: 7, mult: 2.95, desc: '吞噬並重創世界的終極球體！對敵方全體造成 295% 毀滅傷害。' }
         ]
       },
       {
+        id: 'isshiki', name: '大筒木一式', title: '少名毘古那·大黑天降臨', rarity: 'SSR', village: '大筒木', formTag: '覺醒型態',
+        elements: ['瞳', '體'], traits: ['大筒木', '覺醒型態'], icon: 'fa-eye', avatarBg: 'from-rose-900 via-zinc-900 to-amber-950',
+        baseStats: { hp: 9100, atk: 365, def: 175, spd: 151 },
+        jutsus: [
+          { name: '少名毘古那·黑棒瞬擊', type: 'single', elem: '瞳', cost: 0, mult: 1.2, chakraGain: 3, desc: '普攻：將黑棒微縮後瞬間放大貫穿目標，造成 120% 傷害並回 3 氣。' },
+          { name: '大黑天·異空間巨方塊', type: 'stun', elem: '土', cost: 3, mult: 1.75, desc: '從無時間空間召喚巨型立方體鎮壓敵人！造成 175% 傷害並暈眩。' },
+          { name: '秘術·極限體術壓制', type: 'single', elem: '體', cost: 4, mult: 2.3, desc: '壓倒性的體術重擊，造成 230% 單體破防傷害。' },
+          { name: '奧義·大黑天·萬象崩壞', type: 'aoe', elem: '瞳', cost: 7, mult: 2.95, desc: '釋放異空間所有封印巨物轟炸戰場！全體造成 295% 毀滅傷害。' }
+        ]
+      },
+      {
+        id: 'momoshiki', name: '大筒木桃式(金式吸收)', title: '輪迴眼噬神·高皇產靈尊', rarity: 'SSR', village: '大筒木', formTag: '覺醒型態',
+        elements: ['瞳', '火'], traits: ['大筒木', '輪迴眼', '覺醒型態'], icon: 'fa-fire-flame-curved', avatarBg: 'from-purple-900 via-red-900 to-slate-950',
+        baseStats: { hp: 8600, atk: 345, def: 165, spd: 146 },
+        jutsus: [
+          { name: '天手力·紅蓮武器斬', type: 'single', elem: '火', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：揮舞查克拉紅蓮巨斧斬擊，造成 115% 傷害並回 3 氣。' },
+          { name: '高皇產靈尊·忍術倍返', type: 'aoe', elem: '瞳', cost: 4, mult: 1.8, desc: '掌心輪迴眼吸收並十倍反彈忍術，全體造成 180% 傷害。' },
+          { name: '犬飼健命·岩漿巨犬', type: 'aoe', elem: '土', cost: 3, mult: 1.6, desc: '召喚巨大岩漿獵犬吞噬敵軍，全體造成 160% 傷害。' },
+          { name: '奧義·深紅螺旋超巨玉', type: 'aoe', elem: '陰', cost: 7, mult: 2.85, desc: '凝縮毀滅星球的深紅查克拉球！全體造成 285% 傷害。' }
+        ]
+      },
+      {
         id: 'indra', name: '大筒木因陀羅', title: '寫輪眼始祖·完全體須佐', rarity: 'SSR', village: '大筒木',
-        elements: ['雷', '火'], traits: ['宇智波', '大筒木'], icon: 'fa-bolt', avatarBg: 'from-purple-900 to-indigo-950',
+        elements: ['雷', '瞳'], traits: ['宇智波', '大筒木'], icon: 'fa-bolt', avatarBg: 'from-purple-900 to-indigo-950',
         baseStats: { hp: 8100, atk: 330, def: 155, spd: 144 },
         jutsus: [
           { name: '天照雷切刃', type: 'single', elem: '雷', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：雷火交織的瞳術劍擊，造成 115% 傷害並回 3 氣。' },
           { name: '火遁·豪火滅失', type: 'aoe', elem: '火', cost: 3, mult: 1.65, desc: '高濃縮火柱橫掃全場，對敵方全體造成 165% 傷害。' },
-          { name: '始祖須佐能乎·鎧', type: 'buff_team', elem: '陰', cost: 3, mult: 1.35, desc: '展開始祖武神護罩，全隊獲得 135% 攻擊力護盾。' },
+          { name: '始祖須佐能乎·鎧', type: 'buff_team', elem: '瞳', cost: 3, mult: 1.35, desc: '展開始祖武神護罩，全隊獲得 135% 攻擊力護盾。' },
           { name: '奧義·因陀羅雷神閃', type: 'aoe', elem: '雷', cost: 6, mult: 2.65, desc: '引動萬鈞雷霆毀滅一切，對全體造成 265% 雷遁傷害。' }
         ]
       },
@@ -1045,46 +1081,46 @@
       },
       {
         id: 'nagato_edo', name: '長門(穢土完全體)', title: '輪迴眼六道之力集於一身', rarity: 'SSR', village: '雨隱', formTag: '覺醒型態',
-        elements: ['陰', '風'], traits: ['曉', '輪迴眼', '穢土轉生', '覺醒型態'], icon: 'fa-circle-dot', avatarBg: 'from-red-800 to-purple-950',
+        elements: ['瞳', '陰'], traits: ['曉', '輪迴眼', '穢土轉生', '覺醒型態'], icon: 'fa-circle-dot', avatarBg: 'from-red-800 to-purple-950',
         baseStats: { hp: 8400, atk: 335, def: 165, spd: 138 },
         jutsus: [
           { name: '修羅道·怪腕火箭炮', type: 'single', elem: '火', cost: 0, mult: 1.15, chakraGain: 3, desc: '普攻：機械臂發射高爆飛彈，造成 115% 傷害並回 3 氣。' },
           { name: '人間道·吸魂奪魄', type: 'stun', elem: '陰', cost: 3, mult: 1.6, desc: '抽取敵方靈魂使其癱瘓！造成 160% 傷害並暈眩 1 回合。' },
           { name: '餓鬼道·封術吸印', type: 'buff_team', elem: '陰', cost: 3, mult: 1.35, desc: '吸收忍術化為全隊 135% 護盾並回復全隊 1 點查克拉。' },
-          { name: '奧義·地爆天星', type: 'aoe', elem: '陰', cost: 7, mult: 2.75, desc: '製造高密度引力核心吞噬戰場！全體造成 275% 傷害。' }
+          { name: '奧義·地爆天星', type: 'aoe', elem: '瞳', cost: 7, mult: 2.75, desc: '製造高密度引力核心吞噬戰場！全體造成 275% 傷害。' }
         ]
       },
       {
         id: 'pain', name: '培因(天道)', title: '曉之首領·神羅天徵', rarity: 'SSR', village: '曉',
-        elements: ['風', '陰'], traits: ['曉', '輪迴眼'], icon: 'fa-circle-dot', avatarBg: 'from-orange-800 to-slate-900',
+        elements: ['風', '瞳'], traits: ['曉', '輪迴眼'], icon: 'fa-circle-dot', avatarBg: 'from-orange-800 to-slate-900',
         baseStats: { hp: 7600, atk: 300, def: 155, spd: 132 },
         jutsus: [
           { name: '黑棒穿刺', type: 'single', elem: '陰', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：輪迴眼查克拉黑棒突刺，造成 105% 傷害並回 3 氣。' },
-          { name: '萬象天引', type: 'stun', elem: '陰', cost: 3, mult: 1.45, desc: '強力引力將敵人吸至面前重擊，造成 145% 傷害並暈眩 1 回合。' },
+          { name: '萬象天引', type: 'stun', elem: '瞳', cost: 3, mult: 1.45, desc: '強力引力將敵人吸至面前重擊，造成 145% 傷害並暈眩 1 回合。' },
           { name: '神羅天徵·斥力彈開', type: 'aoe', elem: '風', cost: 4, mult: 1.7, desc: '以自身為中心彈開一切，對敵方全體造成 170% 傷害。' },
           { name: '奧義·超神羅天徵', type: 'aoe', elem: '風', cost: 7, mult: 2.6, desc: '毀滅木葉級別的斥力轟炸！對全體造成 260% 傷害。' }
         ]
       },
       {
         id: 'shisui', name: '宇智波止水', title: '瞬身止水·最強幻術別天神', rarity: 'SSR', village: '木葉',
-        elements: ['火', '幻'], traits: ['木葉', '宇智波'], icon: 'fa-eye', avatarBg: 'from-emerald-900 to-red-950',
+        elements: ['火', '瞳'], traits: ['木葉', '宇智波'], icon: 'fa-eye', avatarBg: 'from-emerald-900 to-red-950',
         baseStats: { hp: 6900, atk: 305, def: 135, spd: 146 },
         jutsus: [
           { name: '瞬身殘影斬', type: 'single', elem: '火', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：高速殘影連斬，造成 105% 傷害並回 3 氣。' },
           { name: '火遁·豪火球亂舞', type: 'aoe', elem: '火', cost: 3, mult: 1.5, desc: '多道火球封鎖敵方走位，全體造成 150% 傷害。' },
           { name: '須佐能乎·九十九', type: 'buff_team', elem: '陰', cost: 3, mult: 1.25, desc: '翠綠查克拉武神護陣，全隊獲得 125% 攻擊力護盾。' },
-          { name: '奧義·別天神·光芒', type: 'stun', elem: '幻', cost: 6, mult: 2.6, desc: '最強瞳術改寫敵方意志！造成 260% 單體重創並強制暈眩 1 回合。' }
+          { name: '奧義·別天神·光芒', type: 'stun', elem: '瞳', cost: 6, mult: 2.6, desc: '最強瞳術改寫敵方意志！造成 260% 單體重創並強制暈眩 1 回合。' }
         ]
       },
       {
         id: 'jiraiya', name: '自來也(仙人模式)', title: '妙木山蛤蟆仙人', rarity: 'SSR', village: '木葉',
-        elements: ['火', '水'], traits: ['木葉', '三忍', '仙人'], icon: 'fa-fire-flame-curved', avatarBg: 'from-red-700 to-amber-800',
+        elements: ['火', '仙'], traits: ['木葉', '三忍', '仙人'], icon: 'fa-fire-flame-curved', avatarBg: 'from-red-700 to-amber-800',
         baseStats: { hp: 7400, atk: 280, def: 145, spd: 124 },
         jutsus: [
           { name: '亂獅子髮之術', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：白髮硬化突刺，造成 105% 傷害並回 3 氣。' },
           { name: '火遁·大炎彈', type: 'aoe', elem: '火', cost: 3, mult: 1.5, desc: '口吐巨大火球，對敵方全體造成 150% 火遁傷害。' },
           { name: '水遁·蛤蟆油彈', type: 'aoe', elem: '水', cost: 3, mult: 1.45, desc: '噴灑黏稠蛤蟆油衝擊全體敵人，造成 145% 水屬性傷害。' },
-          { name: '奧義·仙法五右衛門', type: 'aoe', elem: '火', cost: 6, mult: 2.45, desc: '仙人模式油火風合擊！對敵方全體造成 245% 毀滅傷害。' }
+          { name: '奧義·仙法五右衛門', type: 'aoe', elem: '仙', cost: 6, mult: 2.45, desc: '仙人模式油火風合擊！對敵方全體造成 245% 毀滅傷害。' }
         ]
       },
       {
@@ -1110,7 +1146,7 @@
         ]
       },
 
-      // --- SR ELITE TIER ---
+      // --- 精英 SR 階級 ---
       {
         id: 'sakura_byakugou', name: '春野櫻(百豪之術)', title: '新三忍·百豪解放怪力', rarity: 'SR', village: '木葉', formTag: '覺醒型態',
         elements: ['醫', '體'], traits: ['第七班', '木葉', '覺醒型態'], icon: 'fa-heart-pulse', avatarBg: 'from-pink-600 to-rose-700',
@@ -1245,11 +1281,11 @@
       },
       {
         id: 'kabuto', name: '藥師兜(白蛇仙人)', title: '龍地洞仙人模式·穢土操控', rarity: 'SR', village: '音隱', formTag: '覺醒型態',
-        elements: ['醫', '陰'], traits: ['音隱', '仙人', '覺醒型態'], icon: 'fa-staff-aesculapius', avatarBg: 'from-purple-800 to-emerald-900',
+        elements: ['醫', '仙'], traits: ['音隱', '仙人', '覺醒型態'], icon: 'fa-staff-aesculapius', avatarBg: 'from-purple-800 to-emerald-900',
         baseStats: { hp: 6700, atk: 245, def: 135, spd: 128 },
         jutsus: [
           { name: '查克拉手術刀', type: 'single', elem: '醫', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：精準切斷經絡，造成 100% 傷害並回 3 氣。' },
-          { name: '仙法·白激之術', type: 'stun', elem: '陰', cost: 3, mult: 1.4, desc: '強光與震動麻痺敵人感官，造成 140% 傷害並暈眩 1 回合。' },
+          { name: '仙法·白激之術', type: 'stun', elem: '仙', cost: 3, mult: 1.4, desc: '仙術強光與震動麻痺敵人感官，造成 140% 傷害並暈眩 1 回合。' },
           { name: '陰癒傷滅·全隊再生', type: 'heal_team', elem: '醫', cost: 3, mult: 2.55, desc: '高速細胞活化，為全隊回復 255% 攻擊力的生命值。' },
           { name: '奧義·仙法無機轉生', type: 'aoe', elem: '土', cost: 6, mult: 2.35, desc: '賦予周遭岩石生命發動突刺！對全體造成 235% 傷害。' }
         ]
@@ -1315,7 +1351,7 @@
         baseStats: { hp: 6300, atk: 235, def: 125, spd: 134 },
         jutsus: [
           { name: '蝶翼風刃斬', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：振翅刮起烈風斬擊，造成 100% 傷害並回 3 氣。' },
-          { name: '秘術·鱗粉隱之術', type: 'stun', elem: '幻', cost: 3, mult: 1.35, desc: '閃耀鱗粉致盲敵人！造成 135% 傷害並暈眩 1 回合。' },
+          { name: '秘術·鱗粉隱之術', type: 'stun', elem: '陰', cost: 3, mult: 1.35, desc: '閃耀鱗粉致盲敵人！造成 135% 傷害並暈眩 1 回合。' },
           { name: '蟲繭守護', type: 'buff_team', elem: '風', cost: 2, mult: 1.1, desc: '七尾吐絲編織護罩，全隊獲得 110% 攻擊力護盾。' },
           { name: '奧義·七尾重明·鱗粉龍捲', type: 'aoe', elem: '風', cost: 6, mult: 2.25, desc: '空中俯衝掀起狂暴風暴，全體造成 225% 傷害。' }
         ]
@@ -1344,12 +1380,12 @@
       },
       {
         id: 'jugo', name: '重吾', title: '仙人化咒印本源·狂暴雙臂', rarity: 'R', village: '音隱',
-        elements: ['體', '土'], traits: ['鷹小隊', '音隱', '仙人'], icon: 'fa-hand-fist', avatarBg: 'from-orange-900 to-stone-900',
+        elements: ['體', '仙'], traits: ['鷹小隊', '音隱', '仙人'], icon: 'fa-hand-fist', avatarBg: 'from-orange-900 to-stone-900',
         baseStats: { hp: 7000, atk: 235, def: 135, spd: 117 },
         jutsus: [
           { name: '咒印活塞重拳', type: 'single', elem: '體', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：噴射推進的巨拳重擊，造成 105% 傷害並回 3 氣。' },
           { name: '多連不諧和音', type: 'aoe', elem: '風', cost: 3, mult: 1.45, desc: '全身長出噴射孔釋放查克拉衝擊波，全體 145% 傷害。' },
-          { name: '自然能量吸收護體', type: 'buff_team', elem: '土', cost: 2, mult: 1.1, desc: '硬化甲殼掩護隊友，全隊獲得 110% 攻擊力護盾。' },
+          { name: '自然能量吸收護體', type: 'buff_team', elem: '仙', cost: 2, mult: 1.1, desc: '吸收自然能量硬化甲殼，全隊獲得 110% 攻擊力護盾。' },
           { name: '奧義·完全仙人化·零距離砲', type: 'single', elem: '體', cost: 5, mult: 2.45, desc: '全開查克拉噴射砲貼身轟殺！對單體造成 245% 傷害。' }
         ]
       },
@@ -1366,12 +1402,12 @@
       },
       {
         id: 'neji', name: '日向寧次', title: '日向分家天才·八卦掌', rarity: 'SR', village: '木葉',
-        elements: ['體', '風'], traits: ['木葉', '凱班', '日向'], icon: 'fa-yin-yang', avatarBg: 'from-slate-700 to-indigo-800',
+        elements: ['體', '瞳'], traits: ['木葉', '凱班', '日向'], icon: 'fa-yin-yang', avatarBg: 'from-slate-700 to-indigo-800',
         baseStats: { hp: 6200, atk: 235, def: 130, spd: 131 },
         jutsus: [
           { name: '柔拳·八卦空掌', type: 'single', elem: '風', cost: 0, mult: 1.05, chakraGain: 3, desc: '普攻：掌心射出真空查克拉波，造成 105% 傷害並回 3 氣。' },
           { name: '八卦掌·回天', type: 'buff_team', elem: '風', cost: 2, mult: 1.15, desc: '高速旋轉彈開所有攻擊，全隊獲得 115% 攻擊力護盾。' },
-          { name: '柔拳法·八卦六十四掌', type: 'single', elem: '體', cost: 4, mult: 1.95, desc: '封閉全身六十四處穴道！造成 195% 單體連擊傷害。' },
+          { name: '柔拳法·八卦六十四掌', type: 'single', elem: '瞳', cost: 4, mult: 1.95, desc: '白眼看穿並封閉六十四處穴道！造成 195% 單體連擊傷害。' },
           { name: '奧義·八卦一百二十八掌', type: 'aoe', elem: '體', cost: 5, mult: 2.1, desc: '極限高速柔拳連打！對敵方全體造成 210% 傷害。' }
         ]
       },
@@ -1410,13 +1446,13 @@
       },
       {
         id: 'kurenai', name: '夕日紅', title: '木葉第一幻術女上忍', rarity: 'R', village: '木葉',
-        elements: ['幻', '木'], traits: ['木葉', '第八班'], icon: 'fa-eye', avatarBg: 'from-rose-800 to-purple-950',
+        elements: ['陰', '瞳'], traits: ['木葉', '第八班'], icon: 'fa-eye', avatarBg: 'from-rose-800 to-purple-950',
         baseStats: { hp: 5700, atk: 215, def: 120, spd: 126 },
         jutsus: [
-          { name: '幻影苦無', type: 'single', elem: '幻', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：虛實交錯的投擲，造成 100% 傷害並回 3 氣。' },
-          { name: '魔幻·樹縛殺', type: 'stun', elem: '幻', cost: 3, mult: 1.35, desc: '幻化大樹纏繞敵人並刺穿！造成 135% 傷害並暈眩 1 回合。' },
-          { name: '花瓣幻霧屏障', type: 'buff_team', elem: '幻', cost: 2, mult: 1.1, desc: '櫻花幻影迷惑敵方攻擊，全隊獲得 110% 護盾。' },
-          { name: '奧義·幻術·八雲迷宮', type: 'aoe', elem: '幻', cost: 5, mult: 2.05, desc: '令敵軍全員陷入精神崩潰幻境，造成 205% 傷害。' }
+          { name: '幻影苦無', type: 'single', elem: '陰', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：虛實交錯的投擲，造成 100% 傷害並回 3 氣。' },
+          { name: '魔幻·樹縛殺', type: 'stun', elem: '陰', cost: 3, mult: 1.35, desc: '幻化大樹纏繞敵人並刺穿！造成 135% 傷害並暈眩 1 回合。' },
+          { name: '花瓣幻霧屏障', type: 'buff_team', elem: '陰', cost: 2, mult: 1.1, desc: '櫻花幻影迷惑敵方攻擊，全隊獲得 110% 護盾。' },
+          { name: '奧義·幻術·八雲迷宮', type: 'aoe', elem: '瞳', cost: 5, mult: 2.05, desc: '令敵軍全員陷入精神崩潰幻境，造成 205% 傷害。' }
         ]
       },
       {
@@ -1487,7 +1523,7 @@
       },
       {
         id: 'kankuro', name: '勘九郎', title: '砂隱傀儡師·烏鴉黑蟻', rarity: 'R', village: '砂隱',
-        elements: ['土', '幻'], traits: ['砂隱'], icon: 'fa-masks-theater', avatarBg: 'from-zinc-800 to-purple-950',
+        elements: ['土', '陰'], traits: ['砂隱'], icon: 'fa-masks-theater', avatarBg: 'from-zinc-800 to-purple-950',
         baseStats: { hp: 6100, atk: 215, def: 130, spd: 116 },
         jutsus: [
           { name: '烏鴉暗器連射', type: 'single', elem: '土', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：傀儡機關發射苦無，造成 100% 傷害並回 3 氣。' },
@@ -1498,24 +1534,24 @@
       },
       {
         id: 'hinata', name: '日向雛田', title: '白眼公主·柔步雙獅拳', rarity: 'R', village: '木葉',
-        elements: ['體', '水'], traits: ['木葉', '第八班', '日向'], icon: 'fa-yin-yang', avatarBg: 'from-indigo-800 to-slate-800',
+        elements: ['體', '瞳'], traits: ['木葉', '第八班', '日向'], icon: 'fa-yin-yang', avatarBg: 'from-indigo-800 to-slate-800',
         baseStats: { hp: 6000, atk: 210, def: 130, spd: 121 },
         jutsus: [
-          { name: '柔拳·點穴', type: 'single', elem: '體', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：白眼看穿經絡點穴，造成 100% 傷害並回 3 氣。' },
+          { name: '柔拳·點穴', type: 'single', elem: '瞳', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：白眼看穿經絡點穴，造成 100% 傷害並回 3 氣。' },
           { name: '守護八卦六十四掌', type: 'buff_team', elem: '水', cost: 2, mult: 1.15, desc: '查克拉化為細絲防禦全場，為全隊提供 115% 攻擊力護盾。' },
           { name: '柔步雙獅拳', type: 'single', elem: '體', cost: 3, mult: 1.85, desc: '雙手凝聚獅子形態查克拉猛擊，造成 185% 單體傷害。' },
-          { name: '奧義·八卦空掌連擊', type: 'aoe', elem: '水', cost: 5, mult: 2.0, desc: '釋放真空查克拉衝擊波，對敵方全體造成 200% 傷害。' }
+          { name: '奧義·八卦空掌連擊', type: 'aoe', elem: '風', cost: 5, mult: 2.0, desc: '釋放真空查克拉衝擊波，對敵方全體造成 200% 傷害。' }
         ]
       },
       {
         id: 'ino', name: '山中井野', title: '心轉身術與感知醫療', rarity: 'R', village: '木葉',
-        elements: ['幻', '醫'], traits: ['木葉', '豬鹿蝶'], icon: 'fa-spa', avatarBg: 'from-purple-700 to-pink-800',
+        elements: ['陰', '醫'], traits: ['木葉', '豬鹿蝶'], icon: 'fa-spa', avatarBg: 'from-purple-700 to-pink-800',
         baseStats: { hp: 5600, atk: 200, def: 115, spd: 119 },
         jutsus: [
-          { name: '花瓣手裏劍', type: 'single', elem: '幻', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：敏捷投擲造成 100% 傷害並回 3 氣。' },
-          { name: '心轉身之術', type: 'stun', elem: '幻', cost: 3, mult: 1.25, desc: '精神入侵控制敵方行動！造成 125% 傷害並暈眩 1 回合。' },
+          { name: '花瓣手裏劍', type: 'single', elem: '陰', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：敏捷投擲造成 100% 傷害並回 3 氣。' },
+          { name: '心轉身之術', type: 'stun', elem: '陰', cost: 3, mult: 1.25, desc: '精神入侵控制敵方行動！造成 125% 傷害並暈眩 1 回合。' },
           { name: '掌仙術·應急治療', type: 'heal_team', elem: '醫', cost: 3, mult: 2.4, desc: '為全隊回復 240% 攻擊力的生命值。' },
-          { name: '奧義·心亂身之術', type: 'aoe', elem: '幻', cost: 5, mult: 1.95, desc: '擾亂敵軍心智自相殘殺，對全體造成 195% 傷害。' }
+          { name: '奧義·心亂身之術', type: 'aoe', elem: '陰', cost: 5, mult: 1.95, desc: '擾亂敵軍心智自相殘殺，對全體造成 195% 傷害。' }
         ]
       },
       {
@@ -1575,21 +1611,22 @@
       },
       {
         id: 'tayuya', name: '多由也(咒印二)', title: '音忍魔笛幻術使', rarity: 'R', village: '音隱',
-        elements: ['幻', '風'], traits: ['音隱'], icon: 'fa-music', avatarBg: 'from-rose-900 to-purple-950',
+        elements: ['陰', '風'], traits: ['音隱'], icon: 'fa-music', avatarBg: 'from-rose-900 to-purple-950',
         baseStats: { hp: 5700, atk: 215, def: 115, spd: 123 },
         jutsus: [
           { name: '魔笛音波彈', type: 'single', elem: '風', cost: 0, mult: 1.0, chakraGain: 3, desc: '普攻：吹奏鋒利音波攻擊，造成 100% 傷害並回 3 氣。' },
-          { name: '魔笛·夢幻音鎖', type: 'stun', elem: '幻', cost: 3, mult: 1.35, desc: '聽覺幻術束縛敵方神經！造成 135% 傷害並暈眩 1 回合。' },
+          { name: '魔笛·夢幻音鎖', type: 'stun', elem: '陰', cost: 3, mult: 1.35, desc: '聽覺幻術束縛敵方神經！造成 135% 傷害並暈眩 1 回合。' },
           { name: '通靈·三鬼物質化靈體', type: 'aoe', elem: '陰', cost: 3, mult: 1.45, desc: '操縱三頭怒鬼吞噬敵人查克拉，全體造成 145% 傷害。' },
-          { name: '奧義·終曲第九章·魔境之亂', type: 'aoe', elem: '幻', cost: 5, mult: 2.1, desc: '咒印二全力吹奏終極魔音！全體造成 210% 傷害。' }
+          { name: '奧義·終曲第九章·魔境之亂', type: 'aoe', elem: '陰', cost: 5, mult: 2.1, desc: '咒印二全力吹奏終極魔音！全體造成 210% 傷害。' }
         ]
       }
     ];
 
     /* =========================================================================
-       3. ELEMENT / TRAIT COMBO RECIPES
+       3. 高連擊合體聯招公式庫（異系相生融合 + 全 11 屬性同系共鳴）
        ========================================================================= */
     const COMBO_RECIPES = [
+      // --- 異屬性相生融合技 ---
       {
         id: 'wind_fire',
         name: '【風火燎原·豪火螺旋丸】',
@@ -1627,31 +1664,22 @@
         power: 1.8
       },
       {
-        id: 'genjutsu_yin',
-        name: '【無限月讀·精神崩壞】',
-        req: ['幻', '陰'],
-        badge: '幻 + 陰',
+        id: 'dojutsu_yin',
+        name: '【無限月讀·瞳術精神崩壞】',
+        req: ['瞳', '陰'],
+        badge: '瞳 + 陰',
         desc: '極致瞳術與陰遁共鳴！重創目標 175% 傷害並強制暈眩 1 回合。',
         effectType: 'stun_dmg',
         power: 1.75
       },
       {
-        id: 'tai_tai',
-        name: '【八門連擊·青春雙龍破】',
-        req: ['體', '體'],
-        badge: '體 + 體',
-        desc: '雙重體術極限爆發！對單體目標發動 210% 破甲連打。',
-        effectType: 'single_dmg',
-        power: 2.1
-      },
-      {
-        id: 'genjutsu_tai',
-        name: '【影縛連彈·表蓮華】',
-        req: ['幻', '體'],
-        badge: '幻 + 體',
-        desc: '趁敵人陷入幻術硬直發動必殺連打！對目標追加 195% 暴擊重擊。',
-        effectType: 'single_dmg',
-        power: 1.95
+        id: 'sage_yang',
+        name: '【仙法六道·自然陽遁共振】',
+        req: ['仙', '陽'],
+        badge: '仙 + 陽',
+        desc: '自然能量與六道陽力融合！全體造成 165% 仙術衝擊並回復全隊 1 點查克拉。',
+        effectType: 'yin_yang_miracle',
+        power: 1.65
       },
       {
         id: 'earth_water',
@@ -1671,19 +1699,113 @@
         effectType: 'team_heal_chakra',
         power: 1.8
       },
+
+      // --- 全 11 屬性同系共鳴連招（連發同屬性也能接出華麗連擊） ---
+      {
+        id: 'same_fire',
+        name: '【紅蓮業火·雙重豪火滅卻】',
+        req: ['火', '火'],
+        badge: '火 + 火（同系共鳴）',
+        desc: '雙重火遁疊加引爆高溫火海！對敵方全體追加 145% 灼熱追擊。',
+        effectType: 'aoe_dmg',
+        power: 1.45
+      },
+      {
+        id: 'same_water',
+        name: '【怒濤海嘯·大瀑布連擊】',
+        req: ['水', '水'],
+        badge: '水 + 水（同系共鳴）',
+        desc: '水遁查克拉匯聚成滔天巨浪！對敵方全體追加 140% 水壓衝擊。',
+        effectType: 'aoe_dmg',
+        power: 1.4
+      },
+      {
+        id: 'same_wind',
+        name: '【真空龍捲·大鎌鼬亂舞】',
+        req: ['風', '風'],
+        badge: '風 + 風（同系共鳴）',
+        desc: '兩道烈風交錯形成切割風暴！對敵方全體追加 145% 風刃追擊。',
+        effectType: 'aoe_dmg',
+        power: 1.45
+      },
+      {
+        id: 'same_lightning',
+        name: '【紫電雷鳴·雷神雙閃】',
+        req: ['雷', '雷'],
+        badge: '雷 + 雷（同系共鳴）',
+        desc: '超高壓雷遁貫穿防禦！對鎖定目標造成 185% 暴擊雷擊並暈眩 1 回合。',
+        effectType: 'stun_dmg',
+        power: 1.85
+      },
+      {
+        id: 'same_earth',
+        name: '【山崩地裂·超加重岩鎮壓】',
+        req: ['土', '土'],
+        badge: '土 + 土（同系共鳴）',
+        desc: '大地重力倍增壓碎敵陣！對敵方全體造成 140% 震盪並使目標暈眩。',
+        effectType: 'stun_dmg',
+        power: 1.4
+      },
+      {
+        id: 'same_tai',
+        name: '【八門連擊·青春雙龍破】',
+        req: ['體', '體'],
+        badge: '體 + 體（同系共鳴）',
+        desc: '雙重體術極限爆發！對單體目標發動 210% 破甲連打。',
+        effectType: 'single_dmg',
+        power: 2.1
+      },
+      {
+        id: 'same_dojutsu',
+        name: '【雙神威須佐·瞳力共振】',
+        req: ['瞳', '瞳'],
+        badge: '瞳 + 瞳（同系共鳴）',
+        desc: '雙重瞳力引發時空間扭曲！對鎖定目標造成 195% 精神與空間重創。',
+        effectType: 'single_dmg',
+        power: 1.95
+      },
+      {
+        id: 'same_sage',
+        name: '【妙木龍地·仙術自然共鳴】',
+        req: ['仙', '仙'],
+        badge: '仙 + 仙（同系共鳴）',
+        desc: '仙術查克拉沸騰全場！對全體造成 155% 仙法轟擊並為全隊回 1 氣。',
+        effectType: 'yin_yang_miracle',
+        power: 1.55
+      },
+      {
+        id: 'same_yin',
+        name: '【暗影束縛·雙重陰遁侵蝕】',
+        req: ['陰', '陰'],
+        badge: '陰 + 陰（同系共鳴）',
+        desc: '漆黑陰遁查克拉鎖死敵人！造成 175% 傷害並強制暈眩 1 回合。',
+        effectType: 'stun_dmg',
+        power: 1.75
+      },
+      {
+        id: 'same_yang',
+        name: '【九尾太陽·陽遁生命爆發】',
+        req: ['陽', '陽'],
+        badge: '陽 + 陽（同系共鳴）',
+        desc: '熾熱陽遁查克拉橫掃戰場！全體造成 160% 傷害並回復全隊 1 氣。',
+        effectType: 'yin_yang_miracle',
+        power: 1.6
+      },
+
+      // --- 通用異屬性協同連攜 ---
       {
         id: 'universal_synergy',
-        name: '【忍術協同連攜·合擊】',
+        name: '【忍術協同連攜·瞬身合擊】',
         req: ['DIFF', 'DIFF'],
         badge: '任意兩種不同屬性',
-        desc: '雙忍默契配合發動協同追擊！對鎖定目標追加 115% 協同傷害。',
+        desc: '雙忍默契配合發動協同追擊！對鎖定目標追加 125% 協同傷害。',
         effectType: 'single_dmg',
-        power: 1.15
+        power: 1.25
       }
     ];
 
     /* =========================================================================
-       4. 12-CHAPTER ANIME STORY CAMPAIGN & GRADED DUEL STAGES (WITH FORMATIONS)
+       4. 12 章動漫主線劇情 & 自由試煉關卡
        ========================================================================= */
     const STORY_CHAPTERS = [
       {
@@ -1849,7 +1971,7 @@
         enemyFormation: 'fangyuan',
         rewardRyo: 300,
         rewardCards: 50,
-        desc: '敵方為 1★~2★ 木葉同期小隊，適合磨合小隊速度順位與陣型站位。',
+        desc: '敵方為 1★~2★ 木葉同期小隊，適合磨合雙槽連擊軌道與陣型站位。',
         roster: [
           { id: 'kiba', stars: 1 },
           { id: 'shino', stars: 1 },
@@ -1931,9 +2053,9 @@
         ids: ['gaara', 'raikage_a', 'mei', 'onoki']
       },
       {
-        title: '【大筒木始祖·創世神話之陣】',
+        title: '【大筒木神族·一式與輝夜降臨】',
         formation: 'heyi',
-        ids: ['hagoromo', 'kaguya', 'indra', 'ashura']
+        ids: ['isshiki', 'momoshiki', 'kaguya', 'hagoromo']
       },
       {
         title: '【燃燒青春·八門死門極限陣】',
@@ -1943,9 +2065,9 @@
     ];
 
     /* =========================================================================
-       5. PLAYER STATE, SAVE/LOAD & FORMATION-SCALED STATS
+       5. 玩家存檔狀態與陣型屬性計算
        ========================================================================= */
-    const SAVE_KEY = 'naruto_shinobi_squad_save_v4';
+    const SAVE_KEY = 'naruto_shinobi_squad_save_v5';
 
     const defaultState = {
       ryo: 10000,
@@ -1977,9 +2099,7 @@
           battleSpeed: state.battleSpeed
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(toSave));
-      } catch (e) {
-        // Ignore storage errors in restricted environments
-      }
+      } catch (e) {}
     }
 
     function loadGame() {
@@ -1996,9 +2116,7 @@
             state.battleSpeed = parsed.battleSpeed === 2 ? 2 : 1;
           }
         }
-      } catch (e) {
-        // Fallback to defaultState
-      }
+      } catch (e) {}
     }
 
     function requestResetProgress() {
@@ -2116,12 +2234,13 @@
     }
 
     /* =========================================================================
-       6. NAVIGATION, STORY CAMPAIGN, SQUAD FORMATION CENTER & CODEX
+       6. 分頁切換、動漫劇情、小隊編制與全型態圖鑑
        ========================================================================= */
     function switchTab(tabName) {
       if (state.combat) {
         state.combat = null;
       }
+      closeCombatLogDropdown();
       document.getElementById('combat-arena-panel').classList.add('hidden');
 
       ['story', 'stage', 'squad', 'gacha', 'roster'].forEach(t => {
@@ -2180,13 +2299,11 @@
               <h3 class="font-serif-tc text-lg font-black text-white mt-2">${ch.title}</h3>
               <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">${ch.synopsis}</p>
 
-              <!-- Enemy Formation & Counter Status -->
               <div class="mt-3 flex flex-wrap items-center justify-between gap-1.5 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800">
                 <span class="text-[11px] text-rose-300 font-bold"><i class="fa-solid ${enemyForm.icon} mr-1"></i>敵方陣型：${enemyForm.name}</span>
                 ${advBadge}
               </div>
 
-              <!-- Chapter Boss & Enemy Squad -->
               <div class="mt-2.5 grid grid-cols-2 sm:grid-cols-4 gap-2">
                 ${enemyUnits.map(e => `
                   <div class="bg-slate-950/90 border border-slate-800 p-2 rounded-xl text-center">
@@ -2276,7 +2393,6 @@
       updateTopBar();
       const activeForm = getFormationById(state.formation);
 
-      // 1. Render 6 Formations
       const counterTarget = getFormationById(activeForm.counters);
       const counteredByTarget = getFormationById(activeForm.counteredBy);
       document.getElementById('formation-counter-badge').innerHTML = `
@@ -2318,7 +2434,6 @@
         `;
       }).join('');
 
-      // 2. Render 4 Squad Slots with Front/Back Positional Bonuses & Reorder Controls
       const slotsGrid = document.getElementById('squad-slots-grid');
       slotsGrid.innerHTML = '';
 
@@ -2337,6 +2452,7 @@
           squadMembers.push(s);
           totalPower += s.power;
           s.elements.forEach(e => squadElems.add(e));
+          s.jutsus.forEach(j => squadElems.add(j.elem));
 
           slotsGrid.innerHTML += `
             <div class="relative rounded-xl bg-slate-900/95 border-2 border-amber-500/70 p-3 flex flex-col justify-between shadow-lg">
@@ -2400,7 +2516,6 @@
 
       document.getElementById('ui-squad-power').innerText = totalPower.toLocaleString();
 
-      // Speed Order Preview
       const speedPreview = document.getElementById('squad-speed-preview');
       const sortedSpeed = [...squadMembers].sort((a, b) => b.spd - a.spd);
       if (sortedSpeed.length === 0) {
@@ -2413,20 +2528,13 @@
         `).join(' <i class="fa-solid fa-arrow-right text-slate-600"></i> ');
       }
 
-      // Combo Compatibility Analyzer
       const synergyContainer = document.getElementById('squad-synergy-tags');
       const activeCombos = COMBO_RECIPES.filter(c => {
         if (c.id === 'universal_synergy') return squadElems.size >= 2;
         if (c.req[1] === 'ANY') return squadElems.has(c.req[0]);
-        if (c.req[0] === c.req[1]) {
-          let cnt = 0;
-          state.squad.forEach(id => {
-            if (getShinobiStats(id).elements.includes(c.req[0])) cnt++;
-          });
-          return cnt >= 2;
-        }
+        if (c.req[0] === c.req[1]) return squadElems.has(c.req[0]);
         return squadElems.has(c.req[0]) && squadElems.has(c.req[1]);
-      });
+      }).slice(0, 8);
 
       if (activeCombos.length === 0) {
         synergyContainer.innerHTML = `<span class="text-slate-500">目前陣容尚未湊齊屬性合體聯招</span>`;
@@ -2438,7 +2546,6 @@
         `).join('');
       }
 
-      // 3. Render Owned Tactical Roster with Filter, Search & Sort
       const quickBox = document.getElementById('squad-quick-roster');
       const searchEl = document.getElementById('squad-search-input');
       const sortEl = document.getElementById('squad-sort-select');
@@ -2447,7 +2554,6 @@
 
       let ownedList = Object.keys(state.owned).map(id => getShinobiStats(id));
 
-      // Apply Faction / Form Filter
       if (state.squadFactionFilter !== 'ALL') {
         ownedList = ownedList.filter(s => {
           if (state.squadFactionFilter === '木葉') return s.village === '木葉' || s.traits.includes('木葉');
@@ -2460,7 +2566,6 @@
         });
       }
 
-      // Apply Search Keyword (Name, Form Title, Village, or Jutsu Name)
       if (keyword) {
         ownedList = ownedList.filter(s =>
           s.name.toLowerCase().includes(keyword) ||
@@ -2470,7 +2575,6 @@
         );
       }
 
-      // Apply Sort
       ownedList.sort((a, b) => {
         if (sortBy === 'stars') return b.stars - a.stars || b.power - a.power;
         if (sortBy === 'spd') return b.spd - a.spd;
@@ -2509,7 +2613,6 @@
                 </div>
               </div>
 
-              <!-- Full 4-Stat Preview -->
               <div class="grid grid-cols-4 gap-1 mt-2 bg-slate-950/85 p-1.5 rounded-lg border border-slate-800/80 text-center text-[10px] font-mono">
                 <div><span class="text-slate-500 block">HP</span><span class="text-emerald-400 font-bold">${s.hp}</span></div>
                 <div><span class="text-slate-500 block">ATK</span><span class="text-rose-400 font-bold">${s.atk}</span></div>
@@ -2517,7 +2620,6 @@
                 <div><span class="text-slate-500 block">SPD</span><span class="text-sky-400 font-bold">${s.spd}</span></div>
               </div>
 
-              <!-- 4 Signature Jutsu Quick Tags -->
               <div class="mt-2 flex flex-wrap gap-1">
                 ${s.jutsus.map(j => `
                   <span class="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-[9px] text-slate-300 truncate max-w-full">
@@ -2721,7 +2823,7 @@
     }
 
     /* =========================================================================
-       7. GACHA RECRUITMENT SYSTEM (1 元 PER PULL)
+       7. 忍者招募系統（1 元單抽 / 十連 / 百連）
        ========================================================================= */
     function pullGacha(times) {
       const cost = times * 1;
@@ -2812,8 +2914,38 @@
     }
 
     /* =========================================================================
-       8. STAGES, RANDOM 5★ CHALLENGE & FORMATION-INTEGRATED 4v4 COMBAT ENGINE
+       8. 4v4 戰鬥引擎、雙槽屬性軌道高連擊系統 & 下拉式回合實況控制
        ========================================================================= */
+    function toggleCombatLogDropdown(e) {
+      if (e) e.stopPropagation();
+      const panel = document.getElementById('combat-log-dropdown-panel');
+      const chevron = document.getElementById('log-dropdown-chevron');
+      if (!panel) return;
+      const isHidden = panel.classList.contains('hidden');
+      if (isHidden) {
+        panel.classList.remove('hidden');
+        if (chevron) chevron.classList.add('rotate-180');
+        const box = document.getElementById('combat-log-box');
+        if (box) box.scrollTop = box.scrollHeight;
+      } else {
+        closeCombatLogDropdown();
+      }
+    }
+
+    function closeCombatLogDropdown() {
+      const panel = document.getElementById('combat-log-dropdown-panel');
+      const chevron = document.getElementById('log-dropdown-chevron');
+      if (panel) panel.classList.add('hidden');
+      if (chevron) chevron.classList.remove('rotate-180');
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrapper = document.getElementById('log-dropdown-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        closeCombatLogDropdown();
+      }
+    });
+
     function renderStages() {
       document.getElementById('stage-select-panel').classList.remove('hidden');
       document.getElementById('combat-arena-panel').classList.add('hidden');
@@ -2979,6 +3111,7 @@
       state.combat = {
         stage,
         round: 1,
+        roundLogCount: 0,
         playerFormation: playerFormId,
         enemyFormation: enemyFormId,
         playerFormMult: playerAdv.mult,
@@ -2988,8 +3121,8 @@
         turnQueue: [],
         currentActorUid: null,
         selectedTargetUid: enemies[0].uid,
-        playerElementChain: [],
-        enemyElementChain: [],
+        playerElementTrack: [],
+        enemyElementTrack: [],
         playerComboStreak: 0,
         enemyComboStreak: 0,
         busy: false
@@ -3021,10 +3154,10 @@
     function updateSpeedButtonUI() {
       const btn = document.getElementById('btn-battle-speed');
       if (btn) {
-        btn.innerHTML = `<i class="fa-solid fa-forward mr-1"></i>${state.battleSpeed}x 速度`;
+        btn.innerHTML = `<i class="fa-solid fa-forward mr-1"></i>${state.battleSpeed}x`;
         btn.className = state.battleSpeed === 2
-          ? 'text-xs px-3 py-1 rounded-lg bg-amber-500 text-slate-950 border border-amber-300 font-mono font-black transition'
-          : 'text-xs px-3 py-1 rounded-lg bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-700 font-mono font-bold transition';
+          ? 'text-xs px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 border border-amber-300 font-mono font-black transition'
+          : 'text-xs px-2.5 py-1 rounded-lg bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-700 font-mono font-bold transition';
       }
     }
 
@@ -3039,11 +3172,23 @@
       return Math.round(ms / (state.battleSpeed || 1));
     }
 
-    function clearCurrentRoundLog(roundNum) {
+    function updateRoundLogBadge() {
+      const c = state.combat;
+      const rNum = c ? c.round : 1;
+      const cnt = c ? c.roundLogCount : 0;
       const badge = document.getElementById('log-round-badge');
-      if (badge) badge.innerText = roundNum;
+      if (badge) badge.innerText = rNum;
+      const btnLabel = document.getElementById('log-dropdown-btn-label');
+      if (btnLabel) btnLabel.innerText = `回合實況（第 ${rNum} 回合・${cnt} 條）`;
+    }
+
+    function clearCurrentRoundLog(roundNum) {
+      if (state.combat) {
+        state.combat.roundLogCount = 0;
+      }
       const box = document.getElementById('combat-log-box');
       if (box) box.innerHTML = '';
+      updateRoundLogBadge();
     }
 
     function buildRoundQueue() {
@@ -3088,13 +3233,16 @@
       if (c.turnQueue.length === 0) {
         c.round++;
         clearCurrentRoundLog(c.round);
-        c.playerElementChain = [];
-        c.enemyElementChain = [];
-        c.playerComboStreak = 0;
-        c.enemyComboStreak = 0;
+        // 雙槽屬性軌道保留跨回合最後 1 個屬性種子，讓跨回合首招也能延續連攜！
+        if (c.playerElementTrack.length > 1) {
+          c.playerElementTrack = [c.playerElementTrack[c.playerElementTrack.length - 1]];
+        }
+        if (c.enemyElementTrack.length > 1) {
+          c.enemyElementTrack = [c.enemyElementTrack[c.enemyElementTrack.length - 1]];
+        }
         alivePlayers.forEach(p => { p.chakra = Math.min(10, p.chakra + 1); });
         aliveEnemies.forEach(e => { e.chakra = Math.min(10, e.chakra + 1); });
-        addCombatLog(`🔔 第 ${c.round} 回合開始（全員依速度重新排序，雙方各回復 1 點查克拉）`, 'text-sky-300 font-bold');
+        addCombatLog(`🔔 第 ${c.round} 回合開始（全員依速度重新排序，雙方各回復 1 點查克拉，保留跨回合連攜種子！）`, 'text-sky-300 font-bold');
         buildRoundQueue();
       }
 
@@ -3121,30 +3269,46 @@
       }
     }
 
-    function checkComboMatch(prevElem, currentElem) {
-      if (!prevElem) return null;
-      const specific = COMBO_RECIPES.find(r =>
-        r.id !== 'universal_synergy' && (
-          (r.req[0] === prevElem && (r.req[1] === currentElem || r.req[1] === 'ANY')) ||
-          (r.req[1] === prevElem && r.req[0] === currentElem)
-        )
-      );
-      if (specific) return specific;
+    /**
+     * 雙槽屬性軌道高連擊判定器：
+     * 檢查新施放的 currentElem 是否能與 track（最近 2 招屬性）中的任一元素觸發專屬合體技、
+     * 全 11 屬性同系共鳴技，或異屬性協同連攜技！
+     */
+    function checkComboAgainstTrack(track, currentElem) {
+      if (!track || track.length === 0) return null;
 
-      if (prevElem !== currentElem) {
-        return COMBO_RECIPES.find(r => r.id === 'universal_synergy') || null;
+      // 優先檢查專屬異屬性融合或全 11 屬性同系共鳴（先比對最新一招，再比對前一招）
+      for (let i = track.length - 1; i >= 0; i--) {
+        const seedElem = track[i];
+        const specific = COMBO_RECIPES.find(r =>
+          r.id !== 'universal_synergy' && (
+            (r.req[0] === seedElem && (r.req[1] === currentElem || r.req[1] === 'ANY')) ||
+            (r.req[1] === seedElem && r.req[0] === currentElem)
+          )
+        );
+        if (specific) {
+          return { combo: specific, matchedWith: seedElem };
+        }
       }
+
+      // 若未命中專屬公式，只要與軌道內任一屬性不同即觸發通用忍術協同連攜
+      const diffSeed = [...track].reverse().find(el => el !== currentElem);
+      if (diffSeed) {
+        const univ = COMBO_RECIPES.find(r => r.id === 'universal_synergy');
+        if (univ) return { combo: univ, matchedWith: diffSeed };
+      }
+
       return null;
     }
 
-    function triggerComboVisualAndEffect(actor, combo, targetUnit, streakCount) {
+    function triggerComboVisualAndEffect(actor, combo, targetUnit, streakCount, matchedWithElem) {
       const c = state.combat;
       const isPlayer = actor.side === 'player';
       const opponents = isPlayer ? c.enemies.filter(e => e.hp > 0) : c.players.filter(p => p.hp > 0);
       const allies = isPlayer ? c.players.filter(p => p.hp > 0) : c.enemies.filter(e => e.hp > 0);
       const target = (targetUnit && targetUnit.hp > 0) ? targetUnit : opponents[0];
 
-      const streakMult = streakCount <= 1 ? 1.0 : (streakCount === 2 ? 1.2 : (streakCount === 3 ? 1.45 : 1.75));
+      const streakMult = streakCount <= 1 ? 1.0 : (streakCount === 2 ? 1.25 : (streakCount === 3 ? 1.50 : 1.85));
       const bonusPctText = streakCount > 1 ? `【${streakCount} 連擊！威力 +${Math.round((streakMult - 1) * 100)}%】` : '';
 
       const flash = document.getElementById('combo-screen-flash');
@@ -3156,7 +3320,7 @@
       const overlay = document.getElementById('combo-overlay');
       const card = document.getElementById('combo-overlay-card');
       document.getElementById('combo-overlay-side').innerText = isPlayer
-        ? `✨ 我方合體聯招發動 ${bonusPctText} ✨`
+        ? `✨ 我方雙槽軌道聯招發動（銜接【${matchedWithElem}】）${bonusPctText} ✨`
         : `⚠️ 敵方修羅合體聯招發動 ${bonusPctText} ⚠️`;
       document.getElementById('combo-overlay-title').innerText = combo.name;
       document.getElementById('combo-overlay-desc').innerText = combo.desc;
@@ -3189,8 +3353,22 @@
         });
       }
 
+      // 高連擊階段額外追擊獎勵：2連擊起追加「忍具連攜追擊」；4連擊起再爆「奧義共鳴全體震盪」
+      let milestoneNote = '';
+      if (streakCount >= 2 && target && target.hp > 0) {
+        const kunaiDmg = applyDamage(actor, target, scaledAtk * 0.65);
+        milestoneNote += ` ＋ 🗡️【2連擊追擊·忍具連彈】追加 ${kunaiDmg} 點傷害`;
+      }
+      if (streakCount >= 4 && opponents.length > 0) {
+        let waveTotal = 0;
+        opponents.forEach(opp => {
+          waveTotal += applyDamage(actor, opp, scaledAtk * 0.85);
+        });
+        milestoneNote += ` ＋ 💥【4連擊爆發·奧義共鳴震盪】全體追加 ${waveTotal} 點傷害`;
+      }
+
       const tagColor = isPlayer ? 'text-amber-400 font-black' : 'text-rose-400 font-black';
-      addCombatLog(`✨ 【${isPlayer ? '我方' : '敵方'}合體聯招】${combo.name} ${bonusPctText}！${combo.desc}`, tagColor);
+      addCombatLog(`✨ 【${isPlayer ? '我方' : '敵方'}合體聯招】${combo.name} ${bonusPctText}！${combo.desc}${milestoneNote}`, tagColor);
     }
 
     function executeSmartEnemyTurn(enemy) {
@@ -3203,16 +3381,15 @@
         return;
       }
 
-      const prevElem = c.enemyElementChain.length > 0 ? c.enemyElementChain[c.enemyElementChain.length - 1] : null;
       const affordable = enemy.jutsus.map((j, idx) => ({ j, idx })).filter(item => enemy.chakra >= item.j.cost);
 
       let chosen = affordable[0].j;
       const comboJutsu = affordable.find(item => {
-        const match = checkComboMatch(prevElem, item.j.elem);
-        return match && match.id !== 'universal_synergy';
+        const match = checkComboAgainstTrack(c.enemyElementTrack, item.j.elem);
+        return match && match.combo.id !== 'universal_synergy';
       });
 
-      if (comboJutsu && Math.random() < 0.8) {
+      if (comboJutsu && Math.random() < 0.78) {
         chosen = comboJutsu.j;
       } else {
         const lowAlly = aliveEnemies.find(a => a.hp / a.maxHp < 0.55);
@@ -3252,11 +3429,11 @@
         addCombatLog(`🛡️ 敵方【${enemy.name}(${enemy.stars}★)】展開《${chosen.name}》，敵方全隊獲得 ${shieldAmt} 點護盾！`, 'text-purple-300');
       }
 
-      const triggeredCombo = checkComboMatch(prevElem, chosen.elem);
-      c.enemyElementChain.push(chosen.elem);
-      if (c.enemyElementChain.length > 4) c.enemyElementChain.shift();
+      const comboResult = checkComboAgainstTrack(c.enemyElementTrack, chosen.elem);
+      c.enemyElementTrack.push(chosen.elem);
+      if (c.enemyElementTrack.length > 2) c.enemyElementTrack.shift();
 
-      if (triggeredCombo) {
+      if (comboResult) {
         c.enemyComboStreak++;
       } else {
         c.enemyComboStreak = 0;
@@ -3264,8 +3441,8 @@
 
       renderCombatField();
 
-      if (triggeredCombo) {
-        triggerComboVisualAndEffect(enemy, triggeredCombo, target, c.enemyComboStreak);
+      if (comboResult) {
+        triggerComboVisualAndEffect(enemy, comboResult.combo, target, c.enemyComboStreak, comboResult.matchedWith);
         setTimeout(() => {
           renderCombatField();
           nextTurn();
@@ -3288,29 +3465,33 @@
       if (!c) return;
       document.getElementById('combat-round').innerText = c.round;
 
+      // 雙槽屬性軌道視覺化顯示
       const chainBox = document.getElementById('combat-chain-display');
-      if (c.playerElementChain.length === 0) {
-        chainBox.innerHTML = `<span class="text-slate-600 italic">等待首招</span>`;
+      if (c.playerElementTrack.length === 0) {
+        chainBox.innerHTML = `<span class="text-slate-600 italic">[ 空槽 ] → [ 空槽 ]</span>`;
       } else {
-        chainBox.innerHTML = c.playerElementChain.map(el => `<span class="px-2 py-0.5 rounded border text-[10px] elem-${el}">${el}</span>`).join(' <i class="fa-solid fa-angle-right text-slate-500"></i> ');
+        const slotsHtml = c.playerElementTrack.map((el, idx) =>
+          `<span class="px-2 py-0.5 rounded border text-[10px] font-black elem-${el}">${el}</span>`
+        ).join(' <span class="text-slate-500">+</span> ');
+        chainBox.innerHTML = slotsHtml;
       }
 
       const streakBadge = document.getElementById('combat-combo-streak-badge');
       if (c.playerComboStreak > 0) {
-        const bonusPct = c.playerComboStreak === 1 ? 0 : (c.playerComboStreak === 2 ? 20 : (c.playerComboStreak === 3 ? 45 : 75));
+        const bonusPct = c.playerComboStreak === 1 ? 0 : (c.playerComboStreak === 2 ? 25 : (c.playerComboStreak === 3 ? 50 : 85));
         streakBadge.classList.remove('hidden');
         streakBadge.innerText = bonusPct > 0
-          ? `🔥 ${c.playerComboStreak} 連攜 (+${bonusPct}% 威力)`
-          : `🔥 1 連攜已啟動（再接屬性疊加增傷！）`;
+          ? `🔥 ${c.playerComboStreak} 連擊 (+${bonusPct}% 威力 + 追加追擊)`
+          : `🔥 1 連擊已啟動（下招必接高連擊！）`;
       } else {
         streakBadge.classList.add('hidden');
       }
 
       const enemyWarn = document.getElementById('enemy-combo-warning');
-      if (c.enemyElementChain.length > 0) {
-        const lastEnemyElem = c.enemyElementChain[c.enemyElementChain.length - 1];
+      if (c.enemyElementTrack.length > 0) {
+        const trackStr = c.enemyElementTrack.join(' / ');
         enemyWarn.classList.remove('hidden');
-        enemyWarn.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>敵方已蓄勢【${lastEnemyElem}】屬性，小心下一名敵人接續聯招！`;
+        enemyWarn.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>敵方軌道蓄勢【${trackStr}】，小心下名敵人接續聯招！`;
       } else {
         enemyWarn.classList.add('hidden');
       }
@@ -3347,22 +3528,22 @@
         const posTag = e.slotIndex < 2 ? '前排' : '後排';
 
         return `
-          <div id="unit-card-${e.uid}" onclick="selectEnemyTarget('${e.uid}')" class="relative rounded-xl p-3 border-2 transition cursor-pointer ${
+          <div id="unit-card-${e.uid}" onclick="selectEnemyTarget('${e.uid}')" class="relative rounded-xl p-2.5 border-2 transition cursor-pointer ${
             isDead ? 'opacity-30 grayscale bg-slate-950 border-slate-800' :
             (isCurrent ? 'bg-rose-950/50 active-turn-glow' :
             (isTarget ? 'bg-slate-900 border-red-500 shadow-lg' : 'bg-slate-900/80 border-slate-800 hover:border-slate-600'))
           }">
-            ${isTarget ? `<span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-black shadow"><i class="fa-solid fa-crosshairs mr-1"></i>集火目標</span>` : ''}
+            ${isTarget ? `<span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-black shadow"><i class="fa-solid fa-crosshairs mr-1"></i>集火</span>` : ''}
             ${e.stunned ? `<span class="absolute -top-2.5 left-2 px-2 py-0.5 rounded bg-purple-600 text-white text-[10px] font-bold">💫 暈眩</span>` : ''}
 
-            <div class="flex items-center gap-2.5">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${e.avatarBg} border border-rose-400/50 flex items-center justify-center text-white text-base shrink-0">
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${e.avatarBg} border border-rose-400/50 flex items-center justify-center text-white text-sm shrink-0">
                 <i class="fa-solid ${e.icon}"></i>
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1">
                   <span class="text-[9px] px-1 rounded bg-slate-800 text-rose-300 shrink-0">${posTag}</span>
-                  <span class="font-bold text-xs sm:text-sm text-white truncate">${e.name}</span>
+                  <span class="font-bold text-xs text-white truncate">${e.name}</span>
                   <span class="text-[10px] text-amber-400 shrink-0">${'★'.repeat(e.stars)}</span>
                 </div>
                 <div class="flex items-center gap-1 mt-0.5">
@@ -3372,12 +3553,12 @@
               </div>
             </div>
 
-            <div class="mt-2.5 space-y-1">
+            <div class="mt-2 space-y-1">
               <div class="flex justify-between text-[10px] font-mono">
                 <span class="text-rose-300">HP ${e.hp}/${e.maxHp}</span>
                 <span class="text-amber-300"><i class="fa-solid fa-bolt"></i> ${e.chakra}</span>
               </div>
-              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+              <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
                 <div class="h-full bg-gradient-to-r from-rose-600 to-red-400 transition-all duration-300" style="width: ${hpPct}%"></div>
               </div>
               ${e.shield > 0 ? `<div class="text-[10px] text-amber-300 font-mono"><i class="fa-solid fa-shield-halved mr-1"></i>護盾: ${e.shield}</div>` : ''}
@@ -3394,21 +3575,21 @@
         const posTag = p.slotIndex < 2 ? '前排' : '後排';
 
         return `
-          <div id="unit-card-${p.uid}" class="relative rounded-xl p-3 border-2 transition ${
+          <div id="unit-card-${p.uid}" class="relative rounded-xl p-2.5 border-2 transition ${
             isDead ? 'opacity-30 grayscale bg-slate-950 border-slate-800' :
             (isCurrent ? 'bg-sky-950/60 active-turn-glow' : 'bg-slate-900/90 border-slate-800')
           }">
             ${isCurrent ? `<span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded bg-amber-400 text-slate-950 text-[10px] font-black shadow">行動中</span>` : ''}
             ${p.stunned ? `<span class="absolute -top-2.5 left-2 px-2 py-0.5 rounded bg-purple-600 text-white text-[10px] font-bold">💫 暈眩</span>` : ''}
 
-            <div class="flex items-center gap-2.5">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${p.avatarBg} border border-amber-300/60 flex items-center justify-center text-white text-base shrink-0">
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${p.avatarBg} border border-amber-300/60 flex items-center justify-center text-white text-sm shrink-0">
                 <i class="fa-solid ${p.icon}"></i>
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1">
                   <span class="text-[9px] px-1 rounded bg-slate-800 text-sky-300 shrink-0">${posTag}</span>
-                  <span class="font-bold text-xs sm:text-sm text-white truncate">${p.name}</span>
+                  <span class="font-bold text-xs text-white truncate">${p.name}</span>
                   <span class="text-[10px] text-amber-400 shrink-0">${'★'.repeat(p.stars)}</span>
                 </div>
                 <div class="flex items-center gap-1 mt-0.5">
@@ -3418,12 +3599,12 @@
               </div>
             </div>
 
-            <div class="mt-2.5 space-y-1">
+            <div class="mt-2 space-y-1">
               <div class="flex justify-between text-[10px] font-mono">
                 <span class="text-emerald-300">HP ${p.hp}/${p.maxHp}</span>
                 <span class="text-sky-300"><i class="fa-solid fa-bolt"></i> ${p.chakra}</span>
               </div>
-              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+              <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
                 <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300" style="width: ${hpPct}%"></div>
               </div>
               ${p.shield > 0 ? `<div class="text-[10px] text-amber-300 font-mono"><i class="fa-solid fa-shield-halved mr-1"></i>護盾: ${p.shield}</div>` : ''}
@@ -3441,30 +3622,28 @@
       document.getElementById('active-actor-elems').innerHTML = actor.elements.map(e => `<span class="px-1.5 py-0.5 rounded border text-[10px] elem-${e}">${e}</span>`).join('');
 
       const grid = document.getElementById('jutsu-buttons-grid');
-      const prevElem = state.combat.playerElementChain.length > 0
-        ? state.combat.playerElementChain[state.combat.playerElementChain.length - 1]
-        : null;
+      const track = state.combat.playerElementTrack;
 
       grid.innerHTML = actor.jutsus.map((j, idx) => {
         const canAfford = actor.chakra >= j.cost;
-        const matchedCombo = checkComboMatch(prevElem, j.elem);
+        const matchInfo = checkComboAgainstTrack(track, j.elem);
 
         return `
-          <button onclick="castPlayerJutsu(${idx})" ${!canAfford ? 'disabled' : ''} class="text-left p-3 rounded-xl border transition flex flex-col justify-between ${
+          <button onclick="castPlayerJutsu(${idx})" ${!canAfford ? 'disabled' : ''} class="text-left p-2.5 rounded-xl border transition flex flex-col justify-between ${
             !canAfford ? 'bg-slate-950/60 border-slate-800 opacity-45 cursor-not-allowed' :
-            (matchedCombo ? 'bg-gradient-to-r from-amber-950/90 to-red-950/80 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.35)] hover:scale-[1.01]' : 'bg-slate-900 hover:bg-slate-800 border-slate-700 hover:border-sky-400')
+            (matchInfo ? 'bg-gradient-to-r from-amber-950/90 to-red-950/80 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.35)] hover:scale-[1.01]' : 'bg-slate-900 hover:bg-slate-800 border-slate-700 hover:border-sky-400')
           }">
             <div class="flex items-center justify-between gap-1">
-              <div class="flex items-center gap-1.5">
-                <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold elem-${j.elem}">${j.elem}</span>
-                <span class="font-bold text-xs sm:text-sm text-white">${j.name}</span>
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold shrink-0 elem-${j.elem}">${j.elem}</span>
+                <span class="font-bold text-xs text-white truncate">${j.name}</span>
               </div>
-              <span class="text-xs font-mono font-bold ${j.cost === 0 ? 'text-emerald-400' : 'text-sky-400'}">
-                ${j.cost === 0 ? '+3 氣' : `-${j.cost} 氣`}
+              <span class="text-[11px] font-mono font-bold shrink-0 ${j.cost === 0 ? 'text-emerald-400' : 'text-sky-400'}">
+                ${j.cost === 0 ? '+3氣' : `-${j.cost}氣`}
               </span>
             </div>
-            <p class="text-[11px] text-slate-300 mt-1 leading-snug">${j.desc}</p>
-            ${matchedCombo ? `<div class="mt-1.5 text-[10px] font-black text-amber-300 animate-pulse"><i class="fa-solid fa-fire mr-1"></i>接續【${prevElem}】觸發 ${matchedCombo.name}！</div>` : ''}
+            <p class="text-[10px] text-slate-300 mt-1 leading-snug line-clamp-2">${j.desc}</p>
+            ${matchInfo ? `<div class="mt-1 text-[10px] font-black text-amber-300 animate-pulse truncate"><i class="fa-solid fa-fire mr-1"></i>接【${matchInfo.matchedWith}】觸發 ${matchInfo.combo.name}！</div>` : ''}
           </button>
         `;
       }).join('');
@@ -3476,8 +3655,8 @@
       document.getElementById('active-actor-name').innerText = `${actor.name} 正在結印...`;
       document.getElementById('active-actor-elems').innerHTML = '';
       document.getElementById('jutsu-buttons-grid').innerHTML = `
-        <div class="col-span-2 py-8 text-center text-slate-400 text-xs">
-          <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg mb-2"></i>
+        <div class="col-span-full py-6 text-center text-slate-400 text-xs">
+          <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg mb-1.5"></i>
           <div>敵方忍者準備施放忍術，請注意防禦...</div>
         </div>
       `;
@@ -3565,15 +3744,11 @@
         addCombatLog(`🛡️ 【${actor.name}】展開《${jutsu.name}》，全隊獲得 ${shieldAmt} 點護盾！`, 'text-sky-300');
       }
 
-      const prevElem = c.playerElementChain.length > 0
-        ? c.playerElementChain[c.playerElementChain.length - 1]
-        : null;
+      const comboResult = checkComboAgainstTrack(c.playerElementTrack, jutsu.elem);
+      c.playerElementTrack.push(jutsu.elem);
+      if (c.playerElementTrack.length > 2) c.playerElementTrack.shift();
 
-      const triggeredCombo = checkComboMatch(prevElem, jutsu.elem);
-      c.playerElementChain.push(jutsu.elem);
-      if (c.playerElementChain.length > 4) c.playerElementChain.shift();
-
-      if (triggeredCombo) {
+      if (comboResult) {
         c.playerComboStreak++;
       } else {
         c.playerComboStreak = 0;
@@ -3581,8 +3756,8 @@
 
       renderCombatField();
 
-      if (triggeredCombo) {
-        triggerComboVisualAndEffect(actor, triggeredCombo, target, c.playerComboStreak);
+      if (comboResult) {
+        triggerComboVisualAndEffect(actor, comboResult.combo, target, c.playerComboStreak, comboResult.matchedWith);
         setTimeout(() => {
           renderCombatField();
           nextTurn();
@@ -3593,10 +3768,19 @@
     }
 
     function addCombatLog(msg, colorClass = 'text-slate-300') {
+      if (state.combat) {
+        state.combat.roundLogCount = (state.combat.roundLogCount || 0) + 1;
+        updateRoundLogBadge();
+      }
+      const ticker = document.getElementById('latest-log-ticker');
+      if (ticker) {
+        ticker.className = `truncate flex-1 font-mono ${colorClass}`;
+        ticker.innerText = msg;
+      }
       const box = document.getElementById('combat-log-box');
       if (!box) return;
       const div = document.createElement('div');
-      div.className = colorClass;
+      div.className = `py-1 border-b border-slate-800/60 last:border-b-0 ${colorClass}`;
       div.innerText = msg;
       box.appendChild(div);
       box.scrollTop = box.scrollHeight;
@@ -3639,6 +3823,7 @@
 
       const wasStory = !!stage.isStoryChapter;
       state.combat = null;
+      closeCombatLogDropdown();
       document.getElementById('combat-arena-panel').classList.add('hidden');
       if (wasStory) {
         switchTab('story');
@@ -3651,6 +3836,7 @@
       const wasStory = !!(state.combat && state.combat.stage && state.combat.stage.isStoryChapter);
       showToast(`💀 我方小隊全軍覆沒！請調整「忍法陣型」或前往「角色圖鑑」升星再戰！`, 'error');
       state.combat = null;
+      closeCombatLogDropdown();
       document.getElementById('combat-arena-panel').classList.add('hidden');
       if (wasStory) {
         switchTab('story');
@@ -3662,6 +3848,7 @@
     function retreatCombat() {
       const wasStory = !!(state.combat && state.combat.stage && state.combat.stage.isStoryChapter);
       state.combat = null;
+      closeCombatLogDropdown();
       document.getElementById('combat-arena-panel').classList.add('hidden');
       if (wasStory) {
         switchTab('story');
@@ -3671,7 +3858,7 @@
     }
 
     /* =========================================================================
-       9. MODALS (SHINOBI DETAIL & COMBO CODEX) & INITIALIZATION
+       9. 彈出詳情視窗、合體聯招圖鑑與遊戲初始化
        ========================================================================= */
     function openDetailModal(shinobiId) {
       const s = getShinobiStats(shinobiId);
@@ -3729,7 +3916,7 @@
     function openComboCodex() {
       const list = document.getElementById('codex-list');
       list.innerHTML = COMBO_RECIPES.map(c => `
-        <div class="p-3.5 rounded-xl bg-slate-900/95 border border-amber-700/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="p-3 rounded-xl bg-slate-900/95 border border-amber-700/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <div class="font-bold text-sm text-amber-300">${c.name}</div>
             <p class="text-xs text-slate-300 mt-0.5">${c.desc}</p>
