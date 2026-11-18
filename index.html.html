@@ -1,1809 +1,2117 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>山海經：異獸吞噬進化</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #0b1315;
-            font-family: 'Noto Serif TC', serif;
-            color: #e6dfd3;
-        }
-        #gameCanvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-        }
-        /* 水墨捲軸質感邊框與面板 */
-        .ink-panel {
-            background: linear-gradient(145deg, rgba(18, 28, 30, 0.94), rgba(10, 17, 19, 0.97));
-            border: 1px solid rgba(196, 164, 104, 0.45);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(196, 164, 104, 0.08);
-            backdrop-filter: blur(8px);
-        }
-        .ink-card {
-            background: linear-gradient(180deg, rgba(26, 39, 41, 0.9), rgba(14, 22, 24, 0.95));
-            border: 1px solid rgba(196, 164, 104, 0.3);
-            transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .ink-card:hover {
-            transform: translateY(-6px);
-            border-color: #e5c17b;
-            box-shadow: 0 12px 28px rgba(229, 193, 123, 0.22), inset 0 0 15px rgba(229, 193, 123, 0.12);
-        }
-        .gold-text {
-            background: linear-gradient(to bottom, #f7e4b2, #c89d4c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .ink-btn {
-            background: linear-gradient(180deg, #3a2e1d, #241b10);
-            border: 1px solid #c89d4c;
-            color: #f7e4b2;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-            transition: all 0.15s ease;
-        }
-        .ink-btn:hover:not(:disabled) {
-            background: linear-gradient(180deg, #4f3e27, #302415);
-            box-shadow: 0 0 15px rgba(200, 157, 76, 0.45);
-            transform: scale(1.03);
-        }
-        .ink-btn:active:not(:disabled) {
-            transform: scale(0.97);
-        }
-        .ink-btn:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-            border-color: #5a5245;
-        }
-        /* 自訂捲軸 */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(10, 17, 19, 0.6);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(196, 164, 104, 0.4);
-            border-radius: 3px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>山海經：異獸吞噬進化・星海遠征版</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0b1314;
+      font-family: 'Noto Serif TC', serif;
+      color: #f3ecd8;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .ink-panel {
+      background: linear-gradient(145deg, rgba(16, 28, 29, 0.92), rgba(10, 18, 19, 0.96));
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), inset 0 0 18px rgba(212, 175, 55, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .gold-border {
+      border: 1px solid rgba(226, 190, 92, 0.5);
+    }
+
+    .btn-ancient {
+      background: linear-gradient(180deg, #283f3b 0%, #172624 100%);
+      border: 1px solid #c9a44c;
+      color: #f7eed6;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+    }
+
+    .btn-ancient:hover:not(:disabled) {
+      background: linear-gradient(180deg, #375751 0%, #203532 100%);
+      border-color: #ffe08a;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(201, 164, 76, 0.3);
+    }
+
+    .btn-ancient:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn-ancient:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-ascend {
+      background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%);
+      border: 1px solid #fde68a;
+      color: #fffbeb;
+      animation: pulseGold 2s infinite;
+    }
+
+    @keyframes pulseGold {
+      0%, 100% { box-shadow: 0 0 12px rgba(251, 191, 36, 0.5); }
+      50% { box-shadow: 0 0 24px rgba(251, 191, 36, 0.95); }
+    }
+
+    /* 自訂捲軸 */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(12, 20, 21, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(201, 164, 76, 0.5);
+      border-radius: 3px;
+    }
+  </style>
 </head>
-<body class="relative">
+<body>
 
-    <!-- 遊戲主畫布 -->
-    <canvas id="gameCanvas"></canvas>
+  <!-- 主遊戲畫布 -->
+  <canvas id="gameCanvas"></canvas>
 
-    <!-- 頂部 HUD 狀態列 (遊戲中顯示) -->
-    <div id="hudTop" class="hidden fixed top-0 left-0 right-0 p-3 sm:p-4 pointer-events-none flex justify-between items-start z-20 gap-2">
-        <!-- 左上角異獸資訊與血量/經驗條 -->
-        <div class="ink-panel rounded-xl p-3 sm:p-4 pointer-events-auto w-64 sm:w-80">
-            <div class="flex items-center justify-between mb-1">
-                <div class="flex items-center gap-2">
-                    <span id="hudStageBadge" class="text-xs px-2 py-0.5 rounded bg-amber-900/70 border border-amber-500/50 text-amber-200 font-bold">幼體</span>
-                    <h2 id="hudName" class="text-base sm:text-lg font-bold tracking-wider gold-text">息壤蟲</h2>
-                </div>
-                <span id="hudAttr" class="text-xs text-stone-400">土系・雜食</span>
-            </div>
-            <p id="hudPassiveDesc" class="text-[11px] text-amber-200/80 mb-2 truncate">天賦：可吞食靈草礦石，無消化懲罰</p>
-
-            <!-- 生命條 -->
-            <div class="mb-2">
-                <div class="flex justify-between text-xs mb-0.5">
-                    <span class="text-stone-300">氣血</span>
-                    <span id="hudHpText" class="text-emerald-300 font-mono">100 / 100</span>
-                </div>
-                <div class="w-full h-2.5 bg-stone-900 rounded-full overflow-hidden border border-stone-700">
-                    <div id="hudHpBar" class="h-full bg-gradient-to-r from-emerald-700 via-emerald-500 to-teal-300 transition-all duration-150" style="width: 100%"></div>
-                </div>
-            </div>
-
-            <!-- 進化經驗條 -->
-            <div class="mb-2">
-                <div class="flex justify-between text-xs mb-0.5">
-                    <span id="hudExpLabel" class="text-stone-300">進化靈氣</span>
-                    <span id="hudExpText" class="text-amber-300 font-mono">0 / 100</span>
-                </div>
-                <div class="w-full h-2.5 bg-stone-900 rounded-full overflow-hidden border border-stone-700">
-                    <div id="hudExpBar" class="h-full bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-300 transition-all duration-150" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <!-- 體型與吞噬計數 -->
-            <div class="flex justify-between text-xs text-stone-300 pt-1 border-t border-stone-700/70">
-                <span>體型：<strong id="hudSize" class="text-amber-200">22</strong> 丈</span>
-                <span>已吞噬：<strong id="hudKills" class="text-amber-200">0</strong> 隻</span>
-                <span id="hudMinionCount" class="hidden text-lime-300">子蜂：<strong>0</strong></span>
-            </div>
+  <!-- 遊戲內 HUD -->
+  <div id="hudLayer" class="fixed inset-0 pointer-events-none hidden">
+    <!-- 左上角：異獸狀態與靈氣條 -->
+    <div class="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-col gap-2 pointer-events-auto max-w-[300px] sm:max-w-[340px]">
+      <div class="ink-panel rounded-xl p-3 sm:p-3.5">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <div class="flex items-center gap-2">
+            <span id="hudStageBadge" class="px-2 py-0.5 text-xs font-bold rounded bg-amber-900/80 text-amber-200 border border-amber-500/40">幼體</span>
+            <h2 id="hudBeastName" class="text-base sm:text-lg font-black tracking-wider text-amber-100">息壤蟲</h2>
+          </div>
+          <span id="hudBiomeTag" class="text-xs px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-500/30">星域荒野</span>
         </div>
 
-        <!-- 右上角控制按鈕區 -->
-        <div class="flex flex-col sm:flex-row gap-2 pointer-events-auto">
-            <button id="btnBestiary" class="ink-btn px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5">
-                <span>📜</span><span>山海圖鑑</span>
-            </button>
-            <button id="btnRestartTop" class="ink-panel hover:border-amber-400/70 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl text-xs sm:text-sm text-stone-300 hover:text-white transition">
-                重選異獸
-            </button>
+        <!-- 氣血條 -->
+        <div class="mb-2">
+          <div class="flex justify-between text-xs text-stone-300 mb-0.5">
+            <span>氣血</span>
+            <span id="hudHpText">100 / 100</span>
+          </div>
+          <div class="w-full h-2.5 bg-stone-900/90 rounded-full overflow-hidden border border-stone-700/80">
+            <div id="hudHpBar" class="h-full bg-gradient-to-r from-red-700 via-rose-500 to-amber-400 transition-all duration-150" style="width: 100%"></div>
+          </div>
         </div>
+
+        <!-- 進化靈氣條 -->
+        <div class="mb-2">
+          <div class="flex justify-between text-xs text-amber-200/90 mb-0.5">
+            <span id="hudXpLabel">吞噬靈氣</span>
+            <span id="hudXpText">0 / 100</span>
+          </div>
+          <div class="w-full h-2.5 bg-stone-900/90 rounded-full overflow-hidden border border-amber-700/50">
+            <div id="hudXpBar" class="h-full bg-gradient-to-r from-teal-500 via-emerald-400 to-amber-300 transition-all duration-150" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- 體型與狀態數值 -->
+        <div class="flex items-center justify-between text-xs text-stone-300 pt-1 border-t border-stone-700/60">
+          <span>體魄：<strong id="hudSizeText" class="text-amber-300">22</strong></span>
+          <span>吞噬：<strong id="hudKillsText" class="text-emerald-300">0</strong></span>
+          <span id="hudBuffText" class="text-amber-400 font-bold hidden">神威加持!</span>
+        </div>
+      </div>
+
+      <!-- 三大靈脈 BOSS 狀態列 -->
+      <div class="ink-panel rounded-xl px-3 py-2 text-xs flex flex-col gap-1">
+        <div class="text-amber-300/90 font-bold tracking-wider flex items-center justify-between">
+          <span>✦ 三大靈脈鎮守霸主</span>
+          <span id="hudReincarnationBadge" class="text-[11px] text-amber-400">太古血脈 +0%</span>
+        </div>
+        <div id="hudBossList" class="grid grid-cols-1 gap-1 text-[11px]"></div>
+      </div>
+
+      <!-- 究級體解鎖：太古奪神・三神格槽位 -->
+      <div id="divinityPanel" class="ink-panel rounded-xl p-3 hidden border-amber-400/70">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-bold text-amber-300">👑 太古獵神・本源神格</span>
+          <span id="divinityCountText" class="text-xs text-amber-200">0 / 3</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5 mb-2 text-center text-[11px]">
+          <div id="orbSlotQingqiu" class="py-1 px-1 rounded bg-stone-900/90 border border-stone-700 text-stone-500">青丘狐火</div>
+          <div id="orbSlotGuixu" class="py-1 px-1 rounded bg-stone-900/90 border border-stone-700 text-stone-500">歸墟雷龍</div>
+          <div id="orbSlotBuzhou" class="py-1 px-1 rounded bg-stone-900/90 border border-stone-700 text-stone-500">不周饕餮</div>
+        </div>
+        <button id="ascendBtn" onclick="openAscendModal()" class="w-full py-1.5 rounded-lg text-xs font-bold btn-ascend hidden">
+          ✨ 集齊三神格・羽化登仙 ✨
+        </button>
+      </div>
     </div>
 
-    <!-- 中央浮動公告（進化提示、霸主警告等） -->
-    <div id="bannerMsg" class="pointer-events-none fixed top-24 left-1/2 -translate-x-1/2 z-30 opacity-0 transition-all duration-500 transform -translate-y-4">
-        <div class="ink-panel px-6 py-2.5 rounded-full border-amber-400/80 text-center shadow-2xl">
-            <div id="bannerTitle" class="text-base sm:text-xl font-black gold-text tracking-widest">血脈覺醒・一階進化</div>
-            <div id="bannerSub" class="text-xs text-amber-100/90 mt-0.5">化形為【土螻】，獲得全新神通！</div>
-        </div>
+    <!-- 右上角：功能按鈕 -->
+    <div class="absolute top-3 right-3 sm:top-4 sm:right-4 flex gap-2 pointer-events-auto">
+      <button onclick="toggleBestiary(true)" class="btn-ancient px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5">
+        <span>📜</span><span>山海圖鑑</span>
+      </button>
+      <button onclick="returnToTitle()" class="btn-ancient px-3 py-2 rounded-lg text-xs sm:text-sm font-bold">
+        重選異獸
+      </button>
     </div>
 
-    <!-- 底部操作提示與主動技能按鈕 (遊戲中顯示) -->
-    <div id="hudBottom" class="hidden fixed bottom-4 left-0 right-0 px-4 pointer-events-none flex flex-col items-center z-20">
-        <div class="flex items-center gap-4 pointer-events-auto">
-            <button id="btnSkill" class="ink-btn relative overflow-hidden rounded-2xl px-6 py-3.5 sm:px-8 sm:py-4 flex items-center gap-3 shadow-2xl border-2 border-amber-400/80">
-                <span id="skillIcon" class="text-2xl">🌀</span>
-                <div class="text-left">
-                    <div class="flex items-center gap-2">
-                        <span id="skillName" class="font-bold text-sm sm:text-base text-amber-200">泥沼潛行</span>
-                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-black/50 text-stone-300 border border-stone-600">空白鍵 / 點擊</span>
-                    </div>
-                    <div id="skillDesc" class="text-xs text-stone-300">短暫隱身並大幅提升移速</div>
-                </div>
-                <!-- 冷卻遮罩 -->
-                <div id="skillCdOverlay" class="hidden absolute inset-0 bg-black/75 flex items-center justify-center font-mono text-lg font-bold text-amber-300">
-                    5.0s
-                </div>
-            </button>
+    <!-- 底部中央：天賦技能施放列 -->
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 pointer-events-auto">
+      <div id="eventToast" class="px-4 py-1.5 rounded-full bg-amber-950/90 border border-amber-400/70 text-amber-200 text-xs sm:text-sm font-bold shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+        觸發上古奇遇！
+      </div>
+      <div class="ink-panel rounded-2xl px-4 py-2.5 flex items-center gap-3">
+        <button id="skillBtn" onclick="triggerSkill()" class="btn-ancient px-4 py-2 rounded-xl flex items-center gap-2.5 relative overflow-hidden">
+          <span id="skillIcon" class="text-xl">🌀</span>
+          <div class="text-left">
+            <div id="skillName" class="text-xs sm:text-sm font-black text-amber-200">泥沼潛行</div>
+            <div id="skillDesc" class="text-[10px] sm:text-xs text-stone-300">空白鍵 / 點擊施放</div>
+          </div>
+          <div id="skillCdOverlay" class="absolute inset-0 bg-black/75 flex items-center justify-center text-sm font-bold text-amber-300 hidden">
+            8.0s
+          </div>
+        </button>
+        <div class="hidden sm:flex flex-col text-[11px] text-stone-300 leading-tight border-l border-stone-700 pl-3">
+          <span>🖱️ 滑鼠 / 觸控 / WASD 游動</span>
+          <span>🟢 綠圈直接吞噬・🟡 金閃破防可吞</span>
         </div>
-        <div class="mt-2 text-[11px] sm:text-xs text-stone-400 bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
-            滑鼠移動或手指滑動引導異獸 ｜ <span class="text-emerald-400">綠框</span>可直接吞噬 ｜ <span class="text-rose-400">紅框</span>需用技能打至<span class="text-amber-300">閃爍破防</span>後吞食
-        </div>
+      </div>
     </div>
 
-    <!-- ==================== 開局選擇介面 ==================== -->
-    <div id="startScreen" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
-        <div class="ink-panel rounded-2xl max-w-4xl w-full p-5 sm:p-8 my-auto">
-            <div class="text-center mb-6">
-                <div class="inline-block px-3 py-1 rounded-full border border-amber-500/40 bg-amber-950/40 text-amber-300 text-xs tracking-widest mb-2">
-                    大荒洪荒・弱肉強食
-                </div>
-                <h1 class="text-3xl sm:text-5xl font-black gold-text tracking-wider mb-2">山海經：異獸吞噬進化</h1>
-                <p class="text-xs sm:text-sm text-stone-300 max-w-xl mx-auto">
-                    擇一太古異獸降臨大荒。吞噬弱小、獵殺強敵，歷經三階血脈蛻變，終成制霸山海的究級神獸！
-                </p>
-            </div>
-
-            <!-- 三隻初始異獸卡片 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-6">
-                <!-- 1. 息壤蟲 -->
-                <div class="ink-card rounded-xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer group" onclick="startGame('xirang')">
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-900/60 text-amber-200 border border-amber-600/40">土系・雜食吞納</span>
-                            <span class="text-2xl">🪨</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-amber-200 group-hover:text-amber-100 mb-1">息壤蟲</h3>
-                        <p class="text-xs text-stone-400 mb-3">神土所化之靈，無胃之腹，萬物皆可化為養分。</p>
-                        
-                        <div class="space-y-1.5 text-xs text-stone-300 bg-black/35 p-3 rounded-lg border border-stone-800 mb-3">
-                            <div><span class="text-amber-400 font-bold">【被動・貪食】</span>可直接吞食靈草與礦石，成長最穩健。</div>
-                            <div><span class="text-amber-400 font-bold">【主動・泥沼潛行】</span>隱身並暴增移速，輕鬆逃脫巨獸追殺或繞背偷襲。</div>
-                        </div>
-
-                        <div class="text-[11px] text-stone-400 border-t border-stone-800 pt-2">
-                            <span class="text-stone-500">進化路線：</span><br>
-                            息壤蟲 → 土螻 → 饕餮幼雛 → <span class="text-amber-300 font-bold">渾沌・吞天巨獸</span>
-                        </div>
-                    </div>
-                    <button class="ink-btn w-full mt-4 py-2.5 rounded-lg font-bold text-sm">選擇此獸降臨</button>
-                </div>
-
-                <!-- 2. 欽原蜂 -->
-                <div class="ink-card rounded-xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer group" onclick="startGame('qinyuan')">
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-900/60 text-emerald-200 border border-emerald-600/40">木毒系・蟲蠱圍獵</span>
-                            <span class="text-2xl">🐝</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-emerald-300 group-hover:text-emerald-200 mb-1">欽原蜂</h3>
-                        <p class="text-xs text-stone-400 mb-3">昆侖毒蜂，蜇鳥獸則死，擅長以蟲海圍獵巨獸。</p>
-                        
-                        <div class="space-y-1.5 text-xs text-stone-300 bg-black/35 p-3 rounded-lg border border-stone-800 mb-3">
-                            <div><span class="text-emerald-400 font-bold">【被動・血肉孕卵】</span>每次吞噬孵化「子蜂」自動圍攻並削弱大型異獸。</div>
-                            <div><span class="text-emerald-400 font-bold">【主動・枯木毒針】</span>連射劇毒蜂針，使巨獸中毒緩速並快速破防。</div>
-                        </div>
-
-                        <div class="text-[11px] text-stone-400 border-t border-stone-800 pt-2">
-                            <span class="text-stone-500">進化路線：</span><br>
-                            欽原蜂 → 蠱雕 → 鴆羽魔君 → <span class="text-emerald-300 font-bold">太古蟲皇・九嬰蠱</span>
-                        </div>
-                    </div>
-                    <button class="ink-btn w-full mt-4 py-2.5 rounded-lg font-bold text-sm">選擇此獸降臨</button>
-                </div>
-
-                <!-- 3. 化蛇雛 -->
-                <div class="ink-card rounded-xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer group" onclick="startGame('huashe')">
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs px-2.5 py-0.5 rounded-full bg-sky-900/60 text-sky-200 border border-sky-600/40">水雷系・龍血掠食</span>
-                            <span class="text-2xl">🐉</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-sky-300 group-hover:text-sky-200 mb-1">化蛇雛</h3>
-                        <p class="text-xs text-stone-400 mb-3">人面豺身、鳥翼蛇行，身負太古真龍血脈的掠食者。</p>
-                        
-                        <div class="space-y-1.5 text-xs text-stone-300 bg-black/35 p-3 rounded-lg border border-stone-800 mb-3">
-                            <div><span class="text-sky-400 font-bold">【被動・龍血共鳴】</span>吞噬水族與蛇蛟類獲得雙倍靈氣，正面撕咬極強。</div>
-                            <div><span class="text-sky-400 font-bold">【主動・電弧衝刺】</span>化作雷電突進，震暈路徑獵物並重創大型異獸。</div>
-                        </div>
-
-                        <div class="text-[11px] text-stone-400 border-t border-stone-800 pt-2">
-                            <span class="text-stone-500">進化路線：</span><br>
-                            化蛇雛 → 鳴蛇 → 應龍雷蛟 → <span class="text-sky-300 font-bold">創世神獸・燭九陰</span>
-                        </div>
-                    </div>
-                    <button class="ink-btn w-full mt-4 py-2.5 rounded-lg font-bold text-sm">選擇此獸降臨</button>
-                </div>
-            </div>
-        </div>
+    <!-- 右下角：太極羅盤・星海遠征雷達 -->
+    <div class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 pointer-events-auto flex flex-col items-center">
+      <div class="relative rounded-full p-1 ink-panel shadow-2xl">
+        <canvas id="radarCanvas" width="164" height="164" class="rounded-full block"></canvas>
+      </div>
+      <span class="mt-1 text-[10px] tracking-widest text-amber-200/80 bg-black/60 px-2 py-0.5 rounded-full border border-amber-500/30">
+        太極羅盤・星域導航
+      </span>
     </div>
+  </div>
 
-    <!-- ==================== 山海異獸圖鑑彈窗 ==================== -->
-    <div id="bestiaryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-        <div class="ink-panel rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col p-5 sm:p-6">
-            <div class="flex justify-between items-center pb-3 border-b border-stone-700">
-                <div>
-                    <h2 class="text-xl sm:text-2xl font-bold gold-text">📜 山海異獸演化圖鑑</h2>
-                    <p class="text-xs text-stone-400">記錄大荒百獸血脈階段與食物鏈法則（開啟圖鑑時遊戲已暫停）</p>
-                </div>
-                <button id="btnCloseBestiary" class="ink-btn px-3.5 py-1.5 rounded-lg text-sm font-bold">返回大荒</button>
-            </div>
-
-            <div id="bestiaryContent" class="overflow-y-auto py-4 space-y-5 pr-1 text-sm">
-                <!-- 由 JS 動態填入當前種族進化樹與野生異獸圖鑑 -->
-            </div>
+  <!-- 開局選擇初始異獸畫面 -->
+  <div id="startModal" class="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
+    <div class="ink-panel rounded-2xl max-w-4xl w-full p-5 sm:p-8 my-auto">
+      <div class="text-center mb-6">
+        <div class="inline-block px-3 py-1 rounded-full bg-amber-900/50 border border-amber-500/40 text-amber-300 text-xs tracking-widest mb-2">
+          無邊星海・三大靈脈・太古奪神
         </div>
-    </div>
+        <h1 class="text-2xl sm:text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-emerald-300">
+          山海經：異獸吞噬進化
+        </h1>
+        <p class="text-xs sm:text-sm text-stone-300 mt-2 max-w-2xl mx-auto">
+          星域版圖倍增！漫遊無邊界荒野，探尋<span class="text-amber-300 font-bold">上古秘境奇遇</span>，深入<span class="text-emerald-300">青丘靈林</span>、<span class="text-cyan-300">歸墟寒淵</span>、<span class="text-rose-300">不周赤土</span>狩獵屬性異獸，進化究級體並吞噬三大靈脈霸主奪取本源神格！
+        </p>
+        <div id="startLegacyInfo" class="mt-2 text-xs text-amber-400 font-bold hidden"></div>
+      </div>
 
-    <!-- ==================== 結算畫面 (死亡或究級制霸) ==================== -->
-    <div id="endModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-        <div class="ink-panel rounded-2xl max-w-md w-full p-6 text-center border-2 border-amber-500/60">
-            <div id="endBadge" class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 bg-amber-900/60 text-amber-200 border border-amber-500/40">
-                大荒歷練終結
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- 息壤蟲 -->
+        <div onclick="selectStarter('xirang')" class="group cursor-pointer rounded-xl p-4 bg-stone-900/80 border border-amber-600/40 hover:border-amber-400 hover:bg-stone-800/90 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/40">土系・雜食吞納</span>
+              <span class="text-2xl">🪱</span>
             </div>
-            <h2 id="endTitle" class="text-2xl sm:text-3xl font-black gold-text mb-2">身隕大荒</h2>
-            <p id="endDesc" class="text-xs sm:text-sm text-stone-300 mb-5">弱肉強食乃山海鐵律，唯有不斷吞噬方能登頂。</p>
-
-            <div class="bg-black/45 rounded-xl p-4 border border-stone-800 mb-6 space-y-2 text-sm">
-                <div class="flex justify-between">
-                    <span class="text-stone-400">最終形態：</span>
-                    <span id="endFinalForm" class="font-bold text-amber-200">息壤蟲（幼體）</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-stone-400">最終體型：</span>
-                    <span id="endFinalSize" class="font-bold text-emerald-300">25 丈</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-stone-400">吞噬異獸總數：</span>
-                    <span id="endTotalKills" class="font-bold text-sky-300">12 隻</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-stone-400">存活時間：</span>
-                    <span id="endSurviveTime" class="font-bold text-stone-200">45 秒</span>
-                </div>
+            <h3 class="text-xl font-black text-amber-200 group-hover:text-amber-300">息壤蟲</h3>
+            <p class="text-xs text-stone-400 mt-1 mb-3">神土所化，無胃之腹。早期可吞食靈草與礦石穩健成長，生存容錯率最高。</p>
+            <div class="text-xs space-y-1 text-stone-300 border-t border-stone-700/70 pt-2">
+              <div><strong class="text-amber-300">天賦：</strong>可直接吞食靈草/礦石，越級吞噬範圍更廣</div>
+              <div><strong class="text-amber-300">技能【泥沼潛行】：</strong>隱身加速並持續回復氣血</div>
+              <div><strong class="text-emerald-300">進化：</strong>土螻 ➔ 饕餮幼雛 ➔ <span class="text-amber-300 font-bold">渾沌吞天巨獸</span></div>
             </div>
-
-            <div class="flex gap-3">
-                <button id="btnContinueEndless" class="hidden flex-1 py-3 rounded-xl font-bold text-sm bg-emerald-900/80 hover:bg-emerald-800 border border-emerald-500/60 text-emerald-100 transition">
-                    繼續制霸大荒
-                </button>
-                <button id="btnPlayAgain" class="ink-btn flex-1 py-3 rounded-xl font-bold text-sm">
-                    輪迴轉世・重選異獸
-                </button>
-            </div>
+          </div>
+          <button class="mt-4 w-full py-2 rounded-lg btn-ancient text-sm font-bold">以此異獸開局</button>
         </div>
+
+        <!-- 欽原蜂 -->
+        <div onclick="selectStarter('qinyuan')" class="group cursor-pointer rounded-xl p-4 bg-stone-900/80 border border-emerald-600/40 hover:border-emerald-400 hover:bg-stone-800/90 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/40">木毒・蟲蠱圍獵</span>
+              <span class="text-2xl">🐝</span>
+            </div>
+            <h3 class="text-xl font-black text-emerald-200 group-hover:text-emerald-300">欽原蜂</h3>
+            <p class="text-xs text-stone-400 mt-1 mb-3">昆侖毒蜂，蜇鳥獸則死。每次吞噬皆可孵化子蜂群圍攻巨獸，擅長以弱勝強。</p>
+            <div class="text-xs space-y-1 text-stone-300 border-t border-stone-700/70 pt-2">
+              <div><strong class="text-emerald-300">天賦：</strong>吞噬獵物孵化自動作戰「子蜂群」</div>
+              <div><strong class="text-emerald-300">技能【枯木毒針】：</strong>連射劇毒蜂針削弱巨獸至破防</div>
+              <div><strong class="text-emerald-300">進化：</strong>蠱雕 ➔ 鴆羽魔君 ➔ <span class="text-amber-300 font-bold">太古蟲皇・九嬰蠱</span></div>
+            </div>
+          </div>
+          <button class="mt-4 w-full py-2 rounded-lg btn-ancient text-sm font-bold">以此異獸開局</button>
+        </div>
+
+        <!-- 化蛇雛 -->
+        <div onclick="selectStarter('huashe')" class="group cursor-pointer rounded-xl p-4 bg-stone-900/80 border border-cyan-600/40 hover:border-cyan-400 hover:bg-stone-800/90 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-600/40">水雷・龍血掠食</span>
+              <span class="text-2xl">🐉</span>
+            </div>
+            <h3 class="text-xl font-black text-cyan-200 group-hover:text-cyan-300">化蛇雛</h3>
+            <p class="text-xs text-stone-400 mt-1 mb-3">人面豺身、鳥翼蛇行。高速突進掠食者，吞噬水族與龍血種靈氣暴增。</p>
+            <div class="text-xs space-y-1 text-stone-300 border-t border-stone-700/70 pt-2">
+              <div><strong class="text-cyan-300">天賦：</strong>移動迅捷，吞噬水族/蛟龍獲得雙倍靈氣</div>
+              <div><strong class="text-cyan-300">技能【電弧衝刺】：</strong>化作閃電突進並震暈破防獵物</div>
+              <div><strong class="text-emerald-300">進化：</strong>鳴蛇 ➔ 應龍雷蛟 ➔ <span class="text-amber-300 font-bold">創世神獸・燭九陰</span></div>
+            </div>
+          </div>
+          <button class="mt-4 w-full py-2 rounded-lg btn-ancient text-sm font-bold">以此異獸開局</button>
+        </div>
+      </div>
+
+      <div class="text-center text-xs text-stone-400">
+        提示：右下角「太極羅盤」外圈星標可指引三大靈脈霸主與上古秘境方位，助你在遼闊星海遠征探索。
+      </div>
     </div>
+  </div>
 
-    <script>
-        /**
-         * 《山海經：異獸吞噬進化》核心遊戲引擎
-         * 採用單一 HTML5 Canvas 渲染，包含水墨青綠山水背景、動態生態圈、三階進化外觀繪製與粒子系統。
-         */
+  <!-- 山海圖鑑彈窗 -->
+  <div id="bestiaryModal" class="fixed inset-0 z-40 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="ink-panel rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col p-5 sm:p-6">
+      <div class="flex items-center justify-between pb-3 border-b border-amber-500/30">
+        <div>
+          <h2 class="text-xl font-black text-amber-200">📜 山海異獸血脈與生態圖鑑</h2>
+          <p class="text-xs text-stone-400">查看當前異獸進化階位、三大靈脈生態與上古秘境</p>
+        </div>
+        <button onclick="toggleBestiary(false)" class="btn-ancient px-3 py-1.5 rounded-lg text-xs font-bold">關閉圖鑑</button>
+      </div>
+      <div id="bestiaryContent" class="overflow-y-auto py-4 space-y-4 text-xs sm:text-sm"></div>
+    </div>
+  </div>
 
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+  <!-- 死亡重生 / 羽化登仙 結算彈窗 -->
+  <div id="endModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="ink-panel rounded-2xl max-w-md w-full p-6 text-center">
+      <div id="endIcon" class="text-5xl mb-3">💀</div>
+      <h2 id="endTitle" class="text-2xl font-black text-amber-200 mb-2">神魂消散・重入輪迴</h2>
+      <p id="endDesc" class="text-xs sm:text-sm text-stone-300 mb-5">弱肉強食乃山海鐵律，積蓄靈氣再戰星海！</p>
+      <div id="endStats" class="bg-stone-900/90 rounded-xl p-3.5 mb-5 text-xs space-y-1.5 border border-stone-700 text-left"></div>
+      <div class="flex gap-3">
+        <button id="continueWorldBtn" onclick="closeEndModal()" class="flex-1 py-2.5 rounded-xl btn-ancient text-sm font-bold hidden">繼續稱霸星海</button>
+        <button onclick="returnToTitle()" class="flex-1 py-2.5 rounded-xl btn-ascend text-sm font-bold">開啟新輪迴</button>
+      </div>
+    </div>
+  </div>
 
-        // 畫布自適應螢幕大小
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        function resizeCanvas() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
+<script>
+/**
+ * ==========================================
+ * 山海經：異獸吞噬進化 — 星海遠征完整版
+ * ==========================================
+ */
+
+// 1. 世界與空間常數（地圖面積放大一倍：4000x4000 -> 5660x5660）
+const WORLD_SIZE = 5660;
+const HALF_WORLD = WORLD_SIZE / 2;
+const RADAR_RANGE = 2800; // 雷達掃描半徑同步倍增
+
+// 安全環繞數學工具
+function wrapCoord(v) {
+  const m = v % WORLD_SIZE;
+  return m < 0 ? m + WORLD_SIZE : m;
+}
+
+function shortestDelta(from, to) {
+  let d = (to - from) % WORLD_SIZE;
+  if (d > HALF_WORLD) d -= WORLD_SIZE;
+  if (d < -HALF_WORLD) d += WORLD_SIZE;
+  return d;
+}
+
+function toroidalDist(x1, y1, x2, y2) {
+  const dx = shortestDelta(x1, x2);
+  const dy = shortestDelta(y1, y2);
+  return Math.hypot(dx, dy);
+}
+
+// 2. 三大生態靈脈定義（分鎮遼闊星域三極）
+const BIOMES = [
+  {
+    id: 'qingqiu',
+    name: '青丘靈林',
+    attr: '木・妖靈',
+    x: 1350,
+    y: 1450,
+    radius: 760,
+    color: '#10b981',
+    bgGlow: 'rgba(16, 185, 129, 0.14)',
+    bossName: '青丘・九尾天狐',
+    bossColor: '#34d399',
+    orbKey: 'qingqiu',
+    orbName: '青丘狐火'
+  },
+  {
+    id: 'guixu',
+    name: '歸墟寒淵',
+    attr: '水・雷龍',
+    x: 4300,
+    y: 1650,
+    radius: 760,
+    color: '#06b6d4',
+    bgGlow: 'rgba(6, 182, 212, 0.15)',
+    bossName: '歸墟・覆海應龍',
+    bossColor: '#38bdf8',
+    orbKey: 'guixu',
+    orbName: '歸墟雷龍'
+  },
+  {
+    id: 'buzhou',
+    name: '不周赤土',
+    attr: '土・火煞',
+    x: 2830,
+    y: 4350,
+    radius: 760,
+    color: '#f43f5e',
+    bgGlow: 'rgba(244, 63, 94, 0.14)',
+    bossName: '不周・焚天饕餮',
+    bossColor: '#fb7185',
+    orbKey: 'buzhou',
+    orbName: '不周饕餮'
+  }
+];
+
+// 3. 三隻初始異獸與三階段完整進化設定
+const STARTER_DATA = {
+  xirang: {
+    id: 'xirang',
+    element: '土系',
+    color: '#d97706',
+    accent: '#fbbf24',
+    skillName: '泥沼潛行',
+    skillIcon: '🌀',
+    skillCd: 7.5,
+    baseSpeed: 225,
+    eatRatio: 0.90, // 雜食無胃之腹：可吞食更大比例獵物
+    canEatResource: true,
+    stages: [
+      { name: '息壤蟲', title: '幼體', reqXp: 100, baseRadius: 21, maxHp: 130, atk: 18 },
+      { name: '土螻', title: '一階成長', reqXp: 280, baseRadius: 31, maxHp: 260, atk: 34 },
+      { name: '饕餮・幼雛', title: '二階成熟', reqXp: 620, baseRadius: 44, maxHp: 520, atk: 65 },
+      { name: '渾沌・吞天巨獸', title: '三階究級', reqXp: 99999, baseRadius: 60, maxHp: 1100, atk: 120 }
+    ]
+  },
+  qinyuan: {
+    id: 'qinyuan',
+    element: '木毒',
+    color: '#059669',
+    accent: '#34d399',
+    skillName: '枯木毒針',
+    skillIcon: '🐝',
+    skillCd: 5.5,
+    baseSpeed: 265,
+    eatRatio: 0.80,
+    canEatResource: false,
+    stages: [
+      { name: '欽原幼蜂', title: '幼體', reqXp: 100, baseRadius: 19, maxHp: 105, atk: 16 },
+      { name: '蠱雕', title: '一階成長', reqXp: 280, baseRadius: 29, maxHp: 215, atk: 32 },
+      { name: '鴆羽魔君', title: '二階成熟', reqXp: 620, baseRadius: 41, maxHp: 440, atk: 62 },
+      { name: '太古蟲皇・九嬰蠱', title: '三階究級', reqXp: 99999, baseRadius: 56, maxHp: 960, atk: 115 }
+    ]
+  },
+  huashe: {
+    id: 'huashe',
+    element: '水雷',
+    color: '#0284c7',
+    accent: '#38bdf8',
+    skillName: '電弧衝刺',
+    skillIcon: '⚡',
+    skillCd: 6.0,
+    baseSpeed: 255,
+    eatRatio: 0.84,
+    canEatResource: false,
+    stages: [
+      { name: '化蛇雛', title: '幼體', reqXp: 100, baseRadius: 20, maxHp: 115, atk: 22 },
+      { name: '鳴蛇', title: '一階成長', reqXp: 280, baseRadius: 30, maxHp: 240, atk: 42 },
+      { name: '應龍・雷蛟', title: '二階成熟', reqXp: 620, baseRadius: 43, maxHp: 490, atk: 80 },
+      { name: '創世神獸・燭九陰', title: '三階究級', reqXp: 99999, baseRadius: 58, maxHp: 1050, atk: 145 }
+    ]
+  }
+};
+
+// 4. 野生異獸生態物種表
+const WILD_SPECIES = {
+  wild: [
+    { name: '遊魂泥丸', radius: 12, hp: 25, atk: 4, speed: 95, xp: 18, color: '#94a3b8', shape: 'blob' },
+    { name: '青溪小靈兔', radius: 14, hp: 32, atk: 5, speed: 135, xp: 22, color: '#cbd5e1', shape: 'beast' },
+    { name: '淺灘溪蝦', radius: 13, hp: 28, atk: 6, speed: 120, xp: 20, color: '#7dd3fc', shape: 'fish' }
+  ],
+  qingqiu: [
+    { name: '青丘靈狐', radius: 24, hp: 110, atk: 18, speed: 175, xp: 52, color: '#34d399', shape: 'fox' },
+    { name: '木魅樹妖', radius: 34, hp: 220, atk: 28, speed: 115, xp: 85, color: '#059669', shape: 'tree' },
+    { name: '九尾妖靈', radius: 44, hp: 360, atk: 44, speed: 185, xp: 135, color: '#6ee7b7', shape: 'fox' }
+  ],
+  guixu: [
+    { name: '文鰩飛魚', radius: 23, hp: 105, atk: 19, speed: 195, xp: 54, color: '#38bdf8', shape: 'fish', isAquatic: true },
+    { name: '玄水重龜', radius: 35, hp: 250, atk: 26, speed: 105, xp: 88, color: '#0284c7', shape: 'turtle', isAquatic: true },
+    { name: '雷澤蛟龍', radius: 46, hp: 390, atk: 48, speed: 180, xp: 145, color: '#818cf8', shape: 'dragon', isAquatic: true }
+  ],
+  buzhou: [
+    { name: '赤焰火鼠', radius: 24, hp: 115, atk: 22, speed: 180, xp: 55, color: '#fb7185', shape: 'beast' },
+    { name: '重甲土螻', radius: 36, hp: 260, atk: 34, speed: 125, xp: 92, color: '#f97316', shape: 'turtle' },
+    { name: '畢方炎鳥', radius: 45, hp: 380, atk: 52, speed: 190, xp: 148, color: '#ef4444', shape: 'bird' }
+  ]
+};
+
+// 全域遊戲狀態
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const radarCanvas = document.getElementById('radarCanvas');
+const radarCtx = radarCanvas.getContext('2d');
+
+let width = window.innerWidth;
+let height = window.innerHeight;
+let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+let animFrameId = null;
+let lastTime = 0;
+let gameRunning = false;
+let gamePaused = false;
+let worldTime = 0;
+
+// 跨輪迴太古血脈加成
+let legacyAscensions = 0;
+
+// 遊戲世界物件
+let player = null;
+let enemies = [];
+let bosses = [];
+let resources = [];
+let wonders = []; // 上古秘境奇遇
+let minions = []; // 欽原蜂子蜂
+let projectiles = [];
+let particles = [];
+let floatingTexts = [];
+let bgStars = [];
+
+// 輸入狀態
+const keys = {};
+let pointer = { active: false, x: 0, y: 0 };
+
+// 畫布高 DPI 自適應
+function resize() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const radarSize = 164;
+  radarCanvas.width = Math.floor(radarSize * dpr);
+  radarCanvas.height = Math.floor(radarSize * dpr);
+  radarCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', resize);
+
+// 鍵盤與指標事件
+window.addEventListener('keydown', (e) => {
+  keys[e.code] = true;
+  if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+    pointer.active = false;
+  }
+  if (e.code === 'Space' && gameRunning && !gamePaused) {
+    e.preventDefault();
+    triggerSkill();
+  }
+});
+window.addEventListener('keyup', (e) => {
+  keys[e.code] = false;
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!gameRunning || gamePaused) return;
+  pointer.active = true;
+  pointer.x = e.clientX;
+  pointer.y = e.clientY;
+});
+
+canvas.addEventListener('touchstart', (e) => {
+  if (!gameRunning || gamePaused) return;
+  if (e.touches.length > 0) {
+    pointer.active = true;
+    pointer.x = e.touches[0].clientX;
+    pointer.y = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+canvas.addEventListener('touchmove', (e) => {
+  if (!gameRunning || gamePaused) return;
+  if (e.touches.length > 0) {
+    pointer.active = true;
+    pointer.x = e.touches[0].clientX;
+    pointer.y = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+// 顯示浮動提示
+function showToast(msg) {
+  const el = document.getElementById('eventToast');
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => {
+    el.style.opacity = '0';
+  }, 2600);
+}
+
+function addFloatingText(x, y, text, color = '#fde68a', size = 14) {
+  floatingTexts.push({ x, y, text, color, size, life: 1.1, maxLife: 1.1 });
+}
+
+function spawnParticles(x, y, color, count = 10, speed = 130) {
+  for (let i = 0; i < count; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const spd = (0.3 + Math.random() * 0.7) * speed;
+    particles.push({
+      x,
+      y,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd,
+      radius: 2 + Math.random() * 3.5,
+      color,
+      life: 0.45 + Math.random() * 0.35,
+      maxLife: 0.8
+    });
+  }
+}
+
+// 初始化星域背景裝飾
+function initWorldDecor() {
+  bgStars = [];
+  for (let i = 0; i < 240; i++) {
+    bgStars.push({
+      x: Math.random() * WORLD_SIZE,
+      y: Math.random() * WORLD_SIZE,
+      r: 1 + Math.random() * 2.5,
+      alpha: 0.15 + Math.random() * 0.45,
+      type: Math.random() > 0.82 ? 'rune' : 'dot'
+    });
+  }
+}
+
+// 選擇初始異獸並開始遊戲
+function selectStarter(starterId) {
+  const data = STARTER_DATA[starterId];
+  const bonusMult = 1 + legacyAscensions * 0.15;
+  const st0 = data.stages[0];
+
+  // 出生在星域中央安全荒野帶
+  player = {
+    starterId,
+    data,
+    stageIdx: 0,
+    x: WORLD_SIZE / 2,
+    y: WORLD_SIZE / 2,
+    vx: 0,
+    vy: 0,
+    angle: 0,
+    radius: st0.baseRadius,
+    hp: Math.round(st0.maxHp * bonusMult),
+    maxHp: Math.round(st0.maxHp * bonusMult),
+    atk: Math.round(st0.atk * bonusMult),
+    xp: 0,
+    kills: 0,
+    skillTimer: 0,
+    stealthTimer: 0,
+    dashTimer: 0,
+    wonderBuffTimer: 0,
+    hitFlash: 0,
+    divineOrbs: { qingqiu: false, guixu: false, buzhou: false },
+    orbAttackTimer: 0
+  };
+
+  enemies = [];
+  bosses = [];
+  resources = [];
+  wonders = [];
+  minions = [];
+  projectiles = [];
+  particles = [];
+  floatingTexts = [];
+
+  initWorldDecor();
+  initBosses();
+  initWonders();
+
+  // 生成初始野生異獸與資源
+  for (let i = 0; i < 42; i++) spawnWildEnemy('wild');
+  BIOMES.forEach(b => {
+    for (let i = 0; i < 12; i++) spawnWildEnemy(b.id);
+  });
+  for (let i = 0; i < 95; i++) spawnResource();
+
+  document.getElementById('startModal').classList.add('hidden');
+  document.getElementById('endModal').classList.add('hidden');
+  document.getElementById('hudLayer').classList.remove('hidden');
+
+  updateHudUI();
+  resize();
+
+  gameRunning = true;
+  gamePaused = false;
+  lastTime = performance.now();
+
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  animFrameId = requestAnimationFrame(gameLoop);
+  showToast(`已化身為【${st0.name}】，踏入無邊山海星域！`);
+}
+
+// 初始化三大靈脈鎮守 BOSS
+function initBosses() {
+  bosses = BIOMES.map(b => createBossEntity(b, 1));
+}
+
+function createBossEntity(biome, level) {
+  const scale = 1 + (level - 1) * 0.35;
+  return {
+    biomeId: biome.id,
+    biomeName: biome.name,
+    name: level > 1 ? `${biome.bossName}・覺醒${level}重` : biome.bossName,
+    x: biome.x,
+    y: biome.y,
+    homeX: biome.x,
+    homeY: biome.y,
+    vx: 0,
+    vy: 0,
+    angle: Math.random() * Math.PI * 2,
+    radius: Math.min(92, 68 + (level - 1) * 5),
+    hp: Math.round(920 * scale),
+    maxHp: Math.round(920 * scale),
+    atk: Math.round(68 * scale),
+    xp: Math.round(450 * scale),
+    color: biome.bossColor,
+    orbKey: biome.orbKey,
+    level,
+    alive: true,
+    respawnTimer: 0,
+    stunTimer: 0,
+    poisonTimer: 0,
+    hitFlash: 0
+  };
+}
+
+// 初始化 8 座上古秘境奇遇
+function initWonders() {
+  const types = [
+    { id: 'spring', name: '上古靈泉', color: '#34d399', icon: '⛲' },
+    { id: 'altar', name: '太古龍脈祭壇', color: '#fbbf24', icon: '⛩️' },
+    { id: 'chest', name: '封印上古寶匣', color: '#c084fc', icon: '📦' }
+  ];
+  for (let i = 0; i < 8; i++) {
+    const t = types[i % types.length];
+    wonders.push({
+      ...t,
+      x: Math.random() * WORLD_SIZE,
+      y: Math.random() * WORLD_SIZE,
+      radius: 34,
+      active: true,
+      respawnTimer: 0,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+// 生成屬性分區野生異獸
+function spawnWildEnemy(zoneId) {
+  const pool = WILD_SPECIES[zoneId] || WILD_SPECIES.wild;
+  const spec = pool[Math.floor(Math.random() * pool.length)];
+
+  let x, y;
+  if (zoneId === 'wild') {
+    // 避開三大靈脈核心
+    let tries = 0;
+    do {
+      x = Math.random() * WORLD_SIZE;
+      y = Math.random() * WORLD_SIZE;
+      tries++;
+    } while (tries < 10 && BIOMES.some(b => toroidalDist(x, y, b.x, b.y) < b.radius * 0.9));
+  } else {
+    const b = BIOMES.find(item => item.id === zoneId);
+    const ang = Math.random() * Math.PI * 2;
+    const dist = 120 + Math.random() * (b.radius - 140);
+    x = wrapCoord(b.x + Math.cos(ang) * dist);
+    y = wrapCoord(b.y + Math.sin(ang) * dist);
+  }
+
+  enemies.push({
+    zoneId,
+    name: spec.name,
+    radius: spec.radius,
+    hp: spec.hp,
+    maxHp: spec.hp,
+    atk: spec.atk,
+    speed: spec.speed,
+    xp: spec.xp,
+    color: spec.color,
+    shape: spec.shape,
+    isAquatic: !!spec.isAquatic,
+    x,
+    y,
+    vx: (Math.random() - 0.5) * 60,
+    vy: (Math.random() - 0.5) * 60,
+    angle: Math.random() * Math.PI * 2,
+    aiTimer: 1 + Math.random() * 2,
+    stunTimer: 0,
+    poisonTimer: 0,
+    hitFlash: 0
+  });
+}
+
+// 生成靈草 / 神礦 / 靈氣珠資源
+function spawnResource(customX = null, customY = null, highValue = false) {
+  const x = customX !== null ? wrapCoord(customX) : Math.random() * WORLD_SIZE;
+  const y = customY !== null ? wrapCoord(customY) : Math.random() * WORLD_SIZE;
+  const isMineral = Math.random() > 0.5;
+  resources.push({
+    x,
+    y,
+    type: highValue ? 'relic' : (isMineral ? 'mineral' : 'herb'),
+    radius: highValue ? 12 : 8,
+    xp: highValue ? 48 : 16,
+    heal: highValue ? 32 : 10,
+    color: highValue ? '#fde047' : (isMineral ? '#fb923c' : '#4ade80')
+  });
+}
+
+// 觸發異獸專屬主動技能
+function triggerSkill() {
+  if (!player || player.skillTimer > 0) return;
+  const id = player.starterId;
+  player.skillTimer = player.data.skillCd;
+
+  if (id === 'xirang') {
+    // 息壤蟲：【泥沼潛行】隱身加速 + 回復28%氣血
+    player.stealthTimer = 4.0;
+    const healAmt = Math.round(player.maxHp * 0.28);
+    player.hp = Math.min(player.maxHp, player.hp + healAmt);
+    spawnParticles(player.x, player.y, '#fbbf24', 18, 150);
+    addFloatingText(player.x, player.y - player.radius - 10, `泥沼潛行 +${healAmt}氣血`, '#fbbf24');
+  } else if (id === 'qinyuan') {
+    // 欽原蜂：【枯木毒針】扇形連發 7 枚劇毒蜂針
+    const count = 7;
+    for (let i = 0; i < count; i++) {
+      const spread = (i - (count - 1) / 2) * 0.16;
+      const ang = player.angle + spread;
+      projectiles.push({
+        x: player.x + Math.cos(ang) * player.radius,
+        y: player.y + Math.sin(ang) * player.radius,
+        vx: Math.cos(ang) * 540,
+        vy: Math.sin(ang) * 540,
+        radius: 6,
+        dmg: player.atk * 0.75,
+        poison: 4.5,
+        color: '#34d399',
+        life: 1.1
+      });
+    }
+    spawnParticles(player.x, player.y, '#34d399', 14, 140);
+    addFloatingText(player.x, player.y - player.radius - 10, '萬毒蜂針！', '#34d399');
+  } else if (id === 'huashe') {
+    // 化蛇雛：【電弧衝刺】雷霆突進並震暈周圍獵物
+    player.dashTimer = 0.45;
+    player.vx = Math.cos(player.angle) * 760;
+    player.vy = Math.sin(player.angle) * 760;
+    spawnParticles(player.x, player.y, '#38bdf8', 22, 200);
+    addFloatingText(player.x, player.y - player.radius - 10, '雷霆電弧！', '#38bdf8');
+
+    // 震暈與電擊範圍內目標
+    const shockRange = player.radius + 130;
+    [...enemies, ...bosses.filter(b => b.alive)].forEach(t => {
+      if (toroidalDist(player.x, player.y, t.x, t.y) <= shockRange) {
+        t.hp -= player.atk * 1.15;
+        t.stunTimer = 2.2;
+        t.hitFlash = 0.25;
+        addFloatingText(t.x, t.y - t.radius, '雷音震暈！', '#7dd3fc', 12);
+      }
+    });
+  }
+}
+
+// 檢查目標是否處於「可吞噬」狀態
+function canDevourTarget(target) {
+  if (!player) return false;
+  // 1. 體型壓制：目標半徑 <= 玩家半徑 * 吞噬比例
+  const ratioBonus = player.wonderBuffTimer > 0 ? 0.15 : 0;
+  const maxEdibleRadius = player.radius * (player.data.eatRatio + ratioBonus);
+  if (target.radius <= maxEdibleRadius) return true;
+
+  // 2. 破防殘血吞噬：血量低於 28%（或中毒/暈眩且血量低於 35%）即可越級強吞！
+  const breakThreshold = (target.stunTimer > 0 || target.poisonTimer > 0) ? 0.35 : 0.28;
+  if (target.hp / target.maxHp <= breakThreshold) return true;
+
+  return false;
+}
+
+// 獲得靈氣與進化檢查
+function gainPlayerXp(amount) {
+  if (!player) return;
+  player.xp += amount;
+  const curStage = player.data.stages[player.stageIdx];
+
+  if (player.stageIdx < 3 && player.xp >= curStage.reqXp) {
+    player.xp -= curStage.reqXp;
+    player.stageIdx++;
+    const nextStage = player.data.stages[player.stageIdx];
+    const bonusMult = 1 + legacyAscensions * 0.15;
+
+    player.radius = nextStage.baseRadius;
+    player.maxHp = Math.round(nextStage.maxHp * bonusMult);
+    player.hp = player.maxHp;
+    player.atk = Math.round(nextStage.atk * bonusMult);
+
+    spawnParticles(player.x, player.y, '#fde047', 40, 240);
+    showToast(`🌟 血脈蛻變！進化為【${nextStage.name}（${nextStage.title}）】！`);
+    addFloatingText(player.x, player.y - player.radius - 16, `進化：${nextStage.name}！`, '#fde047', 18);
+
+    if (player.stageIdx === 3) {
+      document.getElementById('divinityPanel').classList.remove('hidden');
+      showToast('👑 已達三階究級體！前往三大靈脈吞噬霸主奪取本源神格！');
+    }
+  }
+}
+
+// 遊戲主更新迴圈
+function update(dt) {
+  if (!gameRunning || gamePaused || !player) return;
+  worldTime += dt;
+
+  // 1. 玩家計時器更新
+  if (player.skillTimer > 0) player.skillTimer = Math.max(0, player.skillTimer - dt);
+  if (player.stealthTimer > 0) player.stealthTimer = Math.max(0, player.stealthTimer - dt);
+  if (player.dashTimer > 0) player.dashTimer = Math.max(0, player.dashTimer - dt);
+  if (player.wonderBuffTimer > 0) player.wonderBuffTimer = Math.max(0, player.wonderBuffTimer - dt);
+  if (player.hitFlash > 0) player.hitFlash = Math.max(0, player.hitFlash - dt);
+
+  // 2. 玩家移動控制（支援 WASD/方向鍵 與 滑鼠/觸控）
+  let moveX = 0;
+  let moveY = 0;
+  if (keys['KeyW'] || keys['ArrowUp']) moveY -= 1;
+  if (keys['KeyS'] || keys['ArrowDown']) moveY += 1;
+  if (keys['KeyA'] || keys['ArrowLeft']) moveX -= 1;
+  if (keys['KeyD'] || keys['ArrowRight']) moveX += 1;
+
+  let speedMult = 1;
+  if (player.stealthTimer > 0) speedMult *= 1.38;
+  if (player.wonderBuffTimer > 0) speedMult *= 1.42;
+
+  if (player.dashTimer <= 0) {
+    if (moveX !== 0 || moveY !== 0) {
+      const len = Math.hypot(moveX, moveY);
+      moveX /= len;
+      moveY /= len;
+      player.angle = Math.atan2(moveY, moveX);
+      player.vx = moveX * player.data.baseSpeed * speedMult;
+      player.vy = moveY * player.data.baseSpeed * speedMult;
+    } else if (pointer.active) {
+      const dx = pointer.x - width / 2;
+      const dy = pointer.y - height / 2;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 14) {
+        player.angle = Math.atan2(dy, dx);
+        const factor = Math.min(1, dist / 110);
+        player.vx = Math.cos(player.angle) * player.data.baseSpeed * speedMult * factor;
+        player.vy = Math.sin(player.angle) * player.data.baseSpeed * speedMult * factor;
+      } else {
+        player.vx *= 0.85;
+        player.vy *= 0.85;
+      }
+    } else {
+      player.vx *= 0.88;
+      player.vy *= 0.88;
+    }
+  }
+
+  player.x = wrapCoord(player.x + player.vx * dt);
+  player.y = wrapCoord(player.y + player.vy * dt);
+
+  // 自然微幅回血
+  if (player.hp < player.maxHp) {
+    player.hp = Math.min(player.maxHp, player.hp + player.maxHp * 0.012 * dt);
+  }
+
+  // 3. 神格被動神威效果（究級體奪取神格後生效）
+  player.orbAttackTimer += dt;
+  const pullRadius = (player.divineOrbs.buzhou || player.wonderBuffTimer > 0) ? player.radius + 230 : 0;
+  if (pullRadius > 0) {
+    resources.forEach(r => {
+      const d = toroidalDist(player.x, player.y, r.x, r.y);
+      if (d < pullRadius && d > 5) {
+        const dx = shortestDelta(r.x, player.x);
+        const dy = shortestDelta(r.y, player.y);
+        r.x = wrapCoord(r.x + (dx / d) * 260 * dt);
+        r.y = wrapCoord(r.y + (dy / d) * 260 * dt);
+      }
+    });
+  }
+
+  if (player.orbAttackTimer >= 1.2) {
+    player.orbAttackTimer = 0;
+    const auraRange = player.radius + 170;
+    [...enemies, ...bosses.filter(b => b.alive)].forEach(t => {
+      if (toroidalDist(player.x, player.y, t.x, t.y) <= auraRange) {
+        if (player.divineOrbs.qingqiu) {
+          t.hp -= player.atk * 0.45;
+          spawnParticles(t.x, t.y, '#34d399', 4, 70);
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // ==================== 遊戲設定與《山海經》異獸資料庫 ====================
-        const WORLD_SIZE = 3200; // 大荒地圖總寬高
-
-        // 三大初始異獸及其三階段進化樹定義
-        const EVOLUTION_TREES = {
-            xirang: {
-                id: 'xirang',
-                attrName: '土系・雜食吞納',
-                primaryColor: '#d97706',
-                secondaryColor: '#fbbf24',
-                glowColor: 'rgba(245, 158, 11, 0.45)',
-                passiveDesc: '天賦：可吞食靈草礦石，無消化懲罰',
-                skill: {
-                    name: '泥沼潛行',
-                    icon: '🌀',
-                    desc: '隱身 3.2 秒並大幅提升移速與回血',
-                    cooldown: 7.5,
-                    duration: 3.2
-                },
-                stages: [
-                    { stageName: '幼體', name: '息壤蟲', reqExp: 0, baseRadius: 22, maxHp: 130, speed: 235, biteDmg: 18, desc: '巴掌大的赤褐色神土泥團，靠震動感知獵物，可吞食礦石靈草。' },
-                    { stageName: '一階成長', name: '土螻', reqExp: 120, baseRadius: 34, maxHp: 260, speed: 255, biteDmg: 38, desc: '形如羊而四角，背覆厚重岩甲，衝撞與反震之力極強。' },
-                    { stageName: '二階成熟', name: '饕餮・幼雛', reqExp: 340, baseRadius: 50, maxHp: 520, speed: 275, biteDmg: 75, desc: '羊身人面，胸口裂開吞天巨口，周身散發黑紅煞氣。' },
-                    { stageName: '三階究級', name: '渾沌・吞天巨獸', reqExp: 700, baseRadius: 72, maxHp: 1100, speed: 300, biteDmg: 150, desc: '六足四翼、無面目卻能吞吐天地靈氣的創世級凶獸！' }
-                ]
-            },
-            qinyuan: {
-                id: 'qinyuan',
-                attrName: '木毒系・蟲蠱圍獵',
-                primaryColor: '#10b981',
-                secondaryColor: '#a3e635',
-                glowColor: 'rgba(16, 185, 129, 0.45)',
-                passiveDesc: '天賦：吞噬孵化「子蜂」自動圍獵大型異獸',
-                skill: {
-                    name: '枯木毒針',
-                    icon: '🪡',
-                    desc: '齊射 5 枚劇毒蜂針，使目標中毒緩速並破防',
-                    cooldown: 5.5,
-                    duration: 0.2
-                },
-                stages: [
-                    { stageName: '幼體', name: '欽原蜂', reqExp: 0, baseRadius: 19, maxHp: 95, speed: 290, biteDmg: 14, desc: '昆侖之丘的青銅毒蜂，振翅無聲，吞噬後可孕育子蜂跟隨作戰。' },
-                    { stageName: '一階成長', name: '蠱雕', reqExp: 110, baseRadius: 31, maxHp: 200, speed: 315, biteDmg: 32, desc: '似雕而有獨角，啼聲如嬰兒，率領毒蜂群狩獵大型野獸。' },
-                    { stageName: '二階成熟', name: '鴆羽魔君', reqExp: 310, baseRadius: 46, maxHp: 410, speed: 340, biteDmg: 65, desc: '紫黑羽翼滴落腐蝕黑水，所過之處萬物枯萎。' },
-                    { stageName: '三階究級', name: '太古蟲皇・九嬰蠱', reqExp: 650, baseRadius: 68, maxHp: 920, speed: 365, biteDmg: 135, desc: '九首蛇身與千翼蟲甲的恐怖聚合體，萬蠱朝宗！' }
-                ]
-            },
-            huashe: {
-                id: 'huashe',
-                attrName: '水雷系・龍血掠食',
-                primaryColor: '#0ea5e9',
-                secondaryColor: '#38bdf8',
-                glowColor: 'rgba(14, 165, 233, 0.45)',
-                passiveDesc: '天賦：吞噬魚蛇蛟類靈氣翻倍，撕咬極強',
-                skill: {
-                    name: '電弧衝刺',
-                    icon: '⚡',
-                    desc: '化作雷電向前突進，震暈並重創路徑異獸',
-                    cooldown: 6.0,
-                    duration: 0.35
-                },
-                stages: [
-                    { stageName: '幼體', name: '化蛇雛', reqExp: 0, baseRadius: 21, maxHp: 115, speed: 265, biteDmg: 24, desc: '額生肉瘤、背有小翼的青鱗水蛇，吞噬水族獲得雙倍靈氣。' },
-                    { stageName: '一階成長', name: '鳴蛇', reqExp: 120, baseRadius: 33, maxHp: 240, speed: 290, biteDmg: 48, desc: '四翼而蛇身，其音如磬，飛行時周身纏繞藍色電弧。' },
-                    { stageName: '二階成熟', name: '應龍・雷蛟', reqExp: 330, baseRadius: 49, maxHp: 490, speed: 315, biteDmg: 92, desc: '背生雙翼、腹生四爪的巨型雷蛟，呼風喚雨，威壓八方。' },
-                    { stageName: '三階究級', name: '創世神獸・燭九陰', reqExp: 680, baseRadius: 74, maxHp: 1050, speed: 340, biteDmg: 175, desc: '人面蛇身而赤，睜眼為晝、閉眼為夜的鍾山創世神獸！' }
-                ]
-            }
-        };
-
-        // 野生山海經異獸與資源生態表
-        const WILD_SPECIES = [
-            { id: 'herb', name: '祝餘靈草 / 蘊靈礦', type: 'mineral', radius: 11, exp: 12, hp: 10, maxHp: 10, dmg: 0, speed: 0, color: '#86efac', accent: '#fef08a', shape: 'crystal', desc: '天地靈氣凝結的仙草與礦石（息壤蟲可直接吞食，其他異獸需撞碎吸收）。' },
-            { id: 'fish', name: '文鰩飛魚', type: 'aquatic', radius: 15, exp: 18, hp: 25, maxHp: 25, dmg: 6, speed: 130, color: '#38bdf8', accent: '#bae6fd', shape: 'fish', desc: '狀如鯉魚而鳥翼，常成群游弋，化蛇雛的最愛。' },
-            { id: 'spirit', name: '山精樹魅', type: 'beast', radius: 22, exp: 28, hp: 55, maxHp: 55, dmg: 14, speed: 115, color: '#a3e635', accent: '#4d7c0f', shape: 'blob', desc: '山林間吸取草木精華的小妖，性格膽小。' },
-            { id: 'turtle', name: '旋龜', type: 'beast', radius: 30, exp: 48, hp: 120, maxHp: 120, dmg: 24, speed: 85, color: '#d97706', accent: '#78350f', shape: 'turtle', desc: '鳥首虺尾，背負堅硬玄甲，移動緩慢但防禦極高。' },
-            { id: 'crow', name: '三足火鴉', type: 'beast', radius: 38, exp: 75, hp: 190, maxHp: 190, dmg: 38, speed: 165, color: '#f97316', accent: '#fef08a', shape: 'bird', desc: '棲息於扶桑神木的烈焰神鳥，速度極快且具攻擊性。' },
-            { id: 'jiaolong', name: '深淵惡蛟', type: 'aquatic', radius: 50, exp: 130, hp: 340, maxHp: 340, dmg: 62, speed: 145, color: '#6366f1', accent: '#c7d2fe', shape: 'serpent', desc: '盤踞大澤的凶惡蛟龍，已具化龍之姿。' },
-            { id: 'boss_xiangliu', name: '霸主・九首相柳', type: 'boss', radius: 68, exp: 260, hp: 680, maxHp: 680, dmg: 105, speed: 125, color: '#e11d48', accent: '#fda4af', shape: 'boss', desc: '共工之臣，九首蛇身，所到之處化為澤國劇毒，大荒霸主級凶獸！' }
-        ];
-
-        // ==================== 遊戲全域狀態 ====================
-        let gameState = 'START'; // START, PLAYING, PAUSED, ENDED
-        let selectedSpeciesKey = 'xirang';
-        let unlockedForms = new Set(); // 記錄已解鎖的進化名稱
-        let hasReachedUltimate = false;
-        let endlessMode = false;
-
-        let player = null;
-        let entities = [];
-        let minions = []; // 欽原蜂的子蜂
-        let projectiles = []; // 毒針等投射物
-        let particles = []; // 水墨與能量粒子
-        let floatingTexts = []; // 飄浮傷害與吞噬文字
-        let inkRipples = []; // 水面/地面水墨波紋
-
-        let camera = { x: WORLD_SIZE / 2, y: WORLD_SIZE / 2, zoom: 1 };
-        let pointer = { x: width / 2, y: height / 2, active: false };
-        let lastTime = 0;
-        let surviveTime = 0;
-        let bannerTimeout = null;
-
-        // ==================== 初始化玩家異獸 ====================
-        function createPlayer(speciesKey) {
-            const tree = EVOLUTION_TREES[speciesKey];
-            const s0 = tree.stages[0];
-            unlockedForms.add(s0.name);
-
-            return {
-                speciesKey,
-                tree,
-                stageIndex: 0,
-                name: s0.name,
-                stageName: s0.stageName,
-                x: WORLD_SIZE / 2,
-                y: WORLD_SIZE / 2,
-                vx: 0,
-                vy: 0,
-                angle: 0,
-                radius: s0.baseRadius,
-                targetRadius: s0.baseRadius,
-                hp: s0.maxHp,
-                maxHp: s0.maxHp,
-                exp: 0,
-                nextExp: tree.stages[1].reqExp,
-                speed: s0.speed,
-                biteDmg: s0.biteDmg,
-                kills: 0,
-                skillCd: 0,
-                skillActiveTime: 0,
-                invulnTime: 1.5, // 開局短暫無敵保護
-                wobblePhase: 0
-            };
+        if (player.divineOrbs.guixu) {
+          t.hp -= player.atk * 0.55;
+          t.stunTimer = Math.max(t.stunTimer, 0.6);
+          spawnParticles(t.x, t.y, '#38bdf8', 5, 90);
         }
+      }
+    });
+  }
 
-        // ==================== 啟動遊戲 ====================
-        window.startGame = function(speciesKey) {
-            selectedSpeciesKey = speciesKey;
-            player = createPlayer(speciesKey);
-            entities = [];
-            minions = [];
-            projectiles = [];
-            particles = [];
-            floatingTexts = [];
-            inkRipples = [];
-            surviveTime = 0;
-            hasReachedUltimate = false;
-            endlessMode = false;
+  // 4. 上古秘境奇遇更新與觸發
+  wonders.forEach(w => {
+    w.pulse += dt * 2.5;
+    if (!w.active) {
+      w.respawnTimer -= dt;
+      if (w.respawnTimer <= 0) {
+        w.active = true;
+        w.x = Math.random() * WORLD_SIZE;
+        w.y = Math.random() * WORLD_SIZE;
+      }
+      return;
+    }
 
-            camera.x = player.x;
-            camera.y = player.y;
-            pointer.x = width / 2;
-            pointer.y = height / 2;
+    if (toroidalDist(player.x, player.y, w.x, w.y) <= player.radius + w.radius) {
+      w.active = false;
+      w.respawnTimer = 40; // 40秒後在星域他處重新顯化
+      spawnParticles(w.x, w.y, w.color, 30, 210);
 
-            // 初始生成生態圈生物
-            for (let i = 0; i < 85; i++) {
-                spawnWildEntity(true);
-            }
-
-            // 如果是欽原蜂，開局自帶 1 隻護衛子蜂
-            if (speciesKey === 'qinyuan') {
-                spawnMinion();
-            }
-
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('endModal').classList.add('hidden');
-            document.getElementById('hudTop').classList.remove('hidden');
-            document.getElementById('hudBottom').classList.remove('hidden');
-
-            updateHUD();
-            showBanner(`降臨大荒・${player.name}`, `${player.tree.attrName} ｜ 吞噬弱小以證大道！`);
-            gameState = 'PLAYING';
-            lastTime = performance.now();
-        };
-
-        // ==================== 生成野生異獸 ====================
-        function spawnWildEntity(isInitial = false) {
-            // 根據玩家當前階段調整生態比例，確保新手期有足夠食物，後期有高階巨獸
-            const stage = player ? player.stageIndex : 0;
-            let weights = [32, 26, 20, 12, 6, 3, 1]; // 對應 WILD_SPECIES 權重
-            if (stage === 1) weights = [22, 22, 22, 16, 10, 6, 2];
-            if (stage === 2) weights = [15, 16, 18, 18, 16, 12, 5];
-            if (stage === 3) weights = [12, 12, 14, 16, 18, 18, 10];
-
-            const totalW = weights.reduce((a, b) => a + b, 0);
-            let r = Math.random() * totalW;
-            let chosen = WILD_SPECIES[0];
-            for (let i = 0; i < WILD_SPECIES.length; i++) {
-                if (r < weights[i]) {
-                    chosen = WILD_SPECIES[i];
-                    break;
-                }
-                r -= weights[i];
-            }
-
-            // 隨機生成位置，避開玩家正中央視野
-            let x, y;
-            let attempts = 0;
-            do {
-                x = 120 + Math.random() * (WORLD_SIZE - 240);
-                y = 120 + Math.random() * (WORLD_SIZE - 240);
-                attempts++;
-            } while (player && Math.hypot(x - player.x, y - player.y) < 420 && attempts < 15);
-
-            const sizeVariance = 0.9 + Math.random() * 0.25;
-            const radius = chosen.radius * sizeVariance;
-
-            entities.push({
-                ...chosen,
-                uid: Math.random(),
-                x,
-                y,
-                vx: 0,
-                vy: 0,
-                angle: Math.random() * Math.PI * 2,
-                radius,
-                hp: chosen.maxHp * sizeVariance,
-                maxHp: chosen.maxHp * sizeVariance,
-                aiTimer: Math.random() * 2,
-                poisonTimer: 0,
-                stunTimer: 0,
-                hitFlash: 0,
-                wobble: Math.random() * Math.PI * 2
-            });
+      if (w.id === 'spring') {
+        const heal = Math.round(player.maxHp * 0.65);
+        player.hp = Math.min(player.maxHp, player.hp + heal);
+        player.skillTimer = 0;
+        gainPlayerXp(65);
+        showToast('⛲ 沐浴【上古靈泉】！氣血大增、技能冷卻瞬間重置！');
+        addFloatingText(player.x, player.y - 30, '上古靈泉・氣血全復！', '#34d399', 16);
+      } else if (w.id === 'altar') {
+        player.wonderBuffTimer = 15.0;
+        gainPlayerXp(50);
+        showToast('⛩️ 共鳴【太古龍脈祭壇】！15秒極速神威與吞天吸力加持！');
+        addFloatingText(player.x, player.y - 30, '太古神威加持 (15s)', '#fbbf24', 16);
+      } else if (w.id === 'chest') {
+        for (let k = 0; k < 10; k++) {
+          const ang = (Math.PI * 2 * k) / 10;
+          spawnResource(w.x + Math.cos(ang) * 55, w.y + Math.sin(ang) * 55, true);
         }
+        showToast('📦 開啟【封印上古寶匣】！噴湧大量稀世靈寶！');
+        addFloatingText(player.x, player.y - 30, '上古寶匣開啟！', '#c084fc', 16);
+      }
+    }
+  });
 
-        // ==================== 欽原蜂：孵化子蜂 ====================
-        function spawnMinion() {
-            const maxMinions = 3 + player.stageIndex * 2; // 幼體3隻 -> 究級9隻
-            if (minions.length >= maxMinions) return;
+  // 5. 資源拾取（靈草、礦石、秘境靈寶）
+  for (let i = resources.length - 1; i >= 0; i--) {
+    const r = resources[i];
+    if (toroidalDist(player.x, player.y, r.x, r.y) <= player.radius + r.radius + 4) {
+      // 息壤蟲吞食礦石/靈草獲得額外加成
+      const mult = player.data.canEatResource ? 1.6 : 1.0;
+      gainPlayerXp(Math.round(r.xp * mult));
+      player.hp = Math.min(player.maxHp, player.hp + Math.round(r.heal * mult));
+      spawnParticles(r.x, r.y, r.color, 6, 80);
+      resources.splice(i, 1);
+      if (resources.length < 95) spawnResource();
+    }
+  }
 
-            const angle = Math.random() * Math.PI * 2;
-            minions.push({
-                x: player.x + Math.cos(angle) * (player.radius + 15),
-                y: player.y + Math.sin(angle) * (player.radius + 15),
-                vx: 0,
-                vy: 0,
-                angle,
-                radius: 7 + player.stageIndex * 1.5,
-                orbitOffset: Math.random() * Math.PI * 2,
-                attackCd: 0
-            });
+  // 6. 欽原蜂子蜂群更新
+  for (let i = minions.length - 1; i >= 0; i--) {
+    const m = minions[i];
+    m.life -= dt;
+    if (m.life <= 0) {
+      minions.splice(i, 1);
+      continue;
+    }
+
+    // 尋找最近敵人或 BOSS
+    let target = null;
+    let minDist = 360;
+    [...enemies, ...bosses.filter(b => b.alive)].forEach(e => {
+      const d = toroidalDist(m.x, m.y, e.x, e.y);
+      if (d < minDist) {
+        minDist = d;
+        target = e;
+      }
+    });
+
+    if (target) {
+      const dx = shortestDelta(m.x, target.x);
+      const dy = shortestDelta(m.y, target.y);
+      const d = Math.hypot(dx, dy) || 1;
+      m.x = wrapCoord(m.x + (dx / d) * 310 * dt);
+      m.y = wrapCoord(m.y + (dy / d) * 310 * dt);
+      if (d <= target.radius + 10) {
+        target.hp -= player.atk * 0.45 * dt * 4;
+        target.poisonTimer = 2.0;
+        if (Math.random() < 0.15) spawnParticles(target.x, target.y, '#34d399', 2, 50);
+      }
+    } else {
+      // 環繞玩家飛行
+      m.orbitAngle += dt * 3.5;
+      const tx = wrapCoord(player.x + Math.cos(m.orbitAngle) * (player.radius + 26));
+      const ty = wrapCoord(player.y + Math.sin(m.orbitAngle) * (player.radius + 26));
+      m.x = wrapCoord(m.x + shortestDelta(m.x, tx) * 6 * dt);
+      m.y = wrapCoord(m.y + shortestDelta(m.y, ty) * 6 * dt);
+    }
+  }
+
+  // 7. 投射物更新（毒針）
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const p = projectiles[i];
+    p.life -= dt;
+    p.x = wrapCoord(p.x + p.vx * dt);
+    p.y = wrapCoord(p.y + p.vy * dt);
+
+    let hit = false;
+    const targets = [...enemies, ...bosses.filter(b => b.alive)];
+    for (const t of targets) {
+      if (toroidalDist(p.x, p.y, t.x, t.y) <= t.radius + p.radius) {
+        t.hp -= p.dmg;
+        t.poisonTimer = p.poison;
+        t.hitFlash = 0.18;
+        spawnParticles(p.x, p.y, p.color, 6, 90);
+        hit = true;
+        break;
+      }
+    }
+
+    if (hit || p.life <= 0) {
+      projectiles.splice(i, 1);
+    }
+  }
+
+  // 8. 野生異獸 AI 與碰撞吞噬
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+    if (e.hitFlash > 0) e.hitFlash = Math.max(0, e.hitFlash - dt);
+    if (e.stunTimer > 0) e.stunTimer = Math.max(0, e.stunTimer - dt);
+    if (e.poisonTimer > 0) {
+      e.poisonTimer = Math.max(0, e.poisonTimer - dt);
+      e.hp -= player.atk * 0.28 * dt;
+    }
+
+    // 毒死或被子蜂咬死直接轉化為可吞噬破防狀態
+    if (e.hp < 1) e.hp = 1;
+
+    if (e.stunTimer <= 0) {
+      e.aiTimer -= dt;
+      const distToPlayer = toroidalDist(e.x, e.y, player.x, player.y);
+      const playerVisible = player.stealthTimer <= 0 && distToPlayer < 320;
+
+      if (playerVisible) {
+        const dx = shortestDelta(e.x, player.x);
+        const dy = shortestDelta(e.y, player.y);
+        const d = Math.hypot(dx, dy) || 1;
+        if (canDevourTarget(e)) {
+          // 獵物逃跑
+          e.vx = -(dx / d) * e.speed * 1.05;
+          e.vy = -(dy / d) * e.speed * 1.05;
+        } else if (e.radius > player.radius * 1.05) {
+          // 猛獸追擊玩家
+          e.vx = (dx / d) * e.speed * 1.08;
+          e.vy = (dy / d) * e.speed * 1.08;
         }
-
-        // ==================== 主動技能施放 ====================
-        function triggerPlayerSkill() {
-            if (gameState !== 'PLAYING' || !player || player.skillCd > 0) return;
-
-            const skill = player.tree.skill;
-            player.skillCd = skill.cooldown;
-            player.skillActiveTime = skill.duration;
-
-            if (player.speciesKey === 'xirang') {
-                // 【泥沼潛行】：隱身 + 加速 + 立即回復 20% 氣血
-                const heal = Math.round(player.maxHp * 0.22);
-                player.hp = Math.min(player.maxHp, player.hp + heal);
-                addFloatingText(player.x, player.y - player.radius - 10, `泥沼潛行 +${heal}氣血`, '#fbbf24');
-                spawnBurstParticles(player.x, player.y, '#d97706', 24);
-            } else if (player.speciesKey === 'qinyuan') {
-                // 【枯木毒針】：向朝向扇形發射 5 枚穿透毒針
-                const count = 5 + player.stageIndex;
-                const spread = 0.55;
-                for (let i = 0; i < count; i++) {
-                    const offset = (i / (count - 1) - 0.5) * spread;
-                    const ang = player.angle + offset;
-                    projectiles.push({
-                        x: player.x + Math.cos(ang) * player.radius,
-                        y: player.y + Math.sin(ang) * player.radius,
-                        vx: Math.cos(ang) * 620,
-                        vy: Math.sin(ang) * 620,
-                        angle: ang,
-                        dmg: player.biteDmg * 1.15,
-                        life: 1.1,
-                        color: '#a3e635'
-                    });
-                }
-                addFloatingText(player.x, player.y - player.radius - 10, '枯木毒針！', '#a3e635');
-                spawnBurstParticles(player.x, player.y, '#10b981', 16);
-            } else if (player.speciesKey === 'huashe') {
-                // 【電弧衝刺】：朝移動方向高速突進，震暈並電擊路徑敵人
-                const dashSpeed = 880;
-                player.vx = Math.cos(player.angle) * dashSpeed;
-                player.vy = Math.sin(player.angle) * dashSpeed;
-                player.invulnTime = Math.max(player.invulnTime, 0.55);
-                addFloatingText(player.x, player.y - player.radius - 10, '電弧衝刺！', '#38bdf8');
-                spawnBurstParticles(player.x, player.y, '#38bdf8', 28);
-            }
+      } else if (e.aiTimer <= 0) {
+        e.aiTimer = 1.5 + Math.random() * 2.5;
+        // 靈脈領地引力：保持在所屬靈脈範圍內游動
+        if (e.zoneId !== 'wild') {
+          const home = BIOMES.find(b => b.id === e.zoneId);
+          const distHome = toroidalDist(e.x, e.y, home.x, home.y);
+          if (distHome > home.radius * 0.85) {
+            const hx = shortestDelta(e.x, home.x);
+            const hy = shortestDelta(e.y, home.y);
+            const hd = Math.hypot(hx, hy) || 1;
+            e.vx = (hx / hd) * e.speed;
+            e.vy = (hy / hd) * e.speed;
+          } else {
+            const ang = Math.random() * Math.PI * 2;
+            e.vx = Math.cos(ang) * e.speed * 0.65;
+            e.vy = Math.sin(ang) * e.speed * 0.65;
+          }
+        } else {
+          const ang = Math.random() * Math.PI * 2;
+          e.vx = Math.cos(ang) * e.speed * 0.65;
+          e.vy = Math.sin(ang) * e.speed * 0.65;
         }
-
-        // ==================== 進化檢查與蛻變演出 ====================
-        function checkEvolution() {
-            const stages = player.tree.stages;
-            if (player.stageIndex >= stages.length - 1) return;
-
-            const nextStage = stages[player.stageIndex + 1];
-            if (player.exp >= nextStage.reqExp) {
-                player.stageIndex++;
-                player.name = nextStage.name;
-                player.stageName = nextStage.stageName;
-                player.targetRadius = nextStage.baseRadius;
-                player.maxHp = nextStage.maxHp;
-                player.hp = player.maxHp; // 進化回滿血
-                player.speed = nextStage.speed;
-                player.biteDmg = nextStage.biteDmg;
-                player.invulnTime = 2.5;
-
-                if (player.stageIndex + 1 < stages.length) {
-                    player.nextExp = stages[player.stageIndex + 1].reqExp;
-                } else {
-                    player.nextExp = nextStage.reqExp; // 已滿階
-                }
-
-                unlockedForms.add(player.name);
-
-                // 華麗水墨金光進化特效
-                inkRipples.push({ x: player.x, y: player.y, radius: 10, maxRadius: 320, alpha: 1, color: '#fbbf24' });
-                spawnBurstParticles(player.x, player.y, '#fde047', 55);
-                spawnBurstParticles(player.x, player.y, player.tree.primaryColor, 40);
-
-                showBanner(`血脈蛻變・${player.stageName}`, `進化為【${player.name}】！氣血全滿、神通大增！`);
-
-                // 若達成三階究級形態，彈出制霸祝賀（可選擇繼續無盡遊玩）
-                if (player.stageIndex === 3 && !hasReachedUltimate) {
-                    hasReachedUltimate = true;
-                    setTimeout(() => {
-                        if (gameState === 'PLAYING') {
-                            triggerVictoryModal();
-                        }
-                    }, 1600);
-                }
-            }
-        }
-
-        // ==================== 遊戲主更新迴圈 ====================
-        function update(dt) {
-            if (gameState !== 'PLAYING' || !player) return;
-
-            surviveTime += dt;
-
-            // 1. 更新玩家冷卻與狀態計時
-            if (player.skillCd > 0) player.skillCd = Math.max(0, player.skillCd - dt);
-            if (player.skillActiveTime > 0) player.skillActiveTime = Math.max(0, player.skillActiveTime - dt);
-            if (player.invulnTime > 0) player.invulnTime = Math.max(0, player.invulnTime - dt);
-
-            // 平滑放大體型
-            player.radius += (player.targetRadius - player.radius) * Math.min(1, dt * 5);
-            player.wobblePhase += dt * 7;
-
-            // 2. 計算玩家移動方向（朝向螢幕上的指標位置）
-            const worldTargetX = camera.x + (pointer.x - width / 2) / camera.zoom;
-            const worldTargetY = camera.y + (pointer.y - height / 2) / camera.zoom;
-            const dx = worldTargetX - player.x;
-            const dy = worldTargetY - player.y;
-            const distToPointer = Math.hypot(dx, dy);
-
-            // 判斷是否正在「電弧衝刺」中
-            const isDashing = (player.speciesKey === 'huashe' && player.skillActiveTime > 0);
-            if (!isDashing) {
-                if (distToPointer > 8) {
-                    const targetAngle = Math.atan2(dy, dx);
-                    // 平滑轉向
-                    let angleDiff = targetAngle - player.angle;
-                    while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-                    while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-                    player.angle += angleDiff * Math.min(1, dt * 10);
-
-                    let currentSpeed = player.speed;
-                    if (player.speciesKey === 'xirang' && player.skillActiveTime > 0) {
-                        currentSpeed *= 1.65; // 泥沼潛行加速
-                    }
-                    const speedFactor = Math.min(1, distToPointer / 70);
-                    player.vx = Math.cos(player.angle) * currentSpeed * speedFactor;
-                    player.vy = Math.sin(player.angle) * currentSpeed * speedFactor;
-                } else {
-                    player.vx *= 0.85;
-                    player.vy *= 0.85;
-                }
-            }
-
-            player.x = Math.max(player.radius, Math.min(WORLD_SIZE - player.radius, player.x + player.vx * dt));
-            player.y = Math.max(player.radius, Math.min(WORLD_SIZE - player.radius, player.y + player.vy * dt));
-
-            // 定期產生移動水墨波紋
-            if (Math.hypot(player.vx, player.vy) > 60 && Math.random() < dt * 4) {
-                inkRipples.push({
-                    x: player.x,
-                    y: player.y,
-                    radius: player.radius * 0.6,
-                    maxRadius: player.radius * 2.2,
-                    alpha: 0.35,
-                    color: player.tree.primaryColor
-                });
-            }
-
-            // 攝影機平滑跟隨與隨體型微調縮放
-            const targetZoom = Math.max(0.68, 1.05 - (player.radius - 20) * 0.0055);
-            camera.zoom += (targetZoom - camera.zoom) * Math.min(1, dt * 3);
-            camera.x += (player.x - camera.x) * Math.min(1, dt * 7);
-            camera.y += (player.y - camera.y) * Math.min(1, dt * 7);
-
-            // 3. 更新子蜂 (欽原蜂專屬)
-            updateMinions(dt);
-
-            // 4. 更新投射物 (毒針)
-            for (let i = projectiles.length - 1; i >= 0; i--) {
-                const p = projectiles[i];
-                p.x += p.vx * dt;
-                p.y += p.vy * dt;
-                p.life -= dt;
-
-                if (p.life <= 0) {
-                    projectiles.splice(i, 1);
-                    continue;
-                }
-
-                // 檢查毒針命中野生異獸
-                for (let j = entities.length - 1; j >= 0; j--) {
-                    const e = entities[j];
-                    if (Math.hypot(p.x - e.x, p.y - e.y) < e.radius + 8) {
-                        damageWildEntity(e, p.dmg, true);
-                        spawnBurstParticles(p.x, p.y, '#a3e635', 6);
-                        projectiles.splice(i, 1);
-                        break;
-                    }
-                }
-            }
-
-            // 5. 更新野生異獸 AI 與碰撞
-            updateWildEntities(dt);
-
-            // 補充野生異獸維持生態數量
-            if (entities.length < 85 && Math.random() < dt * 4) {
-                spawnWildEntity(false);
-            }
-
-            // 6. 更新粒子與飄浮文字
-            updateEffects(dt);
-
-            // 7. 刷新 HUD
-            updateHUD();
-        }
-
-        // ==================== 更新欽原蜂「子蜂」AI ====================
-        function updateMinions(dt) {
-            for (let i = 0; i < minions.length; i++) {
-                const m = minions[i];
-                m.orbitOffset += dt * 3.5;
-                if (m.attackCd > 0) m.attackCd -= dt;
-
-                // 尋找玩家附近可攻擊的野生異獸（優先鎖定大型或殘血目標）
-                let target = null;
-                let bestDist = 340;
-                for (const e of entities) {
-                    if (e.type === 'mineral') continue;
-                    const d = Math.hypot(e.x - player.x, e.y - player.y);
-                    if (d < bestDist) {
-                        bestDist = d;
-                        target = e;
-                    }
-                }
-
-                let tx, ty;
-                if (target) {
-                    tx = target.x + Math.cos(m.orbitOffset + i) * (target.radius * 0.7);
-                    ty = target.y + Math.sin(m.orbitOffset + i) * (target.radius * 0.7);
-                } else {
-                    // 圍繞玩家護衛飛行
-                    const orbitR = player.radius + 24 + (i % 3) * 10;
-                    tx = player.x + Math.cos(m.orbitOffset + i * 1.2) * orbitR;
-                    ty = player.y + Math.sin(m.orbitOffset + i * 1.2) * orbitR;
-                }
-
-                const dx = tx - m.x;
-                const dy = ty - m.y;
-                m.angle = Math.atan2(dy, dx);
-                m.x += dx * Math.min(1, dt * 6.5);
-                m.y += dy * Math.min(1, dt * 6.5);
-
-                // 子蜂叮咬目標
-                if (target && m.attackCd <= 0 && Math.hypot(m.x - target.x, m.y - target.y) < target.radius + m.radius + 6) {
-                    m.attackCd = 0.65;
-                    const dmg = Math.max(5, player.biteDmg * 0.35);
-                    damageWildEntity(target, dmg, true);
-                    spawnBurstParticles(m.x, m.y, '#a3e635', 3);
-                }
-            }
-        }
-
-        // ==================== 野生異獸傷害與破防狀態 ====================
-        function damageWildEntity(e, amount, applyPoison = false) {
-            e.hp -= amount;
-            e.hitFlash = 0.15;
-            if (applyPoison) {
-                e.poisonTimer = 4.0;
-            }
-            if (e.hp <= 0) {
-                e.hp = 1; // 保留 1 點血進入「破防瀕死閃爍」讓玩家吞噬！
-                e.stunTimer = Math.max(e.stunTimer, 2.5);
-            }
-        }
-
-        // ==================== 更新野生異獸 AI 與吞噬判定 ====================
-        function updateWildEntities(dt) {
-            const isStealth = (player.speciesKey === 'xirang' && player.skillActiveTime > 0);
-            const isDashing = (player.speciesKey === 'huashe' && player.skillActiveTime > 0);
-
-            for (let i = entities.length - 1; i >= 0; i--) {
-                const e = entities[i];
-                e.wobble += dt * 5;
-                if (e.hitFlash > 0) e.hitFlash -= dt;
-                if (e.stunTimer > 0) e.stunTimer -= dt;
-
-                // 中毒持續扣血與減速
-                if (e.poisonTimer > 0) {
-                    e.poisonTimer -= dt;
-                    e.hp = Math.max(1, e.hp - (player.biteDmg * 0.28) * dt);
-                }
-
-                // 判斷是否處於「可被玩家直接吞噬」狀態：
-                // 條件 A：體型 <= 玩家體型的 82%
-                // 條件 B：已進入「破防殘血狀態」(血量 <= 32% 且非礦石)
-                const isSmaller = e.radius <= player.radius * 0.82;
-                const isBroken = (e.type !== 'mineral' && e.hp <= e.maxHp * 0.32);
-                const canBeEaten = isSmaller || isBroken;
-
-                // 移動 AI（非礦石類）
-                if (e.speed > 0 && e.stunTimer <= 0) {
-                    const distToPlayer = Math.hypot(player.x - e.x, player.y - e.y);
-                    const speedMult = e.poisonTimer > 0 ? 0.55 : 1.0;
-
-                    if (!isStealth && distToPlayer < 340) {
-                        if (canBeEaten) {
-                            // 弱小或破防的異獸看到玩家會驚慌逃跑
-                            e.angle = Math.atan2(e.y - player.y, e.x - player.x);
-                            e.vx = Math.cos(e.angle) * e.speed * 1.15 * speedMult;
-                            e.vy = Math.sin(e.angle) * e.speed * 1.15 * speedMult;
-                        } else if (e.dmg > 0) {
-                            // 比玩家大的掠食者會主動追擊玩家！
-                            e.angle = Math.atan2(player.y - e.y, player.x - e.x);
-                            e.vx = Math.cos(e.angle) * e.speed * 0.92 * speedMult;
-                            e.vy = Math.sin(e.angle) * e.speed * 0.92 * speedMult;
-                        }
-                    } else {
-                        // 閒逛巡邏
-                        e.aiTimer -= dt;
-                        if (e.aiTimer <= 0) {
-                            e.aiTimer = 1.5 + Math.random() * 2.5;
-                            e.angle += (Math.random() - 0.5) * 2.5;
-                        }
-                        e.vx = Math.cos(e.angle) * e.speed * 0.45 * speedMult;
-                        e.vy = Math.sin(e.angle) * e.speed * 0.45 * speedMult;
-                    }
-
-                    e.x = Math.max(e.radius, Math.min(WORLD_SIZE - e.radius, e.x + e.vx * dt));
-                    e.y = Math.max(e.radius, Math.min(WORLD_SIZE - e.radius, e.y + e.vy * dt));
-                }
-
-                // 與玩家的接觸判定
-                const dist = Math.hypot(player.x - e.x, player.y - e.y);
-                const touchDist = player.radius + e.radius * 0.85;
-
-                if (dist < touchDist) {
-                    // 特殊狀況 1：化蛇「電弧衝刺」撞擊路徑上的異獸
-                    if (isDashing) {
-                        if (canBeEaten) {
-                            consumeEntity(i);
-                            continue;
-                        } else if (e.hitFlash <= 0) {
-                            damageWildEntity(e, player.biteDmg * 1.6, false);
-                            e.stunTimer = 1.5;
-                            addFloatingText(e.x, e.y - e.radius, '雷擊震暈！', '#38bdf8');
-                            spawnBurstParticles(e.x, e.y, '#38bdf8', 15);
-                            // 衝刺撞到大怪後稍微彈開避免卡在體內
-                            const pushAng = Math.atan2(player.y - e.y, player.x - e.x);
-                            player.vx = Math.cos(pushAng) * 280;
-                            player.vy = Math.sin(pushAng) * 280;
-                            continue;
-                        }
-                    }
-
-                    // 特殊狀況 2：可直接吞噬（體型壓制 或 破防狀態）
-                    if (canBeEaten) {
-                        consumeEntity(i);
-                        continue;
-                    }
-
-                    // 特殊狀況 3：硬碰硬互咬（目標比玩家大且未破防）
-                    if (e.type === 'mineral') {
-                        // 非息壤蟲撞擊礦石，將其撞碎並直接吸收
-                        consumeEntity(i);
-                        continue;
-                    }
-
-                    // 玩家主動撕咬對目標造成傷害（息壤蟲一階後帶反震，化蛇基礎咬傷極高）
-                    if (e.hitFlash <= 0) {
-                        damageWildEntity(e, player.biteDmg, player.speciesKey === 'qinyuan');
-                        addFloatingText(e.x, e.y - e.radius, `-${Math.round(player.biteDmg)}`, '#fbbf24');
-                    }
-
-                    // 若玩家無敵時間已過，則受到巨獸反擊傷害並被彈開
-                    if (player.invulnTime <= 0 && !isStealth) {
-                        let dmgTaken = e.dmg;
-                        // 息壤蟲一階以上擁有岩甲減傷 25%
-                        if (player.speciesKey === 'xirang' && player.stageIndex >= 1) {
-                            dmgTaken = Math.round(dmgTaken * 0.75);
-                        }
-                        player.hp -= dmgTaken;
-                        player.invulnTime = 0.75; // 受傷後 0.75 秒保護避免瞬間秒殺
-
-                        // 彈開效果
-                        const knockAng = Math.atan2(player.y - e.y, player.x - e.x);
-                        player.x += Math.cos(knockAng) * 36;
-                        player.y += Math.sin(knockAng) * 36;
-
-                        addFloatingText(player.x, player.y - player.radius, `-${dmgTaken} 遭巨獸重創！`, '#f43f5e');
-                        spawnBurstParticles(player.x, player.y, '#f43f5e', 18);
-
-                        if (player.hp <= 0) {
-                            player.hp = 0;
-                            triggerGameOver(e.name);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        // ==================== 執行吞噬結算 ====================
-        function consumeEntity(index) {
-            const e = entities[index];
-            entities.splice(index, 1);
-
-            // 計算獲得的靈氣經驗（種族天賦加成）
-            let gainedExp = e.exp;
-            let bonusNote = '';
-
-            if (player.speciesKey === 'xirang' && e.type === 'mineral') {
-                gainedExp = Math.round(gainedExp * 1.6);
-                bonusNote = ' (神土吞納加成)';
-            } else if (player.speciesKey === 'huashe' && e.type === 'aquatic') {
-                gainedExp = Math.round(gainedExp * 1.8);
-                bonusNote = ' (龍血共鳴雙倍)';
-            }
-
-            player.exp += gainedExp;
-            player.kills++;
-
-            // 吞噬回血與微幅體型成長
-            const healAmount = Math.round(e.maxHp * 0.25 + 8);
-            player.hp = Math.min(player.maxHp, player.hp + healAmount);
-            player.targetRadius = Math.min(88, player.targetRadius + 0.35);
-
-            // 欽原蜂天賦：每吞噬 1 隻生物，孵化 1 隻子蜂
-            if (player.speciesKey === 'qinyuan' && e.type !== 'mineral') {
-                spawnMinion();
-            }
-
-            // 特效與浮動文字
-            spawnBurstParticles(e.x, e.y, e.color, 14);
-            inkRipples.push({
-                x: e.x,
-                y: e.y,
-                radius: e.radius * 0.5,
-                maxRadius: e.radius * 2.4,
-                alpha: 0.6,
-                color: '#fde047'
-            });
-            addFloatingText(player.x, player.y - player.radius - 12, `吞噬${e.name} +${gainedExp}靈氣${bonusNote}`, '#fde047');
-
-            checkEvolution();
-        }
-
-        // ==================== 粒子與浮動文字管理 ====================
-        function spawnBurstParticles(x, y, color, count) {
-            for (let i = 0; i < count; i++) {
-                const ang = Math.random() * Math.PI * 2;
-                const spd = 50 + Math.random() * 190;
-                particles.push({
-                    x,
-                    y,
-                    vx: Math.cos(ang) * spd,
-                    vy: Math.sin(ang) * spd,
-                    radius: 2.5 + Math.random() * 4.5,
-                    color,
-                    alpha: 1,
-                    life: 0.4 + Math.random() * 0.45
-                });
-            }
-        }
-
-        function addFloatingText(x, y, text, color) {
-            floatingTexts.push({
-                x,
-                y,
-                text,
-                color,
-                life: 1.15,
-                maxLife: 1.15
-            });
-        }
-
-        function updateEffects(dt) {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx * dt;
-                p.y += p.vy * dt;
-                p.vx *= 0.93;
-                p.vy *= 0.93;
-                p.life -= dt;
-                p.alpha = Math.max(0, p.life * 1.5);
-                if (p.life <= 0) particles.splice(i, 1);
-            }
-
-            for (let i = floatingTexts.length - 1; i >= 0; i--) {
-                const ft = floatingTexts[i];
-                ft.y -= 38 * dt;
-                ft.life -= dt;
-                if (ft.life <= 0) floatingTexts.splice(i, 1);
-            }
-
-            for (let i = inkRipples.length - 1; i >= 0; i--) {
-                const r = inkRipples[i];
-                r.radius += (r.maxRadius - r.radius) * Math.min(1, dt * 4);
-                r.alpha -= dt * 0.7;
-                if (r.alpha <= 0) inkRipples.splice(i, 1);
-            }
-        }
-
-        // ==================== 渲染系統：水墨山水與異獸繪製 ====================
-        function render() {
-            // 1. 清空畫布為深邃古風青墨底色
-            ctx.fillStyle = '#0c1618';
-            ctx.fillRect(0, 0, width, height);
-
-            ctx.save();
-            // 套用攝影機變換
-            ctx.translate(width / 2, height / 2);
-            ctx.scale(camera.zoom, camera.zoom);
-            ctx.translate(-camera.x, -camera.y);
-
-            // 2. 繪製水墨青綠山水地形背景與大荒邊界
-            drawInkWorldBackground();
-
-            // 3. 繪製水墨波紋
-            for (const r of inkRipples) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = r.color;
-                ctx.globalAlpha = Math.max(0, r.alpha);
-                ctx.lineWidth = 2.5;
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            // 4. 繪製野生山海經異獸（含綠框可吞噬 / 紅框危險 / 破防閃爍提示）
-            for (const e of entities) {
-                // 視野剔除優化
-                if (Math.abs(e.x - camera.x) > (width / camera.zoom) * 0.75 ||
-                    Math.abs(e.y - camera.y) > (height / camera.zoom) * 0.75) continue;
-                drawWildEntity(e);
-            }
-
-            // 5. 繪製投射物（枯木毒針）
-            for (const p of projectiles) {
-                ctx.save();
-                ctx.translate(p.x, p.y);
-                ctx.rotate(p.angle);
-                ctx.fillStyle = p.color;
-                ctx.shadowColor = '#a3e635';
-                ctx.shadowBlur = 10;
-                ctx.beginPath();
-                ctx.moveTo(14, 0);
-                ctx.lineTo(-8, -4);
-                ctx.lineTo(-4, 0);
-                ctx.lineTo(-8, 4);
-                ctx.closePath();
-                ctx.fill();
-                ctx.restore();
-            }
-
-            // 6. 繪製欽原蜂的子蜂群
-            for (const m of minions) {
-                ctx.save();
-                ctx.translate(m.x, m.y);
-                ctx.rotate(m.angle);
-                // 翅膀
-                ctx.fillStyle = 'rgba(209, 250, 229, 0.65)';
-                ctx.beginPath();
-                ctx.ellipse(0, -m.radius * 0.9, m.radius * 0.5, m.radius * 0.9, 0.3, 0, Math.PI * 2);
-                ctx.ellipse(0, m.radius * 0.9, m.radius * 0.5, m.radius * 0.9, -0.3, 0, Math.PI * 2);
-                ctx.fill();
-                // 蜂身
-                ctx.fillStyle = '#34d399';
-                ctx.beginPath();
-                ctx.ellipse(0, 0, m.radius * 1.2, m.radius * 0.7, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-
-            // 7. 繪製玩家異獸本體（隨階段進化呈現截然不同的神獸外觀）
-            if (player) {
-                drawPlayerBeast(player);
-            }
-
-            // 8. 繪製粒子特效
-            for (const p of particles) {
-                ctx.save();
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-
-            // 9. 繪製飄浮戰鬥/吞噬文字
-            for (const ft of floatingTexts) {
-                ctx.save();
-                ctx.globalAlpha = Math.min(1, ft.life / (ft.maxLife * 0.4));
-                ctx.font = 'bold 15px "Noto Serif TC", serif';
-                ctx.textAlign = 'center';
-                ctx.fillStyle = '#000';
-                ctx.fillText(ft.text, ft.x + 1.5, ft.y + 1.5);
-                ctx.fillStyle = ft.color;
-                ctx.fillText(ft.text, ft.x, ft.y);
-                ctx.restore();
-            }
-
-            ctx.restore();
-
-            // 10. 繪製右下角迷你大荒羅盤（小地圖）
-            if (gameState === 'PLAYING' || gameState === 'PAUSED') {
-                drawMiniMap();
-            }
-        }
-
-        // 繪製水墨青綠山水背景與太極八卦陣紋
-        function drawInkWorldBackground() {
-            // 水墨網格線
-            const gridSize = 160;
-            ctx.strokeStyle = 'rgba(148, 163, 184, 0.06)';
-            ctx.lineWidth = 1;
-            const startX = Math.floor((camera.x - width / camera.zoom) / gridSize) * gridSize;
-            const endX = camera.x + width / camera.zoom;
-            const startY = Math.floor((camera.y - height / camera.zoom) / gridSize) * gridSize;
-            const endY = camera.y + height / camera.zoom;
-
-            ctx.beginPath();
-            for (let x = Math.max(0, startX); x <= Math.min(WORLD_SIZE, endX); x += gridSize) {
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, WORLD_SIZE);
-            }
-            for (let y = Math.max(0, startY); y <= Math.min(WORLD_SIZE, endY); y += gridSize) {
-                ctx.moveTo(0, y);
-                ctx.lineTo(WORLD_SIZE, y);
-            }
-            ctx.stroke();
-
-            // 大荒中央「昆侖靈脈陣法」裝飾
-            const cx = WORLD_SIZE / 2;
-            const cy = WORLD_SIZE / 2;
-            ctx.save();
-            ctx.strokeStyle = 'rgba(200, 157, 76, 0.14)';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 260, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.arc(cx, cy, 480, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.restore();
-
-            // 大荒世界結界外框（金色結界線）
-            ctx.strokeStyle = 'rgba(217, 119, 6, 0.55)';
-            ctx.lineWidth = 8;
-            ctx.strokeRect(0, 0, WORLD_SIZE, WORLD_SIZE);
-        }
-
-        // 繪製野生山海經異獸與食物鏈外框提示
-        function drawWildEntity(e) {
-            ctx.save();
-            ctx.translate(e.x, e.y);
-
-            const isSmaller = player && e.radius <= player.radius * 0.82;
-            const isBroken = (e.type !== 'mineral' && e.hp <= e.maxHp * 0.32);
-            const canBeEaten = isSmaller || isBroken;
-
-            // 食物鏈判定光圈（綠框＝可直接吞噬；紅框＝危險巨獸；閃爍金綠框＝破防可強吞！）
-            if (player) {
-                ctx.beginPath();
-                ctx.arc(0, 0, e.radius + 6, 0, Math.PI * 2);
-                if (isBroken) {
-                    const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.015);
-                    ctx.strokeStyle = `rgba(250, 204, 21, ${0.4 + pulse * 0.6})`;
-                    ctx.lineWidth = 3;
-                    ctx.setLineDash([6, 4]);
-                } else if (canBeEaten) {
-                    ctx.strokeStyle = 'rgba(52, 211, 153, 0.45)';
-                    ctx.lineWidth = 2;
-                } else {
-                    ctx.strokeStyle = 'rgba(244, 63, 94, 0.55)';
-                    ctx.lineWidth = 2.5;
-                }
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-
-            ctx.save();
-            ctx.rotate(e.angle);
-
-            // 受傷白光閃爍
-            ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.color;
-
-            if (e.shape === 'crystal') {
-                // 祝餘靈草 / 蘊靈礦
-                ctx.beginPath();
-                for (let i = 0; i < 6; i++) {
-                    const a = (i * Math.PI) / 3;
-                    const r = i % 2 === 0 ? e.radius : e.radius * 0.55;
-                    if (i === 0) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
-                    else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-                }
-                ctx.closePath();
-                ctx.fill();
-            } else if (e.shape === 'fish' || e.shape === 'serpent') {
-                // 文鰩飛魚 / 深淵惡蛟
-                const tailSwing = Math.sin(e.wobble) * 0.35;
-                // 魚鰭/蛟翼
-                ctx.fillStyle = e.accent;
-                ctx.beginPath();
-                ctx.ellipse(0, -e.radius * 0.95, e.radius * 0.45, e.radius * 0.85, -0.3, 0, Math.PI * 2);
-                ctx.ellipse(0, e.radius * 0.95, e.radius * 0.45, e.radius * 0.85, 0.3, 0, Math.PI * 2);
-                ctx.fill();
-                // 身體
-                ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.color;
-                ctx.beginPath();
-                ctx.ellipse(0, 0, e.radius * 1.25, e.radius * 0.65, 0, 0, Math.PI * 2);
-                ctx.fill();
-                // 擺動尾巴
-                ctx.beginPath();
-                ctx.moveTo(-e.radius * 1.1, 0);
-                ctx.lineTo(-e.radius * 1.85, Math.sin(tailSwing) * e.radius - e.radius * 0.5);
-                ctx.lineTo(-e.radius * 1.85, Math.sin(tailSwing) * e.radius + e.radius * 0.5);
-                ctx.closePath();
-                ctx.fill();
-            } else if (e.shape === 'turtle') {
-                // 旋龜
-                ctx.fillStyle = e.accent;
-                ctx.beginPath();
-                ctx.arc(0, 0, e.radius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.color;
-                ctx.beginPath();
-                ctx.arc(0, 0, e.radius * 0.78, 0, Math.PI * 2);
-                ctx.fill();
-                // 龜首
-                ctx.beginPath();
-                ctx.arc(e.radius * 1.05, 0, e.radius * 0.32, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (e.shape === 'bird') {
-                // 三足火鴉
-                const flap = Math.sin(e.wobble * 1.5) * 0.3;
-                ctx.fillStyle = e.accent;
-                ctx.beginPath();
-                ctx.ellipse(-2, -e.radius * 1.1, e.radius * 0.55, e.radius * 1.1, flap, 0, Math.PI * 2);
-                ctx.ellipse(-2, e.radius * 1.1, e.radius * 0.55, e.radius * 1.1, -flap, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.color;
-                ctx.beginPath();
-                ctx.arc(0, 0, e.radius * 0.85, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (e.shape === 'boss') {
-                // 霸主・九首相柳（多個蛇首環繞）
-                for (let k = 0; k < 7; k++) {
-                    const hAng = (k - 3) * 0.32 + Math.sin(e.wobble + k) * 0.12;
-                    ctx.strokeStyle = e.color;
-                    ctx.lineWidth = 7;
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.lineTo(Math.cos(hAng) * e.radius * 1.35, Math.sin(hAng) * e.radius * 1.35);
-                    ctx.stroke();
-
-                    ctx.fillStyle = e.accent;
-                    ctx.beginPath();
-                    ctx.arc(Math.cos(hAng) * e.radius * 1.38, Math.sin(hAng) * e.radius * 1.38, 7, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.color;
-                ctx.beginPath();
-                ctx.arc(0, 0, e.radius * 0.9, 0, Math.PI * 2);
-                ctx.fill();
-            } else {
-                // 山精樹魅
-                ctx.beginPath();
-                ctx.arc(0, 0, e.radius, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // 生物眼睛
-            if (e.type !== 'mineral') {
-                ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                ctx.arc(e.radius * 0.45, -e.radius * 0.25, Math.max(2.5, e.radius * 0.14), 0, Math.PI * 2);
-                ctx.arc(e.radius * 0.45, e.radius * 0.25, Math.max(2.5, e.radius * 0.14), 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            ctx.restore();
-
-            // 繪製名稱與血條（非礦石類）
-            if (e.type !== 'mineral') {
-                ctx.font = e.type === 'boss' ? 'bold 14px "Noto Serif TC"' : '11px "Noto Serif TC"';
-                ctx.textAlign = 'center';
-                ctx.fillStyle = isBroken ? '#fde047' : (canBeEaten ? '#a7f3d0' : '#fda4af');
-                const label = isBroken ? `【破防可吞】${e.name}` : e.name;
-                ctx.fillText(label, 0, -e.radius - 14);
-
-                // 血條（受傷時顯示）
-                if (e.hp < e.maxHp) {
-                    const barW = Math.max(32, e.radius * 1.5);
-                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                    ctx.fillRect(-barW / 2, -e.radius - 10, barW, 4);
-                    ctx.fillStyle = isBroken ? '#facc15' : '#f43f5e';
-                    ctx.fillRect(-barW / 2, -e.radius - 10, barW * (e.hp / e.maxHp), 4);
-                }
-            }
-
-            ctx.restore();
+      }
+
+      e.angle = Math.atan2(e.vy, e.vx);
+      e.x = wrapCoord(e.x + e.vx * dt);
+      e.y = wrapCoord(e.y + e.vy * dt);
+    }
+
+    // 玩家與野生異獸接觸判定
+    const dist = toroidalDist(player.x, player.y, e.x, e.y);
+    if (dist <= player.radius + e.radius) {
+      if (canDevourTarget(e)) {
+        // 成功吞噬！
+        const isDragonBonus = player.starterId === 'huashe' && e.isAquatic;
+        const gainedXp = Math.round(e.xp * (isDragonBonus ? 1.8 : 1.0));
+        gainPlayerXp(gainedXp);
+        player.kills++;
+        player.hp = Math.min(player.maxHp, player.hp + Math.round(e.maxHp * 0.22));
+        spawnParticles(e.x, e.y, e.color, 14, 140);
+        addFloatingText(
+          e.x,
+          e.y,
+          `吞噬 ${e.name} +${gainedXp}靈氣`,
+          isDragonBonus ? '#38bdf8' : '#4ade80'
+        );
+
+        // 欽原蜂天賦：吞噬後孵化子蜂
+        if (player.starterId === 'qinyuan' && minions.length < 6 + player.stageIdx * 2) {
+          minions.push({
+            x: player.x,
+            y: player.y,
+            orbitAngle: Math.random() * Math.PI * 2,
+            life: 22
+          });
         }
 
-        // 繪製玩家異獸（隨三階段進化大幅改變視覺輪廓、羽翼、角與神獸光環）
-        function drawPlayerBeast(p) {
-            ctx.save();
-            ctx.translate(p.x, p.y);
-
-            // 潛行半透明效果
-            if (p.speciesKey === 'xirang' && p.skillActiveTime > 0) {
-                ctx.globalAlpha = 0.38;
-            } else if (p.invulnTime > 0) {
-                ctx.globalAlpha = 0.65 + 0.35 * Math.sin(performance.now() * 0.03);
-            }
-
-            // 階段進化神獸光環（一階以上顯示太古陣紋光環）
-            if (p.stageIndex >= 1) {
-                ctx.save();
-                ctx.rotate(performance.now() * 0.001 * (p.stageIndex));
-                ctx.strokeStyle = p.tree.glowColor;
-                ctx.lineWidth = 2 + p.stageIndex;
-                ctx.beginPath();
-                ctx.arc(0, 0, p.radius + 10 + p.stageIndex * 4, 0, Math.PI * 2);
-                if (p.stageIndex >= 2) {
-                    ctx.setLineDash([12, 8]);
-                }
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            ctx.rotate(p.angle);
-            const r = p.radius;
-            const pulse = Math.sin(p.wobblePhase) * 2.5;
-
-            if (p.speciesKey === 'xirang') {
-                // === 土系路線：息壤蟲 -> 土螻 -> 饕餮幼雛 -> 渾沌吞天巨獸 ===
-                if (p.stageIndex >= 1) {
-                    // 土螻四角 / 饕餮利角
-                    ctx.fillStyle = '#fef08a';
-                    const hornCount = p.stageIndex >= 2 ? 4 : 2;
-                    for (let h = 0; h < hornCount; h++) {
-                        const side = h % 2 === 0 ? -1 : 1;
-                        const offset = h >= 2 ? 0.35 : 0.65;
-                        ctx.beginPath();
-                        ctx.moveTo(r * 0.4, side * r * offset);
-                        ctx.lineTo(r * 1.35, side * r * (offset + 0.25));
-                        ctx.lineTo(r * 0.1, side * r * (offset + 0.35));
-                        ctx.closePath();
-                        ctx.fill();
-                    }
-                }
-                if (p.stageIndex >= 3) {
-                    // 渾沌四翼
-                    ctx.fillStyle = 'rgba(245, 158, 11, 0.65)';
-                    ctx.beginPath();
-                    ctx.ellipse(-r * 0.2, -r * 1.25, r * 0.6, r * 1.1, 0.2, 0, Math.PI * 2);
-                    ctx.ellipse(-r * 0.2, r * 1.25, r * 0.6, r * 1.1, -0.2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                // 本體
-                const grad = ctx.createRadialGradient(0, 0, r * 0.2, 0, 0, r);
-                grad.addColorStop(0, '#fbbf24');
-                grad.addColorStop(1, '#92400e');
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(0, 0, r + pulse * 0.4, 0, Math.PI * 2);
-                ctx.fill();
-
-                // 饕餮/渾沌胸口巨口獠牙
-                if (p.stageIndex >= 2) {
-                    ctx.fillStyle = '#450a0a';
-                    ctx.beginPath();
-                    ctx.arc(r * 0.2, 0, r * 0.52, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.strokeStyle = '#fef08a';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-            } else if (p.speciesKey === 'qinyuan') {
-                // === 木毒路線：欽原蜂 -> 蠱雕 -> 鴆羽魔君 -> 太古蟲皇九嬰蠱 ===
-                const wingFlap = Math.sin(p.wobblePhase * 2.2) * 0.35;
-                const wingPairs = p.stageIndex >= 2 ? 2 : 1;
-                ctx.fillStyle = p.stageIndex >= 2 ? 'rgba(163, 230, 53, 0.55)' : 'rgba(209, 250, 229, 0.65)';
-                for (let w = 0; w < wingPairs; w++) {
-                    const wx = -w * r * 0.45;
-                    ctx.beginPath();
-                    ctx.ellipse(wx, -r * 1.15, r * 0.5, r * 1.15, wingFlap, 0, Math.PI * 2);
-                    ctx.ellipse(wx, r * 1.15, r * 0.5, r * 1.15, -wingFlap, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                // 毒尾針
-                ctx.fillStyle = '#bef264';
-                ctx.beginPath();
-                ctx.moveTo(-r * 0.9, -r * 0.2);
-                ctx.lineTo(-r * 1.65, 0);
-                ctx.lineTo(-r * 0.9, r * 0.2);
-                ctx.closePath();
-                ctx.fill();
-                // 身體
-                const grad = ctx.createRadialGradient(0, 0, r * 0.2, 0, 0, r);
-                grad.addColorStop(0, '#34d399');
-                grad.addColorStop(1, '#064e3b');
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.ellipse(0, 0, r * 1.15, r * 0.85, 0, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (p.speciesKey === 'huashe') {
-                // === 水雷路線：化蛇雛 -> 鳴蛇 -> 應龍雷蛟 -> 創世神獸燭九陰 ===
-                // 蛇尾擺動
-                const tailWave = Math.sin(p.wobblePhase) * r * 0.45;
-                ctx.strokeStyle = p.stageIndex === 3 ? '#ef4444' : '#0284c7';
-                ctx.lineWidth = r * 0.75;
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(-r * 0.5, 0);
-                ctx.quadraticCurveTo(-r * 1.3, tailWave, -r * 2.0, -tailWave * 0.8);
-                ctx.stroke();
-
-                // 龍翼（鳴蛇/應龍/燭九陰）
-                if (p.stageIndex >= 1) {
-                    ctx.fillStyle = p.stageIndex === 3 ? 'rgba(248, 113, 113, 0.65)' : 'rgba(56, 189, 248, 0.55)';
-                    ctx.beginPath();
-                    ctx.ellipse(0, -r * 1.25, r * 0.65, r * 1.2, 0.25, 0, Math.PI * 2);
-                    ctx.ellipse(0, r * 1.25, r * 0.65, r * 1.2, -0.25, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                // 龍角（二階以上）
-                if (p.stageIndex >= 2) {
-                    ctx.strokeStyle = '#fde047';
-                    ctx.lineWidth = 3.5;
-                    ctx.beginPath();
-                    ctx.moveTo(r * 0.3, -r * 0.35);
-                    ctx.lineTo(-r * 0.4, -r * 0.95);
-                    ctx.moveTo(r * 0.3, r * 0.35);
-                    ctx.lineTo(-r * 0.4, r * 0.95);
-                    ctx.stroke();
-                }
-
-                // 龍首主體
-                const grad = ctx.createRadialGradient(0, 0, r * 0.2, 0, 0, r);
-                if (p.stageIndex === 3) {
-                    // 燭九陰赤紅神龍配色
-                    grad.addColorStop(0, '#fca5a5');
-                    grad.addColorStop(1, '#991b1b');
-                } else {
-                    grad.addColorStop(0, '#7dd3fc');
-                    grad.addColorStop(1, '#0369a1');
-                }
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.ellipse(0, 0, r * 1.15, r * 0.88, 0, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // 雙眼（渾沌無面目除外）
-            if (!(p.speciesKey === 'xirang' && p.stageIndex === 3)) {
-                ctx.fillStyle = '#fef08a';
-                ctx.shadowColor = '#fef08a';
-                ctx.shadowBlur = 8;
-                ctx.beginPath();
-                ctx.arc(r * 0.52, -r * 0.28, Math.max(3.5, r * 0.14), 0, Math.PI * 2);
-                ctx.arc(r * 0.52, r * 0.28, Math.max(3.5, r * 0.14), 0, Math.PI * 2);
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            ctx.restore();
+        const oldZone = e.zoneId;
+        enemies.splice(i, 1);
+        spawnWildEnemy(oldZone);
+      } else {
+        // 互相撕咬交鋒
+        e.hp -= player.atk * dt * 2.4;
+        e.hitFlash = 0.12;
+        if (player.stealthTimer <= 0 && player.dashTimer <= 0) {
+          player.hp -= e.atk * dt * 1.4;
+          player.hitFlash = 0.12;
         }
+        // 輕微彈開避免重疊卡死
+        const pushDx = shortestDelta(e.x, player.x);
+        const pushDy = shortestDelta(e.y, player.y);
+        const pd = Math.hypot(pushDx, pushDy) || 1;
+        player.x = wrapCoord(player.x + (pushDx / pd) * 65 * dt);
+        player.y = wrapCoord(player.y + (pushDy / pd) * 65 * dt);
+      }
+    }
+  }
 
-        // 繪製右下角大荒羅盤小地圖
-        function drawMiniMap() {
-            const mapSize = 110;
-            const margin = 16;
-            const mx = width - mapSize - margin;
-            const my = height - mapSize - margin;
+  // 9. 三大靈脈鎮守 BOSS 更新與奪神吞噬
+  bosses.forEach(b => {
+    if (!b.alive) {
+      b.respawnTimer -= dt;
+      if (b.respawnTimer <= 0) {
+        const biome = BIOMES.find(item => item.id === b.biomeId);
+        Object.assign(b, createBossEntity(biome, b.level + 1));
+        showToast(`🔥 靈脈復甦！【${b.name}】已降臨${b.biomeName}！`);
+      }
+      return;
+    }
 
-            ctx.save();
-            // 背景圓盤
-            ctx.fillStyle = 'rgba(10, 17, 19, 0.82)';
-            ctx.strokeStyle = 'rgba(200, 157, 76, 0.5)';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.rect(mx, my, mapSize, mapSize);
-            ctx.fill();
-            ctx.stroke();
+    if (b.hitFlash > 0) b.hitFlash = Math.max(0, b.hitFlash - dt);
+    if (b.stunTimer > 0) b.stunTimer = Math.max(0, b.stunTimer - dt);
+    if (b.poisonTimer > 0) {
+      b.poisonTimer = Math.max(0, b.poisonTimer - dt);
+      b.hp -= player.atk * 0.25 * dt;
+    }
+    if (b.hp < 1) b.hp = 1;
 
-            // 繪製野生異獸光點
-            for (const e of entities) {
-                const ex = mx + (e.x / WORLD_SIZE) * mapSize;
-                const ey = my + (e.y / WORLD_SIZE) * mapSize;
-                if (e.type === 'boss') {
-                    ctx.fillStyle = '#f43f5e';
-                    ctx.fillRect(ex - 2.5, ey - 2.5, 5, 5);
-                } else if (e.radius <= player.radius * 0.82) {
-                    ctx.fillStyle = 'rgba(52, 211, 153, 0.65)';
-                    ctx.fillRect(ex - 1, ey - 1, 2, 2);
-                } else {
-                    ctx.fillStyle = 'rgba(251, 113, 133, 0.65)';
-                    ctx.fillRect(ex - 1.5, ey - 1.5, 3, 3);
-                }
-            }
+    // BOSS 巡遊領地與追擊闖入者
+    if (b.stunTimer <= 0) {
+      const distPlayer = toroidalDist(b.x, b.y, player.x, player.y);
+      const distHome = toroidalDist(b.x, b.y, b.homeX, b.homeY);
 
-            // 繪製玩家光點
-            const px = mx + (player.x / WORLD_SIZE) * mapSize;
-            const py = my + (player.y / WORLD_SIZE) * mapSize;
-            ctx.fillStyle = '#fde047';
-            ctx.beginPath();
-            ctx.arc(px, py, 3.5, 0, Math.PI * 2);
-            ctx.fill();
+      if (player.stealthTimer <= 0 && distPlayer < 460 && distHome < 740) {
+        const dx = shortestDelta(b.x, player.x);
+        const dy = shortestDelta(b.y, player.y);
+        const d = Math.hypot(dx, dy) || 1;
+        b.vx = (dx / d) * 155;
+        b.vy = (dy / d) * 155;
+      } else {
+        // 環繞靈脈中心巡弋
+        const orbitAng = worldTime * 0.45 + b.level;
+        const tx = wrapCoord(b.homeX + Math.cos(orbitAng) * 240);
+        const ty = wrapCoord(b.homeY + Math.sin(orbitAng) * 240);
+        b.vx = shortestDelta(b.x, tx) * 1.2;
+        b.vy = shortestDelta(b.y, ty) * 1.2;
+      }
 
-            ctx.restore();
+      b.angle = Math.atan2(b.vy, b.vx);
+      b.x = wrapCoord(b.x + b.vx * dt);
+      b.y = wrapCoord(b.y + b.vy * dt);
+    }
+
+    // 玩家與 BOSS 交戰 / 破防吞噬
+    const dist = toroidalDist(player.x, player.y, b.x, b.y);
+    if (dist <= player.radius + b.radius) {
+      if (canDevourTarget(b)) {
+        // 成功吞噬靈脈霸主！
+        b.alive = false;
+        b.respawnTimer = 45;
+        player.kills++;
+        gainPlayerXp(b.xp);
+        player.hp = player.maxHp;
+        player.maxHp = Math.round(player.maxHp * 1.08);
+        player.atk = Math.round(player.atk * 1.08);
+        spawnParticles(b.x, b.y, b.color, 45, 260);
+
+        if (player.stageIdx >= 3) {
+          player.divineOrbs[b.orbKey] = true;
+          showToast(`👑 獵神壯舉！吞噬【${b.name}】奪得【${BIOMES.find(x => x.id === b.biomeId).orbName}神格】！`);
+          addFloatingText(b.x, b.y, `奪取本源神格！`, '#fde047', 20);
+        } else {
+          showToast(`⚔️ 越級壯舉！吞噬霸主【${b.name}】，全屬性永久強化！`);
+          addFloatingText(b.x, b.y, `吞噬霸主 +${b.xp}靈氣！`, '#fde047', 18);
         }
-
-        // ==================== UI 介面更新 ====================
-        function updateHUD() {
-            if (!player) return;
-
-            document.getElementById('hudStageBadge').textContent = player.stageName;
-            document.getElementById('hudName').textContent = player.name;
-            document.getElementById('hudAttr').textContent = player.tree.attrName;
-            document.getElementById('hudPassiveDesc').textContent = player.tree.passiveDesc;
-
-            const hpPct = Math.max(0, Math.min(100, (player.hp / player.maxHp) * 100));
-            document.getElementById('hudHpBar').style.width = `${hpPct}%`;
-            document.getElementById('hudHpText').textContent = `${Math.ceil(player.hp)} / ${player.maxHp}`;
-
-            // 經驗條計算
-            const currStageReq = player.tree.stages[player.stageIndex].reqExp;
-            if (player.stageIndex >= player.tree.stages.length - 1) {
-                document.getElementById('hudExpLabel').textContent = '神獸境界';
-                document.getElementById('hudExpText').textContent = '已達究級巔峰';
-                document.getElementById('hudExpBar').style.width = '100%';
-            } else {
-                const span = player.nextExp - currStageReq;
-                const progress = player.exp - currStageReq;
-                const expPct = Math.max(0, Math.min(100, (progress / span) * 100));
-                document.getElementById('hudExpLabel').textContent = `距下階【${player.tree.stages[player.stageIndex + 1].name}】`;
-                document.getElementById('hudExpText').textContent = `${player.exp} / ${player.nextExp}`;
-                document.getElementById('hudExpBar').style.width = `${expPct}%`;
-            }
-
-            document.getElementById('hudSize').textContent = Math.round(player.radius);
-            document.getElementById('hudKills').textContent = player.kills;
-
-            const minionEl = document.getElementById('hudMinionCount');
-            if (player.speciesKey === 'qinyuan') {
-                minionEl.classList.remove('hidden');
-                minionEl.querySelector('strong').textContent = minions.length;
-            } else {
-                minionEl.classList.add('hidden');
-            }
-
-            // 更新底部主動技能按鈕
-            const skill = player.tree.skill;
-            document.getElementById('skillIcon').textContent = skill.icon;
-            document.getElementById('skillName').textContent = skill.name;
-            document.getElementById('skillDesc').textContent = skill.desc;
-
-            const btnSkill = document.getElementById('btnSkill');
-            const cdOverlay = document.getElementById('skillCdOverlay');
-            if (player.skillCd > 0) {
-                btnSkill.disabled = true;
-                cdOverlay.classList.remove('hidden');
-                cdOverlay.textContent = `${player.skillCd.toFixed(1)}s`;
-            } else {
-                btnSkill.disabled = false;
-                cdOverlay.classList.add('hidden');
-            }
+      } else {
+        b.hp -= player.atk * dt * 2.2;
+        b.hitFlash = 0.14;
+        if (player.stealthTimer <= 0 && player.dashTimer <= 0) {
+          player.hp -= b.atk * dt * 1.45;
+          player.hitFlash = 0.14;
         }
+        const pushDx = shortestDelta(b.x, player.x);
+        const pushDy = shortestDelta(b.y, player.y);
+        const pd = Math.hypot(pushDx, pushDy) || 1;
+        player.x = wrapCoord(player.x + (pushDx / pd) * 90 * dt);
+        player.y = wrapCoord(player.y + (pushDy / pd) * 90 * dt);
+      }
+    }
+  });
 
-        function showBanner(title, sub) {
-            const banner = document.getElementById('bannerMsg');
-            document.getElementById('bannerTitle').textContent = title;
-            document.getElementById('bannerSub').textContent = sub;
-            banner.classList.remove('opacity-0', '-translate-y-4');
-            banner.classList.add('opacity-100', 'translate-y-0');
+  // 10. 粒子與浮動文字更新
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const pt = particles[i];
+    pt.life -= dt;
+    pt.x = wrapCoord(pt.x + pt.vx * dt);
+    pt.y = wrapCoord(pt.y + pt.vy * dt);
+    if (pt.life <= 0) particles.splice(i, 1);
+  }
+  for (let i = floatingTexts.length - 1; i >= 0; i--) {
+    const ft = floatingTexts[i];
+    ft.life -= dt;
+    ft.y = wrapCoord(ft.y - 36 * dt);
+    if (ft.life <= 0) floatingTexts.splice(i, 1);
+  }
 
-            if (bannerTimeout) clearTimeout(bannerTimeout);
-            bannerTimeout = setTimeout(() => {
-                banner.classList.remove('opacity-100', 'translate-y-0');
-                banner.classList.add('opacity-0', '-translate-y-4');
-            }, 3400);
-        }
+  // 11. 檢查玩家氣血歸零
+  if (player.hp <= 0) {
+    player.hp = 0;
+    triggerDeathModal();
+  }
 
-        // ==================== 圖鑑與結算彈窗控制 ====================
-        function openBestiary() {
-            if (gameState === 'PLAYING') gameState = 'PAUSED';
-            const container = document.getElementById('bestiaryContent');
-            const tree = player.tree;
+  updateHudUI();
+}
 
-            let html = `
-                <div>
-                    <h3 class="text-base font-bold text-amber-300 mb-2">【當前血脈進化譜系】${tree.attrName}</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            `;
+// 繪製主畫面（以玩家為中心無接縫環繞渲染）
+function render() {
+  // 深邃青墨星域底色
+  ctx.fillStyle = '#0b1415';
+  ctx.fillRect(0, 0, width, height);
 
-            tree.stages.forEach((st, idx) => {
-                const isUnlocked = unlockedForms.has(st.name);
-                const isCurrent = player.stageIndex === idx;
-                html += `
-                    <div class="p-3 rounded-xl border ${isCurrent ? 'border-amber-400 bg-amber-950/35' : (isUnlocked ? 'border-stone-600 bg-black/40' : 'border-stone-800 bg-black/20 opacity-60')}">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold ${isUnlocked ? 'text-amber-200' : 'text-stone-400'}">${st.stageName}：${st.name}</span>
-                            <span class="text-xs px-2 py-0.5 rounded bg-stone-800 text-stone-300">${isCurrent ? '當前形態' : (isUnlocked ? '已覺醒' : `需 ${st.reqExp} 靈氣`)}</span>
-                        </div>
-                        <p class="text-xs text-stone-300">${st.desc}</p>
-                    </div>
-                `;
-            });
+  if (!player) return;
 
-            html += `</div></div><div><h3 class="text-base font-bold text-emerald-300 mb-2">【大荒百獸生態圖鑑】</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">`;
+  const cx = width / 2;
+  const cy = height / 2;
 
-            WILD_SPECIES.forEach(w => {
-                html += `
-                    <div class="p-2.5 rounded-lg border border-stone-800 bg-black/35 flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold text-stone-200">${w.name}</span>
-                            <span class="text-[11px] text-amber-300">體型 ${w.radius} ｜ +${w.exp} 靈氣</span>
-                        </div>
-                        <p class="text-xs text-stone-400">${w.desc}</p>
-                    </div>
-                `;
-            });
+  // 1. 繪製星域微塵與八卦陣紋背景
+  bgStars.forEach(s => {
+    const dx = shortestDelta(player.x, s.x);
+    const dy = shortestDelta(player.y, s.y);
+    if (Math.abs(dx) > cx + 40 || Math.abs(dy) > cy + 40) return;
 
-            html += `</div></div>`;
-            container.innerHTML = html;
-            document.getElementById('bestiaryModal').classList.remove('hidden');
-        }
+    const sx = cx + dx;
+    const sy = cy + dy;
+    ctx.save();
+    ctx.globalAlpha = s.alpha;
+    if (s.type === 'rune') {
+      ctx.strokeStyle = '#c9a44c';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(sx, sy, Math.max(1, s.r * 4), 0, Math.PI * 2);
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.arc(sx, sy, Math.max(1, s.r), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  });
 
-        function closeBestiary() {
-            document.getElementById('bestiaryModal').classList.add('hidden');
-            if (gameState === 'PAUSED') {
-                gameState = 'PLAYING';
-                lastTime = performance.now();
-            }
-        }
+  // 2. 繪製三大生態靈脈光暈結界
+  BIOMES.forEach(b => {
+    const dx = shortestDelta(player.x, b.x);
+    const dy = shortestDelta(player.y, b.y);
+    if (Math.abs(dx) > cx + b.radius + 60 || Math.abs(dy) > cy + b.radius + 60) return;
 
-        function triggerGameOver(killerName) {
-            gameState = 'ENDED';
-            document.getElementById('endBadge').textContent = '弱肉強食・道消身隕';
-            document.getElementById('endTitle').textContent = `葬身於【${killerName}】之口`;
-            document.getElementById('endDesc').textContent = '大荒凶險異常，善用主動神通與地形周旋，待破防後再行吞噬！';
-            document.getElementById('btnContinueEndless').classList.add('hidden');
-            fillEndStats();
-            document.getElementById('endModal').classList.remove('hidden');
-        }
+    const sx = cx + dx;
+    const sy = cy + dy;
+    const safeR = Math.max(10, b.radius);
 
-        function triggerVictoryModal() {
-            gameState = 'PAUSED';
-            document.getElementById('endBadge').textContent = '三階究級・大道已成';
-            document.getElementById('endTitle').textContent = `制霸山海・${player.name}`;
-            document.getElementById('endDesc').textContent = '你已吞盡大荒靈氣，登臨太古創世神獸之境，八荒百獸莫敢不從！';
-            document.getElementById('btnContinueEndless').classList.remove('hidden');
-            fillEndStats();
-            document.getElementById('endModal').classList.remove('hidden');
-        }
+    const grad = ctx.createRadialGradient(sx, sy, 20, sx, sy, safeR);
+    grad.addColorStop(0, b.bgGlow);
+    grad.addColorStop(0.75, b.bgGlow);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
 
-        function fillEndStats() {
-            document.getElementById('endFinalForm').textContent = `${player.name}（${player.stageName}）`;
-            document.getElementById('endFinalSize').textContent = `${Math.round(player.radius)} 丈`;
-            document.getElementById('endTotalKills').textContent = `${player.kills} 隻`;
-            document.getElementById('endSurviveTime').textContent = `${Math.floor(surviveTime)} 秒`;
-        }
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(sx, sy, safeR, 0, Math.PI * 2);
+    ctx.fill();
 
-        // ==================== 輸入事件監聽 ====================
-        window.addEventListener('mousemove', (e) => {
-            pointer.x = e.clientX;
-            pointer.y = e.clientY;
-            pointer.active = true;
-        });
+    // 靈脈外環虛線結界
+    ctx.save();
+    ctx.strokeStyle = b.color;
+    ctx.globalAlpha = 0.25;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([14, 10]);
+    ctx.beginPath();
+    ctx.arc(sx, sy, safeR, 0, Math.PI * 2);
+    ctx.stroke();
 
-        canvas.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 0) {
-                pointer.x = e.touches[0].clientX;
-                pointer.y = e.touches[0].clientY;
-                pointer.active = true;
-            }
-        }, { passive: true });
+    // 靈脈中心古印名稱
+    ctx.globalAlpha = 0.32;
+    ctx.fillStyle = b.color;
+    ctx.font = '900 26px "Noto Serif TC", serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`【${b.name}】`, sx, sy - 10);
+    ctx.font = '500 13px "Noto Serif TC", serif';
+    ctx.fillText(b.attr, sx, sy + 14);
+    ctx.restore();
+  });
 
-        canvas.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 0) {
-                pointer.x = e.touches[0].clientX;
-                pointer.y = e.touches[0].clientY;
-            }
-        }, { passive: true });
+  // 3. 繪製上古秘境奇遇陣眼
+  wonders.forEach(w => {
+    if (!w.active) return;
+    const dx = shortestDelta(player.x, w.x);
+    const dy = shortestDelta(player.y, w.y);
+    if (Math.abs(dx) > cx + 80 || Math.abs(dy) > cy + 80) return;
 
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                triggerPlayerSkill();
-            } else if (e.code === 'Escape') {
-                if (!document.getElementById('bestiaryModal').classList.contains('hidden')) {
-                    closeBestiary();
-                }
-            }
-        });
+    const sx = cx + dx;
+    const sy = cy + dy;
+    const r = Math.max(8, w.radius + Math.sin(w.pulse) * 4);
 
-        document.getElementById('btnSkill').addEventListener('click', triggerPlayerSkill);
-        document.getElementById('btnBestiary').addEventListener('click', openBestiary);
-        document.getElementById('btnCloseBestiary').addEventListener('click', closeBestiary);
+    ctx.save();
+    ctx.strokeStyle = w.color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(sx, sy, r, 0, Math.PI * 2);
+    ctx.stroke();
 
-        document.getElementById('btnRestartTop').addEventListener('click', () => {
-            gameState = 'START';
-            document.getElementById('hudTop').classList.add('hidden');
-            document.getElementById('hudBottom').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-        });
+    ctx.fillStyle = w.color;
+    ctx.globalAlpha = 0.2;
+    ctx.beginPath();
+    ctx.arc(sx, sy, r, 0, Math.PI * 2);
+    ctx.fill();
 
-        document.getElementById('btnPlayAgain').addEventListener('click', () => {
-            gameState = 'START';
-            document.getElementById('endModal').classList.add('hidden');
-            document.getElementById('hudTop').classList.add('hidden');
-            document.getElementById('hudBottom').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-        });
+    ctx.globalAlpha = 1;
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(w.icon, sx, sy);
 
-        document.getElementById('btnContinueEndless').addEventListener('click', () => {
-            endlessMode = true;
-            document.getElementById('endModal').classList.add('hidden');
-            gameState = 'PLAYING';
-            lastTime = performance.now();
-        });
+    ctx.font = 'bold 11px "Noto Serif TC", serif';
+    ctx.fillStyle = w.color;
+    ctx.fillText(w.name, sx, sy + r + 14);
+    ctx.restore();
+  });
 
-        // ==================== 主動畫循環啟動 ====================
-        function gameLoop(now) {
-            const dt = Math.min(0.05, (now - lastTime) / 1000);
-            lastTime = now;
+  // 4. 繪製資源（靈草、神礦、秘境靈寶）
+  resources.forEach(r => {
+    const dx = shortestDelta(player.x, r.x);
+    const dy = shortestDelta(player.y, r.y);
+    if (Math.abs(dx) > cx + 30 || Math.abs(dy) > cy + 30) return;
 
-            update(dt);
-            render();
+    const sx = cx + dx;
+    const sy = cy + dy;
+    ctx.save();
+    ctx.fillStyle = r.color;
+    ctx.shadowColor = r.color;
+    ctx.shadowBlur = r.type === 'relic' ? 12 : 6;
+    ctx.beginPath();
+    ctx.arc(sx, sy, Math.max(3, r.radius), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
 
-            requestAnimationFrame(gameLoop);
-        }
+  // 5. 繪製野生異獸
+  enemies.forEach(e => {
+    const dx = shortestDelta(player.x, e.x);
+    const dy = shortestDelta(player.y, e.y);
+    if (Math.abs(dx) > cx + e.radius + 50 || Math.abs(dy) > cy + e.radius + 50) return;
 
-        window.onload = function() {
-            lastTime = performance.now();
-            requestAnimationFrame(gameLoop);
-        };
-    </script>
+    drawCreature(cx + dx, cy + dy, e, false);
+  });
+
+  // 6. 繪製三大靈脈鎮守 BOSS
+  bosses.forEach(b => {
+    if (!b.alive) return;
+    const dx = shortestDelta(player.x, b.x);
+    const dy = shortestDelta(player.y, b.y);
+    if (Math.abs(dx) > cx + b.radius + 80 || Math.abs(dy) > cy + b.radius + 80) return;
+
+    drawCreature(cx + dx, cy + dy, b, true);
+  });
+
+  // 7. 繪製欽原蜂子蜂群
+  minions.forEach(m => {
+    const dx = shortestDelta(player.x, m.x);
+    const dy = shortestDelta(player.y, m.y);
+    if (Math.abs(dx) > cx + 30 || Math.abs(dy) > cy + 30) return;
+
+    ctx.save();
+    ctx.fillStyle = '#34d399';
+    ctx.shadowColor = '#10b981';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(cx + dx, cy + dy, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // 8. 繪製投射物
+  projectiles.forEach(p => {
+    const dx = shortestDelta(player.x, p.x);
+    const dy = shortestDelta(player.y, p.y);
+    if (Math.abs(dx) > cx + 30 || Math.abs(dy) > cy + 30) return;
+
+    ctx.save();
+    ctx.fillStyle = p.color;
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(cx + dx, cy + dy, Math.max(2, p.radius), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // 9. 繪製玩家異獸本體
+  drawPlayer(cx, cy);
+
+  // 10. 繪製粒子與浮動文字
+  particles.forEach(pt => {
+    const dx = shortestDelta(player.x, pt.x);
+    const dy = shortestDelta(player.y, pt.y);
+    if (Math.abs(dx) > cx + 40 || Math.abs(dy) > cy + 40) return;
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+    ctx.fillStyle = pt.color;
+    ctx.beginPath();
+    ctx.arc(cx + dx, cy + dy, Math.max(1, pt.radius), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  floatingTexts.forEach(ft => {
+    const dx = shortestDelta(player.x, ft.x);
+    const dy = shortestDelta(player.y, ft.y);
+    if (Math.abs(dx) > cx + 100 || Math.abs(dy) > cy + 100) return;
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, ft.life / ft.maxLife);
+    ctx.font = `bold ${ft.size}px "Noto Serif TC", serif`;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = ft.color;
+    ctx.shadowColor = '#000';
+    ctx.shadowBlur = 4;
+    ctx.fillText(ft.text, cx + dx, cy + dy);
+    ctx.restore();
+  });
+
+  // 11. 繪製右下角「太極羅盤・星海遠征雷達」
+  renderRadar();
+}
+
+// 繪製野生異獸 / 靈脈 BOSS
+function drawCreature(sx, sy, entity, isBoss) {
+  const r = Math.max(6, entity.radius);
+  const edible = canDevourTarget(entity);
+
+  ctx.save();
+  // 食物鏈捕食提示光圈（綠圈＝可直接吞；金虛線＝破防殘血可強吞；紅圈＝危險強敵）
+  ctx.beginPath();
+  ctx.arc(sx, sy, r + (isBoss ? 12 : 7), 0, Math.PI * 2);
+  if (edible) {
+    const isBreakState = entity.radius > player.radius * player.data.eatRatio;
+    ctx.strokeStyle = isBreakState ? '#fde047' : '#4ade80';
+    ctx.lineWidth = isBreakState ? 3 : 2;
+    if (isBreakState) ctx.setLineDash([6, 4]);
+  } else {
+    ctx.strokeStyle = isBoss ? '#f43f5e' : 'rgba(248, 113, 113, 0.65)';
+    ctx.lineWidth = isBoss ? 3 : 1.5;
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 異獸主體旋轉與外觀
+  ctx.translate(sx, sy);
+  ctx.rotate(entity.angle);
+
+  ctx.fillStyle = entity.hitFlash > 0 ? '#ffffff' : entity.color;
+  if (isBoss) {
+    ctx.shadowColor = entity.color;
+    ctx.shadowBlur = 22;
+  }
+
+  // 主軀幹
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 根據不同形態繪製特徵（雙翼 / 尾鰭 / 尖角）
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  if (isBoss || entity.shape === 'dragon' || entity.shape === 'bird' || entity.shape === 'fox') {
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.2, 0);
+    ctx.lineTo(-r * 0.8, -r * 1.25);
+    ctx.lineTo(r * 0.35, -r * 0.4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.2, 0);
+    ctx.lineTo(-r * 0.8, r * 1.25);
+    ctx.lineTo(r * 0.35, r * 0.4);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // 眼睛
+  ctx.fillStyle = isBoss ? '#fef08a' : '#0f172a';
+  ctx.beginPath();
+  ctx.arc(r * 0.48, -r * 0.28, Math.max(2, r * 0.14), 0, Math.PI * 2);
+  ctx.arc(r * 0.48, r * 0.28, Math.max(2, r * 0.14), 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+
+  // 名稱與血條
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.font = isBoss ? 'bold 13px "Noto Serif TC", serif' : '11px "Noto Serif TC", serif';
+  ctx.fillStyle = edible ? '#bbf7d0' : (isBoss ? '#fecdd3' : '#e2e8f0');
+  ctx.fillText(isBoss ? `👑 ${entity.name}` : entity.name, sx, sy - r - 14);
+
+  if (entity.hp < entity.maxHp || isBoss) {
+    const barW = Math.max(32, r * 1.6);
+    const barH = isBoss ? 5 : 3.5;
+    const pct = Math.max(0, Math.min(1, entity.hp / entity.maxHp));
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.fillRect(sx - barW / 2, sy - r - 10, barW, barH);
+    ctx.fillStyle = edible ? '#fde047' : (isBoss ? '#fb7185' : '#f87171');
+    ctx.fillRect(sx - barW / 2, sy - r - 10, barW * pct, barH);
+  }
+  ctx.restore();
+}
+
+// 繪製玩家異獸（隨三階段進化視覺蛻變 + 環繞神格珠）
+function drawPlayer(sx, sy) {
+  const r = Math.max(10, player.radius);
+  const stage = player.stageIdx;
+
+  ctx.save();
+  if (player.stealthTimer > 0) ctx.globalAlpha = 0.48;
+
+  // 究級體太古法陣光環
+  if (stage >= 2) {
+    ctx.save();
+    ctx.translate(sx, sy);
+    ctx.rotate(worldTime * (stage === 3 ? 1.2 : 0.6));
+    ctx.strokeStyle = stage === 3 ? '#fde047' : player.data.accent;
+    ctx.lineWidth = stage === 3 ? 2.2 : 1.5;
+    ctx.setLineDash([10, 6]);
+    ctx.beginPath();
+    ctx.arc(0, 0, r + 12, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 本體旋轉繪製
+  ctx.save();
+  ctx.translate(sx, sy);
+  ctx.rotate(player.angle);
+
+  ctx.fillStyle = player.hitFlash > 0 ? '#ffffff' : player.data.color;
+  ctx.shadowColor = player.data.accent;
+  ctx.shadowBlur = 14 + stage * 6;
+
+  // 進化羽翼 / 鰭刺（一階以上出現）
+  if (stage >= 1) {
+    const wingSpan = r * (1.15 + stage * 0.22);
+    ctx.fillStyle = player.data.accent;
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.1, 0);
+    ctx.lineTo(-r * 0.85, -wingSpan);
+    ctx.lineTo(r * 0.35, -r * 0.35);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.1, 0);
+    ctx.lineTo(-r * 0.85, wingSpan);
+    ctx.lineTo(r * 0.35, r * 0.35);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // 進化利角（二階以上出現）
+  if (stage >= 2) {
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.moveTo(r * 0.6, -r * 0.35);
+    ctx.lineTo(r * 1.38, -r * 0.55);
+    ctx.lineTo(r * 0.8, -r * 0.1);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(r * 0.6, r * 0.35);
+    ctx.lineTo(r * 1.38, r * 0.55);
+    ctx.lineTo(r * 0.8, r * 0.1);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // 主體身軀
+  ctx.fillStyle = player.hitFlash > 0 ? '#ffffff' : player.data.color;
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 背部靈紋
+  ctx.strokeStyle = player.data.accent;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(-r * 0.15, 0, r * 0.52, -0.9, 0.9);
+  ctx.stroke();
+
+  // 雙目
+  ctx.fillStyle = '#fef9c3';
+  ctx.beginPath();
+  ctx.arc(r * 0.52, -r * 0.3, Math.max(2.5, r * 0.14), 0, Math.PI * 2);
+  ctx.arc(r * 0.52, r * 0.3, Math.max(2.5, r * 0.14), 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+
+  // 繪製已奪取的「太古本源神格珠」環繞旋轉
+  const activeOrbs = [];
+  if (player.divineOrbs.qingqiu) activeOrbs.push('#34d399');
+  if (player.divineOrbs.guixu) activeOrbs.push('#38bdf8');
+  if (player.divineOrbs.buzhou) activeOrbs.push('#fb7185');
+
+  activeOrbs.forEach((orbColor, idx) => {
+    const ang = worldTime * 2.6 + (Math.PI * 2 * idx) / activeOrbs.length;
+    const ox = sx + Math.cos(ang) * (r + 22);
+    const oy = sy + Math.sin(ang) * (r + 22);
+    ctx.save();
+    ctx.fillStyle = orbColor;
+    ctx.shadowColor = orbColor;
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(ox, oy, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  ctx.restore();
+}
+
+// 繪製右下角「太極羅盤・星海遠征雷達」（含外圈遠距星標導航）
+function renderRadar() {
+  const size = 164;
+  const half = size / 2;
+  const maxR = half - 14;
+
+  radarCtx.clearRect(0, 0, size, size);
+
+  // 羅盤底盤
+  radarCtx.fillStyle = 'rgba(11, 20, 21, 0.94)';
+  radarCtx.beginPath();
+  radarCtx.arc(half, half, half - 2, 0, Math.PI * 2);
+  radarCtx.fill();
+
+  // 八卦同心刻度環
+  radarCtx.strokeStyle = 'rgba(201, 164, 76, 0.25)';
+  radarCtx.lineWidth = 1;
+  [0.45, 0.85, 1.0].forEach(ratio => {
+    radarCtx.beginPath();
+    radarCtx.arc(half, half, maxR * ratio, 0, Math.PI * 2);
+    radarCtx.stroke();
+  });
+
+  // 動態太極掃描扇形
+  const sweepAng = worldTime * 2.0;
+  const sweepGrad = radarCtx.createRadialGradient(half, half, 4, half, half, maxR);
+  sweepGrad.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
+  sweepGrad.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+  radarCtx.fillStyle = sweepGrad;
+  radarCtx.beginPath();
+  radarCtx.moveTo(half, half);
+  radarCtx.arc(half, half, maxR, sweepAng - 0.55, sweepAng);
+  radarCtx.closePath();
+  radarCtx.fill();
+
+  if (!player) return;
+
+  // 1. 繪製三大生態靈脈光域在雷達上的位置
+  BIOMES.forEach(b => {
+    const dx = shortestDelta(player.x, b.x);
+    const dy = shortestDelta(player.y, b.y);
+    const dist = Math.hypot(dx, dy);
+    if (dist <= RADAR_RANGE) {
+      const rx = half + (dx / RADAR_RANGE) * maxR;
+      const ry = half + (dy / RADAR_RANGE) * maxR;
+      const rr = Math.max(8, (b.radius / RADAR_RANGE) * maxR);
+      radarCtx.save();
+      radarCtx.fillStyle = b.color;
+      radarCtx.globalAlpha = 0.22;
+      radarCtx.beginPath();
+      radarCtx.arc(rx, ry, rr, 0, Math.PI * 2);
+      radarCtx.fill();
+      radarCtx.restore();
+    }
+  });
+
+  // 2. 繪製周邊野生異獸光點
+  enemies.forEach(e => {
+    const dx = shortestDelta(player.x, e.x);
+    const dy = shortestDelta(player.y, e.y);
+    const dist = Math.hypot(dx, dy);
+    if (dist <= RADAR_RANGE) {
+      const rx = half + (dx / RADAR_RANGE) * maxR;
+      const ry = half + (dy / RADAR_RANGE) * maxR;
+      radarCtx.fillStyle = canDevourTarget(e) ? '#4ade80' : '#f87171';
+      radarCtx.beginPath();
+      radarCtx.arc(rx, ry, 1.8, 0, Math.PI * 2);
+      radarCtx.fill();
+    }
+  });
+
+  // 3. 繪製上古秘境奇遇（圓盤內顯示金點，圓盤外於外圈亮起金色方位星標）
+  wonders.forEach(w => {
+    if (!w.active) return;
+    const dx = shortestDelta(player.x, w.x);
+    const dy = shortestDelta(player.y, w.y);
+    const dist = Math.hypot(dx, dy);
+    const ang = Math.atan2(dy, dx);
+
+    if (dist <= RADAR_RANGE) {
+      const rx = half + (dx / RADAR_RANGE) * maxR;
+      const ry = half + (dy / RADAR_RANGE) * maxR;
+      radarCtx.fillStyle = '#fde047';
+      radarCtx.beginPath();
+      radarCtx.arc(rx, ry, 3, 0, Math.PI * 2);
+      radarCtx.fill();
+    } else {
+      // 外圈方位指引星點
+      const ex = half + Math.cos(ang) * (maxR + 5);
+      const ey = half + Math.sin(ang) * (maxR + 5);
+      radarCtx.fillStyle = '#fde047';
+      radarCtx.beginPath();
+      radarCtx.arc(ex, ey, 2.5, 0, Math.PI * 2);
+      radarCtx.fill();
+    }
+  });
+
+  // 4. 繪製三大靈脈 BOSS（圓盤內顯示王冠光點，圓盤外於外圈繪製方向箭頭指針！）
+  bosses.forEach(b => {
+    if (!b.alive) return;
+    const dx = shortestDelta(player.x, b.x);
+    const dy = shortestDelta(player.y, b.y);
+    const dist = Math.hypot(dx, dy);
+    const ang = Math.atan2(dy, dx);
+
+    if (dist <= RADAR_RANGE) {
+      const rx = half + (dx / RADAR_RANGE) * maxR;
+      const ry = half + (dy / RADAR_RANGE) * maxR;
+      radarCtx.fillStyle = b.color;
+      radarCtx.strokeStyle = '#ffffff';
+      radarCtx.lineWidth = 1.2;
+      radarCtx.beginPath();
+      radarCtx.arc(rx, ry, 4.8, 0, Math.PI * 2);
+      radarCtx.fill();
+      radarCtx.stroke();
+    } else {
+      // 外圈遠征方向指針箭頭
+      const ex = half + Math.cos(ang) * (maxR + 6);
+      const ey = half + Math.sin(ang) * (maxR + 6);
+      radarCtx.save();
+      radarCtx.translate(ex, ey);
+      radarCtx.rotate(ang);
+      radarCtx.fillStyle = b.color;
+      radarCtx.beginPath();
+      radarCtx.moveTo(5, 0);
+      radarCtx.lineTo(-4, -3.8);
+      radarCtx.lineTo(-4, 3.8);
+      radarCtx.closePath();
+      radarCtx.fill();
+      radarCtx.restore();
+    }
+  });
+
+  // 5. 中心玩家太極光點與朝向指針
+  radarCtx.save();
+  radarCtx.translate(half, half);
+  radarCtx.rotate(player.angle);
+  radarCtx.fillStyle = '#ffffff';
+  radarCtx.beginPath();
+  radarCtx.moveTo(6, 0);
+  radarCtx.lineTo(-4, -3.5);
+  radarCtx.lineTo(-4, 3.5);
+  radarCtx.closePath();
+  radarCtx.fill();
+  radarCtx.restore();
+}
+
+// 更新左上與底部 HUD 介面
+function updateHudUI() {
+  if (!player) return;
+  const st = player.data.stages[player.stageIdx];
+
+  document.getElementById('hudStageBadge').textContent = st.title;
+  document.getElementById('hudBeastName').textContent = st.name;
+  document.getElementById('hudHpText').textContent = `${Math.ceil(player.hp)} / ${player.maxHp}`;
+  document.getElementById('hudHpBar').style.width = `${Math.max(0, Math.min(100, (player.hp / player.maxHp) * 100))}%`;
+
+  if (player.stageIdx < 3) {
+    document.getElementById('hudXpLabel').textContent = '進化靈氣';
+    document.getElementById('hudXpText').textContent = `${player.xp} / ${st.reqXp}`;
+    document.getElementById('hudXpBar').style.width = `${Math.min(100, (player.xp / st.reqXp) * 100)}%`;
+  } else {
+    document.getElementById('hudXpLabel').textContent = '太古究級體';
+    document.getElementById('hudXpText').textContent = '靈氣圓滿・可獵殺神格';
+    document.getElementById('hudXpBar').style.width = '100%';
+  }
+
+  document.getElementById('hudSizeText').textContent = Math.round(player.radius);
+  document.getElementById('hudKillsText').textContent = player.kills;
+  document.getElementById('hudReincarnationBadge').textContent = `太古血脈 +${legacyAscensions * 15}%`;
+
+  const buffEl = document.getElementById('hudBuffText');
+  if (player.wonderBuffTimer > 0) {
+    buffEl.textContent = `神威 ${player.wonderBuffTimer.toFixed(1)}s`;
+    buffEl.classList.remove('hidden');
+  } else {
+    buffEl.classList.add('hidden');
+  }
+
+  // 判斷目前所在生態區域
+  let currentBiomeName = '星域荒野';
+  for (const b of BIOMES) {
+    if (toroidalDist(player.x, player.y, b.x, b.y) <= b.radius) {
+      currentBiomeName = `${b.name} (${b.attr})`;
+      break;
+    }
+  }
+  document.getElementById('hudBiomeTag').textContent = currentBiomeName;
+
+  // 更新三大靈脈 BOSS 狀態列表
+  const bossListEl = document.getElementById('hudBossList');
+  bossListEl.innerHTML = bosses.map(b => {
+    const statusText = b.alive
+      ? `<span class="text-emerald-300">鎮守中 (${Math.ceil((b.hp / b.maxHp) * 100)}%)</span>`
+      : `<span class="text-amber-400">靈脈復甦 ${Math.ceil(b.respawnTimer)}s</span>`;
+    return `<div class="flex justify-between items-center">
+      <span class="text-stone-300">${b.name}</span>
+      ${statusText}
+    </div>`;
+  }).join('');
+
+  // 更新神格槽位
+  if (player.stageIdx >= 3) {
+    const orbs = player.divineOrbs;
+    const count = (orbs.qingqiu ? 1 : 0) + (orbs.guixu ? 1 : 0) + (orbs.buzhou ? 1 : 0);
+    document.getElementById('divinityCountText').textContent = `${count} / 3`;
+
+    setOrbSlotStyle('orbSlotQingqiu', orbs.qingqiu, 'border-emerald-400 text-emerald-200 bg-emerald-950/80');
+    setOrbSlotStyle('orbSlotGuixu', orbs.guixu, 'border-cyan-400 text-cyan-200 bg-cyan-950/80');
+    setOrbSlotStyle('orbSlotBuzhou', orbs.buzhou, 'border-rose-400 text-rose-200 bg-rose-950/80');
+
+    if (count >= 3) {
+      document.getElementById('ascendBtn').classList.remove('hidden');
+    }
+  }
+
+  // 更新技能按鈕冷卻
+  document.getElementById('skillIcon').textContent = player.data.skillIcon;
+  document.getElementById('skillName').textContent = player.data.skillName;
+  const cdOverlay = document.getElementById('skillCdOverlay');
+  if (player.skillTimer > 0) {
+    cdOverlay.textContent = `${player.skillTimer.toFixed(1)}s`;
+    cdOverlay.classList.remove('hidden');
+  } else {
+    cdOverlay.classList.add('hidden');
+  }
+}
+
+function setOrbSlotStyle(elId, active, activeClasses) {
+  const el = document.getElementById(elId);
+  if (active) {
+    el.className = `py-1 px-1 rounded border font-bold ${activeClasses}`;
+  } else {
+    el.className = 'py-1 px-1 rounded bg-stone-900/90 border border-stone-700 text-stone-500';
+  }
+}
+
+// 山海圖鑑彈窗控制
+function toggleBestiary(open) {
+  const modal = document.getElementById('bestiaryModal');
+  if (open) {
+    gamePaused = true;
+    renderBestiaryContent();
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  } else {
+    gamePaused = false;
+    lastTime = performance.now();
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function renderBestiaryContent() {
+  const container = document.getElementById('bestiaryContent');
+  let html = '';
+
+  // 三大初始異獸譜系
+  Object.values(STARTER_DATA).forEach(st => {
+    const isCurrent = player && player.starterId === st.id;
+    html += `
+      <div class="p-3.5 rounded-xl bg-stone-900/85 border ${isCurrent ? 'border-amber-400' : 'border-stone-700'}">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-amber-200 text-base">${st.skillIcon} ${st.stages[0].name}血脈（${st.element}）</span>
+          ${isCurrent ? '<span class="text-xs px-2 py-0.5 rounded bg-amber-900 text-amber-200">當前操控</span>' : ''}
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          ${st.stages.map((s, idx) => `
+            <div class="p-2 rounded bg-black/50 border ${isCurrent && player.stageIdx >= idx ? 'border-emerald-500/60 text-emerald-200' : 'border-stone-800 text-stone-400'}">
+              <div class="text-[10px] opacity-75">${s.title}</div>
+              <div class="font-bold mt-0.5">${s.name}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  // 三大生態靈脈與奇遇說明
+  html += `
+    <div class="p-3.5 rounded-xl bg-stone-900/85 border border-stone-700 space-y-2">
+      <div class="font-bold text-amber-200 text-base">🌌 星域三大靈脈與上古秘境</div>
+      <p class="text-stone-300">• <strong class="text-emerald-300">青丘靈林</strong>：棲息青丘靈狐、木魅樹妖、九尾妖靈；鎮守霸主【青丘・九尾天狐】。</p>
+      <p class="text-stone-300">• <strong class="text-cyan-300">歸墟寒淵</strong>：棲息文鰩飛魚、玄水重龜、雷澤蛟龍；鎮守霸主【歸墟・覆海應龍】。</p>
+      <p class="text-stone-300">• <strong class="text-rose-300">不周赤土</strong>：棲息赤焰火鼠、重甲土螻、畢方炎鳥；鎮守霸主【不周・焚天饕餮】。</p>
+      <p class="text-amber-200/90">• <strong>上古秘境奇遇</strong>：地圖散落上古靈泉（回血重置冷卻）、太古龍脈祭壇（15秒神威吸力）、封印上古寶匣（噴湧稀世靈寶）。</p>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+// 死亡與羽化登仙結算彈窗
+function triggerDeathModal() {
+  gamePaused = true;
+  const st = player.data.stages[player.stageIdx];
+  document.getElementById('endIcon').textContent = '💀';
+  document.getElementById('endTitle').textContent = '神魂消散・重入輪迴';
+  document.getElementById('endDesc').textContent = '弱肉強食乃山海鐵律，避開紅圈巨獸、善用技能破防再戰星海！';
+  document.getElementById('continueWorldBtn').classList.add('hidden');
+  document.getElementById('endStats').innerHTML = `
+    <div>最終異獸形態：<strong class="text-amber-300">${st.name}（${st.title}）</strong></div>
+    <div>累計吞噬異獸：<strong class="text-emerald-300">${player.kills} 隻</strong></div>
+    <div>當前太古血脈加成：<strong class="text-amber-400">+${legacyAscensions * 15}%</strong></div>
+  `;
+  const modal = document.getElementById('endModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function openAscendModal() {
+  gamePaused = true;
+  legacyAscensions++;
+  const st = player.data.stages[player.stageIdx];
+  document.getElementById('endIcon').textContent = '👑';
+  document.getElementById('endTitle').textContent = '三神格圓滿・羽化登仙！';
+  document.getElementById('endDesc').textContent = '你已吞噬青丘、歸墟、不周三大靈脈霸主，名刻《山海太古神獸錄》，所有初始異獸獲得永久 15% 血脈神威疊加！';
+  document.getElementById('continueWorldBtn').classList.remove('hidden');
+  document.getElementById('endStats').innerHTML = `
+    <div>登仙神獸：<strong class="text-amber-300">${st.name}</strong></div>
+    <div>累計吞噬異獸：<strong class="text-emerald-300">${player.kills} 隻</strong></div>
+    <div>永久太古血脈加成：<strong class="text-amber-400">已提升至 +${legacyAscensions * 15}%</strong></div>
+  `;
+  const modal = document.getElementById('endModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeEndModal() {
+  gamePaused = false;
+  lastTime = performance.now();
+  const modal = document.getElementById('endModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function returnToTitle() {
+  gameRunning = false;
+  gamePaused = false;
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+
+  document.getElementById('hudLayer').classList.add('hidden');
+  document.getElementById('divinityPanel').classList.add('hidden');
+  document.getElementById('ascendBtn').classList.add('hidden');
+  document.getElementById('endModal').classList.add('hidden');
+  document.getElementById('endModal').classList.remove('flex');
+  document.getElementById('bestiaryModal').classList.add('hidden');
+  document.getElementById('bestiaryModal').classList.remove('flex');
+
+  const legacyInfo = document.getElementById('startLegacyInfo');
+  if (legacyAscensions > 0) {
+    legacyInfo.textContent = `✨ 已傳承【太古登仙血脈】：所有初始異獸全屬性永久 +${legacyAscensions * 15}%`;
+    legacyInfo.classList.remove('hidden');
+  }
+  document.getElementById('startModal').classList.remove('hidden');
+}
+
+// 單一主動畫迴圈
+function gameLoop(now) {
+  const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) / 1000));
+  lastTime = now;
+
+  update(dt);
+  render();
+
+  if (gameRunning) {
+    animFrameId = requestAnimationFrame(gameLoop);
+  }
+}
+
+// 初始啟動畫面背景預渲染
+resize();
+ctx.fillStyle = '#0b1415';
+ctx.fillRect(0, 0, width, height);
+</script>
 </body>
 </html>
