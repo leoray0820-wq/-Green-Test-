@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>山海經：異獸吞噬進化・萬神無極終極版</title>
+  <title>山海經：異獸吞噬進化・洞天靈寵養成版</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap');
@@ -94,15 +94,15 @@
 
   <!-- 遊戲內 HUD -->
   <div id="hudLayer" class="fixed inset-0 pointer-events-none hidden">
-    <!-- 左上角：異獸狀態、基因靈韻與神格面板 -->
-    <div class="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-col gap-2 pointer-events-auto max-w-[300px] sm:max-w-[345px]">
+    <!-- 左上角：異獸狀態、羈絆親密度、基因靈韻與神格面板 -->
+    <div class="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-col gap-2 pointer-events-auto max-w-[305px] sm:max-w-[350px]">
       <div class="ink-panel rounded-xl p-3">
         <div class="flex items-center justify-between gap-1.5 mb-1.5">
           <div class="flex items-center gap-1.5 truncate">
             <span id="hudStageBadge" class="px-1.5 py-0.5 text-[11px] font-bold rounded bg-amber-900/80 text-amber-200 border border-amber-500/40 shrink-0">幼體</span>
             <h2 id="hudBeastName" class="text-sm sm:text-base font-black tracking-wider text-amber-100 truncate">息壤蟲</h2>
           </div>
-          <span id="hudBiomeTag" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-500/30 shrink-0">星域荒野</span>
+          <span id="hudBiomeTag" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-500/30 shrink-0">洞天福地</span>
         </div>
 
         <!-- 氣血條 -->
@@ -127,6 +127,17 @@
           </div>
         </div>
 
+        <!-- 靈寵羈絆親密度條 -->
+        <div class="mb-1.5">
+          <div class="flex justify-between text-[11px] text-rose-200/90 mb-0.5">
+            <span>💖 靈寵羈絆</span>
+            <span id="hudBondText">0 / 100</span>
+          </div>
+          <div class="w-full h-1.5 bg-stone-900/90 rounded-full overflow-hidden border border-rose-700/40">
+            <div id="hudBondBar" class="h-full bg-gradient-to-r from-pink-600 via-rose-400 to-amber-300 transition-all duration-150" style="width: 0%"></div>
+          </div>
+        </div>
+
         <!-- 吞噬基因靈韻（御風 / 烈陽 / 厚土） -->
         <div class="grid grid-cols-3 gap-1 py-1 my-1 border-y border-stone-700/60 text-center text-[10px]">
           <div class="bg-teal-950/60 rounded py-0.5 border border-teal-500/20 text-teal-300">
@@ -140,10 +151,10 @@
           </div>
         </div>
 
-        <!-- 體型、眷屬與血脈統計 -->
+        <!-- 體型、靈果與血脈統計 -->
         <div class="flex items-center justify-between text-[11px] text-stone-300">
           <span>體魄：<strong id="hudSizeText" class="text-amber-300">22</strong></span>
-          <span>眷屬：<strong id="hudCompanionText" class="text-cyan-300">0</strong></span>
+          <span>靈果：<strong id="hudFruitText" class="text-lime-300">2</strong></span>
           <span id="hudLegacyText" class="text-amber-400 font-bold">血脈 +0%</span>
         </div>
       </div>
@@ -175,16 +186,20 @@
       </div>
     </div>
 
-    <!-- 右上角：天象指示器與功能按鈕 -->
+    <!-- 右上角：模式切換、天象與功能按鈕 -->
     <div class="absolute top-3 right-3 sm:top-4 sm:right-4 flex flex-col items-end gap-2 pointer-events-auto">
-      <div class="flex gap-2">
+      <div class="flex flex-wrap justify-end gap-1.5 sm:gap-2">
+        <button id="modeSwitchBtn" onclick="switchMode()" class="btn-ascend px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5">
+          <span id="modeSwitchIcon">🌌</span><span id="modeSwitchLabel">外出星海狩獵</span>
+        </button>
         <button onclick="toggleBestiary(true)" class="btn-ancient px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5">
           <span>📜</span><span>山海全典</span>
         </button>
         <button onclick="returnToTitle()" class="btn-ancient px-3 py-2 rounded-lg text-xs sm:text-sm font-bold">
-          重選異獸
+          重孵靈卵
         </button>
       </div>
+
       <!-- 動態星象狀態徽章 -->
       <div id="celestialBadge" class="ink-panel px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 border-amber-500/40">
         <span id="celestialIcon">✨</span>
@@ -193,12 +208,27 @@
       </div>
     </div>
 
-    <!-- 底部中央：天賦技能施放列 -->
+    <!-- 底部中央：洞天照料互動列 或 星海天賦技能列 -->
     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 pointer-events-auto">
       <div id="eventToast" class="px-4 py-1.5 rounded-full bg-amber-950/95 border border-amber-400/80 text-amber-200 text-xs sm:text-sm font-bold shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
         觸發上古奇遇！
       </div>
-      <div class="ink-panel rounded-2xl px-4 py-2 flex items-center gap-3">
+
+      <!-- 洞天福地：電子寵物照料互動列 -->
+      <div id="sanctuaryControls" class="ink-panel rounded-2xl px-3.5 py-2 flex items-center gap-2 sm:gap-3">
+        <button onclick="petBeast()" class="btn-ancient px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+          <span>💖</span><span>撫摸安撫</span>
+        </button>
+        <button id="feedBtn" onclick="feedBeast()" class="btn-ancient px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+          <span>🍒</span><span>投餵靈果 (<span id="feedCountSpan">2</span>)</span>
+        </button>
+        <button onclick="purifyBeast()" class="btn-ancient px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+          <span>✨</span><span>靈泉淨化</span>
+        </button>
+      </div>
+
+      <!-- 星海狩獵：天賦技能施放列 -->
+      <div id="wildControls" class="ink-panel rounded-2xl px-4 py-2 flex items-center gap-3 hidden">
         <button id="skillBtn" onclick="triggerSkill()" class="btn-ancient px-3.5 py-1.5 rounded-xl flex items-center gap-2 relative overflow-hidden">
           <span id="skillIcon" class="text-xl">🌀</span>
           <div class="text-left">
@@ -227,80 +257,80 @@
     </div>
   </div>
 
-  <!-- 開局選擇初始異獸畫面 -->
+  <!-- 開局孵化上古異獸蛋畫面 -->
   <div id="startModal" class="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
     <div class="ink-panel rounded-2xl max-w-4xl w-full p-5 sm:p-7 my-auto">
       <div class="text-center mb-5">
         <div class="inline-block px-3 py-1 rounded-full bg-amber-900/50 border border-amber-500/40 text-amber-300 text-xs tracking-widest mb-2">
-          九大靈脈・基因突變・三系伴生靈寵・天劫無極體・域外魔神
+          洞天福地養成 × 九大靈脈吞噬 × 基因突變 × 無極天劫
         </div>
         <h1 class="text-2xl sm:text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-emerald-300">
           山海經：異獸吞噬進化
         </h1>
         <p class="text-xs sm:text-sm text-stone-300 mt-2 max-w-2xl mx-auto">
-          吞噬不同屬性異獸累積<span class="text-amber-300 font-bold">基因靈韻</span>可觸發隱藏分支進化並召喚專屬<span class="text-cyan-300 font-bold">伴生靈寵</span>！集齊九大神格渡過九霄天劫，證道無極體迎戰域外混沌魔神！
+          挑選一顆<span class="text-amber-300 font-bold">上古靈獸蛋</span>孵化！在「洞天福地」撫摸、投餵與淨化培養羈絆，再帶牠「外出星海狩獵」吞噬萬物、累積基因靈韻、蛻變無極體！
         </p>
         <div id="startLegacyInfo" class="mt-2 text-xs text-amber-400 font-bold hidden"></div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-        <!-- 息壤蟲 -->
+        <!-- 息壤蛋 -->
         <div onclick="selectStarter('xirang')" class="group cursor-pointer rounded-xl p-4 bg-stone-900/85 border border-amber-600/40 hover:border-amber-400 hover:bg-stone-800/90 transition-all flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/40">土・吞納法相</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/40">土・流金靈蛋</span>
               <canvas id="previewXirang" width="56" height="44"></canvas>
             </div>
-            <h3 class="text-xl font-black text-amber-200 group-hover:text-amber-300">息壤蟲</h3>
-            <p class="text-xs text-stone-400 mt-1 mb-2.5">流金神土凝結之靈，可吞食靈草神礦成長，並凝聚「玄黃土偶」護主吸靈。</p>
+            <h3 class="text-xl font-black text-amber-200 group-hover:text-amber-300">息壤蟲蛋</h3>
+            <p class="text-xs text-stone-400 mt-1 mb-2.5">溫潤如暖玉的土系靈蛋，孵化後為「息壤蟲」，可凝聚玄黃土偶護主吸靈。</p>
             <div class="text-xs space-y-1 text-stone-300 border-t border-stone-700/70 pt-2">
               <div><strong class="text-amber-300">伴生靈寵：</strong>玄黃土偶（護盾減傷＋吸靈）</div>
-              <div><strong class="text-fuchsia-300">隱藏突變：</strong>高水/金基因突變為【玄武岩魔】</div>
+              <div><strong class="text-fuchsia-300">隱藏突變：</strong>高厚土基因突變【玄武岩魔】</div>
               <div><strong class="text-emerald-300">無極終極：</strong><span class="text-amber-300 font-bold">無極・鴻蒙道祖</span></div>
             </div>
           </div>
-          <button class="mt-3.5 w-full py-2 rounded-lg btn-ancient text-sm font-bold">以此異獸開局</button>
+          <button class="mt-3.5 w-full py-2 rounded-lg btn-ancient text-sm font-bold">孵化此靈蛋</button>
         </div>
 
-        <!-- 欽原蜂 -->
+        <!-- 欽原蛋 -->
         <div onclick="selectStarter('qinyuan')" class="group cursor-pointer rounded-xl p-4 bg-stone-900/85 border border-emerald-600/40 hover:border-emerald-400 hover:bg-stone-800/90 transition-all flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/40">木毒・蟲蠱法相</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/40">木毒・青銅靈蛋</span>
               <canvas id="previewQinyuan" width="56" height="44"></canvas>
             </div>
-            <h3 class="text-xl font-black text-emerald-200 group-hover:text-emerald-300">欽原蜂</h3>
-            <p class="text-xs text-stone-400 mt-1 mb-2.5">昆侖青銅玉蜂，吞噬獵物孵化「噬魂子蜂群」圍攻強敵，遠程劇毒破防。</p>
+            <h3 class="text-xl font-black text-emerald-200 group-hover:text-emerald-300">欽原蜂蛋</h3>
+            <p class="text-xs text-stone-400 mt-1 mb-2.5">帶著草木清香與微弱震動的靈蛋，孵化後為「欽原幼蜂」，善於群體圍獵與疊毒。</p>
             <div class="text-xs space-y-1 text-stone-300 border-t border-stone-700/70 pt-2">
               <div><strong class="text-emerald-300">伴生靈寵：</strong>噬魂子蜂（自動圍獵＋疊毒）</div>
-              <div><strong class="text-fuchsia-300">隱藏突變：</strong>高妖/風基因突變為【九尾魅蠱】</div>
+              <div><strong class="text-fuchsia-300">隱藏突變：</strong>高御風/烈陽突變【九尾魅蠱】</div>
               <div><strong class="text-emerald-300">無極終極：</strong><span class="text-amber-300 font-bold">無極・萬蠱祖神</span></div>
             </div>
           </div>
-          <button class="mt-3.5 w-full py-2 rounded-lg btn-ancient text-sm font-bold">以此異獸開局</button>
+          <button class="mt-3.5 w-full py-2 rounded-lg btn-ancient text-sm font-bold">孵化此靈蛋</button>
         </div>
 
-        <!-- 化蛇雛 -->
+        <!-- 化蛇蛋 -->
         <div onclick="selectStarter('huashe')" class="group cursor-pointer rounded-xl p-4 bg-stone-900/85 border border-cyan-600/40 hover:border-cyan-400 hover:bg-stone-800/90 transition-all flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-600/40">水雷・真龍法相</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-600/40">水雷・龍鱗靈蛋</span>
               <canvas id="previewHuashe" width="56" height="44"></canvas>
             </div>
-            <h3 class="text-xl font-black text-cyan-200 group-hover:text-cyan-300">化蛇雛</h3>
-            <p class="text-xs text-stone-400 mt-1 mb-2.5">青鱗羽翼小蛟，高速雷霆突進，吞噬後召喚「雷電龍魂」連鎖電擊。</p>
+            <h3 class="text-xl font-black text-cyan-200 group-hover:text-cyan-300">化蛇雛蛋</h3>
+            <p class="text-xs text-stone-400 mt-1 mb-2.5">表面隱現雷電紋路的靈蛋，孵化後為「化蛇雛」，高速雷霆突進並召喚雷龍魂。</p>
             <div class="text-xs space-y-1 text-stone-300 border-t border-stone-700/70 pt-2">
               <div><strong class="text-cyan-300">伴生靈寵：</strong>雷電龍魂（穿梭戰場＋落雷）</div>
-              <div><strong class="text-fuchsia-300">隱藏突變：</strong>高火/妖基因突變為【赤鱬炎龍】</div>
+              <div><strong class="text-fuchsia-300">隱藏突變：</strong>高烈陽基因突變【赤鱬炎龍】</div>
               <div><strong class="text-emerald-300">無極終極：</strong><span class="text-amber-300 font-bold">無極・太初陰陽龍</span></div>
             </div>
           </div>
-          <button class="mt-3.5 w-full py-2 rounded-lg btn-ancient text-sm font-bold">以此異獸開局</button>
+          <button class="mt-3.5 w-full py-2 rounded-lg btn-ancient text-sm font-bold">孵化此靈蛋</button>
         </div>
       </div>
 
       <div class="text-center text-xs text-stone-400">
-        提示：星域每 65 秒輪替「血月狂潮 / 靈雨甘霖」星象；晉升究級體後靠近弱小異獸將觸發「萬獸朝拜」自動進貢靈氣！
+        提示：在「洞天福地」撫摸或投餵異獸可提升羈絆並獲得靈果，外出狩獵吞噬異獸也能補充靈果與加速進化！
       </div>
     </div>
   </div>
@@ -319,7 +349,7 @@
     </div>
   </div>
 
-  <!-- 死亡重生 / 魔神凱旋 結算彈窗 -->
+  <!-- 死亡重生 / 魔神凱旋 / 羽化轉生 結算彈窗 -->
   <div id="endModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
     <div class="ink-panel rounded-2xl max-w-md w-full p-6 text-center">
       <div id="endIcon" class="text-5xl mb-3">💀</div>
@@ -328,7 +358,7 @@
       <div id="endStats" class="bg-stone-900/90 rounded-xl p-3.5 mb-5 text-xs space-y-1.5 border border-stone-700 text-left"></div>
       <div class="flex gap-3">
         <button id="continueWorldBtn" onclick="closeEndModal()" class="flex-1 py-2.5 rounded-xl btn-ancient text-sm font-bold hidden">繼續稱霸星海</button>
-        <button onclick="returnToTitle()" class="flex-1 py-2.5 rounded-xl btn-ascend text-sm font-bold">開啟新輪迴</button>
+        <button onclick="returnToTitle()" class="flex-1 py-2.5 rounded-xl btn-ascend text-sm font-bold">羽化孵新靈卵</button>
       </div>
     </div>
   </div>
@@ -336,8 +366,9 @@
 <script>
 /**
  * ==========================================
- * 山海經：異獸吞噬進化 — 萬神無極終極整合版
- * 整合：九大靈脈、基因靈韻、隱藏突變、三系伴生靈寵、
+ * 山海經：異獸吞噬進化 — 洞天靈寵養成版
+ * 整合：洞天福地互動（撫摸、投餵、淨化、羈絆、靈果）、
+ *       九大靈脈狩獵、基因靈韻、隱藏突變、三系伴生靈寵、
  *       星象天劫、萬獸朝拜、域外混沌魔神終極戰
  * ==========================================
  */
@@ -386,6 +417,16 @@ function playSound(type) {
       gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
       osc.connect(gain); gain.connect(audioCtx.destination);
       osc.start(now); osc.stop(now + 0.18);
+    } else if (type === 'pet') {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(660, now + 0.22);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.24);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(now); osc.stop(now + 0.24);
     } else if (type === 'skill') {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -422,7 +463,7 @@ function playSound(type) {
 }
 
 // ------------------------------------------
-// 九大屬性靈脈定義（含基因歸類：wind御風 / fire烈陽 / earth厚土）
+// 九大屬性靈脈定義
 // ------------------------------------------
 const NINE_BIOMES = [
   { id: 'wood', attr: '木', geneType: 'wind', name: '建木林海', x: 1500, y: 1500, radius: 680, color: '#22c55e', bgGlow: 'rgba(34, 197, 94, 0.14)', bossName: '建木・句芒木神', orbName: '木之神格', species: [{ name: '青木鹿靈', radius: 22, hp: 95, atk: 15, speed: 175, xp: 48, color: '#4ade80', shape: 'deer' }, { name: '藤蔓樹妖', radius: 33, hp: 210, atk: 25, speed: 110, xp: 82, color: '#16a34a', shape: 'treant' }, { name: '太古木魅', radius: 43, hp: 340, atk: 40, speed: 145, xp: 130, color: '#86efac', shape: 'treant' }] },
@@ -442,7 +483,6 @@ const WILD_CRITTERS = [
   { name: '淺灘溪蝦', radius: 12, hp: 26, atk: 5, speed: 120, xp: 20, color: '#7dd3fc', shape: 'fish', isAquatic: true, geneType: 'earth' }
 ];
 
-// 三大初始異獸、隱藏突變分岐與無極體設定
 const STARTER_DATA = {
   xirang: {
     id: 'xirang', element: '土・吞納', color: '#d97706', accent: '#fde047',
@@ -502,13 +542,16 @@ let worldTime = 0;
 let legacyAscensions = 0;
 let abyssClearedCount = 0;
 
+// 'sanctuary'（洞天福地電子寵物養成） | 'wild'（星海大世界狩獵）
+let currentMode = 'sanctuary';
+
 let player = null;
 let enemies = [];
 let bosses = [];
-let abyssDemon = null; // 域外混沌魔神
+let abyssDemon = null;
 let resources = [];
 let wonders = [];
-let companions = []; // 三系專屬伴生靈寵
+let companions = [];
 let projectiles = [];
 let enemyProjectiles = [];
 let particles = [];
@@ -516,12 +559,7 @@ let floatingTexts = [];
 let bgStars = [];
 let lightningBolts = [];
 
-// 動態星象事件狀態
-let celestial = {
-  state: 'calm', // 'calm' | 'bloodmoon' | 'spiritrain'
-  timer: 45
-};
-
+let celestial = { state: 'calm', timer: 45 };
 const keys = {};
 let pointer = { active: false, x: 0, y: 0 };
 
@@ -561,7 +599,7 @@ window.addEventListener('keydown', (e) => {
   if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
     pointer.active = false;
   }
-  if (e.code === 'Space' && gameRunning && !gamePaused) {
+  if (e.code === 'Space' && gameRunning && !gamePaused && currentMode === 'wild') {
     e.preventDefault();
     triggerSkill();
   }
@@ -569,13 +607,17 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
 canvas.addEventListener('mousemove', (e) => {
-  if (!gameRunning || gamePaused) return;
+  if (!gameRunning || gamePaused || currentMode !== 'wild') return;
   pointer.active = true;
   pointer.x = e.clientX;
   pointer.y = e.clientY;
 });
 canvas.addEventListener('touchstart', (e) => {
   if (!gameRunning || gamePaused) return;
+  if (currentMode === 'sanctuary') {
+    petBeast();
+    return;
+  }
   if (e.touches.length > 0) {
     pointer.active = true;
     pointer.x = e.touches[0].clientX;
@@ -583,7 +625,7 @@ canvas.addEventListener('touchstart', (e) => {
   }
 }, { passive: true });
 canvas.addEventListener('touchmove', (e) => {
-  if (!gameRunning || gamePaused) return;
+  if (!gameRunning || gamePaused || currentMode !== 'wild') return;
   if (e.touches.length > 0) {
     pointer.active = true;
     pointer.x = e.touches[0].clientX;
@@ -638,20 +680,20 @@ function selectStarter(starterId) {
     maxHp: Math.round(st0.maxHp * bonusMult),
     atk: Math.round(st0.atk * bonusMult),
     xp: 0, kills: 0,
+    bond: 15, // 靈寵羈絆親密度 (0~100)
+    spiritFruits: 3, // 洞天靈果數量
+    petIdleAngle: 0,
     genes: { wind: 0, fire: 0, earth: 0 },
-    isMutant: false,
-    customColor: null,
+    isMutant: false, customColor: null,
     skillTimer: 0, stealthTimer: 0, dashTimer: 0, wonderBuffTimer: 0,
     hitFlash: 0, divineOrbs: {}, orbAttackTimer: 0,
-    isSupreme: false,
-    tribulationActive: false,
-    tribulationTimer: 0,
-    lightningTick: 0
+    isSupreme: false, tribulationActive: false, tribulationTimer: 0, lightningTick: 0
   };
 
   enemies = []; bosses = []; abyssDemon = null; resources = []; wonders = [];
   companions = []; projectiles = []; enemyProjectiles = []; particles = []; floatingTexts = []; lightningBolts = [];
   celestial = { state: 'calm', timer: 45 };
+  currentMode = 'sanctuary';
 
   initWorldDecor();
   initNineBosses();
@@ -664,6 +706,7 @@ function selectStarter(starterId) {
   for (let i = 0; i < 140; i++) spawnResource();
 
   buildNineOrbsUI();
+  syncModeUI();
 
   document.getElementById('startModal').classList.add('hidden');
   document.getElementById('endModal').classList.add('hidden');
@@ -679,7 +722,76 @@ function selectStarter(starterId) {
 
   if (animFrameId) cancelAnimationFrame(animFrameId);
   animFrameId = requestAnimationFrame(gameLoop);
-  showToast(`已化身為【${st0.name}】，吞噬異獸累積基因靈韻與伴生靈寵！`);
+  showToast(`🥚 靈蛋破殼！迎來【${st0.name}】入駐洞天福地！`);
+}
+
+// ------------------------------------------
+// 模式切換：洞天福地養成 <-> 外出星海狩獵
+// ------------------------------------------
+function switchMode() {
+  if (!player || player.tribulationActive) return;
+  if (currentMode === 'sanctuary') {
+    currentMode = 'wild';
+    showToast('🌌 已踏出洞天，馳騁九大屬性靈脈星海！');
+  } else {
+    currentMode = 'sanctuary';
+    pointer.active = false;
+    player.vx = 0; player.vy = 0;
+    showToast('🏡 已返回崑崙洞天福地，可撫摸、投餵與淨化靈寵！');
+  }
+  syncModeUI();
+}
+
+function syncModeUI() {
+  const isWild = currentMode === 'wild';
+  document.getElementById('sanctuaryControls').classList.toggle('hidden', isWild);
+  document.getElementById('wildControls').classList.toggle('hidden', !isWild);
+  document.getElementById('modeSwitchIcon').textContent = isWild ? '🏡' : '🌌';
+  document.getElementById('modeSwitchLabel').textContent = isWild ? '返回洞天小窩' : '外出星海狩獵';
+}
+
+// ------------------------------------------
+// 洞天福地互動：撫摸、投餵、淨化
+// ------------------------------------------
+function petBeast() {
+  if (!player) return;
+  playSound('pet');
+  player.bond = Math.min(100, player.bond + 6);
+  gainPlayerXp(12);
+  spawnParticles(width / 2, height / 2, '#f472b6', 14, 110);
+  addFloatingText(player.x, player.y - player.radius - 16, '💖 咕嚕～羈絆 +6', '#f472b6', 15);
+  if (Math.random() < 0.35) {
+    player.spiritFruits++;
+    showToast('🍒 靈寵開心蹭了蹭你，並叼來一顆【洞天靈果】！');
+  }
+  updateHudUI();
+}
+
+function feedBeast() {
+  if (!player) return;
+  if (player.spiritFruits <= 0) {
+    showToast('🍂 靈果已用盡！外出吞噬異獸可補充靈果，或撫摸靈寵有機會尋回。');
+    return;
+  }
+  playSound('devour');
+  player.spiritFruits--;
+  player.bond = Math.min(100, player.bond + 10);
+  player.hp = player.maxHp;
+  gainPlayerXp(45, ['wind', 'fire', 'earth'][Math.floor(Math.random() * 3)]);
+  spawnParticles(width / 2, height / 2, '#4ade80', 18, 130);
+  addFloatingText(player.x, player.y - player.radius - 16, '🍒 美味靈果！靈氣 +45', '#4ade80', 15);
+  trySpawnCompanion();
+  updateHudUI();
+}
+
+function purifyBeast() {
+  if (!player) return;
+  playSound('pet');
+  player.hp = player.maxHp;
+  player.bond = Math.min(100, player.bond + 5);
+  spawnParticles(width / 2, height / 2, '#38bdf8', 20, 120);
+  addFloatingText(player.x, player.y - player.radius - 16, '✨ 靈泉淨化・氣血全滿', '#7dd3fc', 15);
+  updateHudUI();
 }
 
 function initNineBosses() {
@@ -806,9 +918,7 @@ function triggerSkill() {
 
 function canDevourTarget(target) {
   if (!player) return false;
-  if (target.isAbyssBoss) {
-    return (target.hp / target.maxHp) <= 0.20;
-  }
+  if (target.isAbyssBoss) return (target.hp / target.maxHp) <= 0.20;
   if (player.isSupreme) return true;
 
   const ratioBonus = player.wonderBuffTimer > 0 ? 0.15 : 0;
@@ -819,11 +929,11 @@ function canDevourTarget(target) {
   return (target.hp / target.maxHp) <= breakThreshold;
 }
 
-// 獲得靈氣、基因靈韻與隱藏突變進化判定
 function gainPlayerXp(amount, geneType = null) {
   if (!player) return;
   const rainMult = celestial.state === 'bloodmoon' ? 1.8 : 1.0;
-  player.xp += Math.round(amount * rainMult);
+  const bondBonus = 1 + (player.bond / 100) * 0.25;
+  player.xp += Math.round(amount * rainMult * bondBonus);
 
   if (geneType && player.genes[geneType] !== undefined) {
     player.genes[geneType]++;
@@ -840,7 +950,6 @@ function gainPlayerXp(amount, geneType = null) {
     let nextStage = player.data.stages[player.stageIdx];
     const bonusMult = 1 + legacyAscensions * 0.15;
 
-    // 檢查二階進化時的「隱藏基因畸變」
     if (player.stageIdx === 2) {
       const totalGenes = player.genes.wind + player.genes.fire + player.genes.earth;
       if (totalGenes >= 8) {
@@ -878,25 +987,20 @@ function gainPlayerXp(amount, geneType = null) {
   }
 }
 
-// 召喚伴生靈寵（三系各有特色）
 function trySpawnCompanion() {
   if (!player) return;
   const maxComp = 4 + player.stageIdx * 2;
   if (companions.length >= maxComp) return;
-
   companions.push({
-    type: player.starterId,
-    x: player.x,
-    y: player.y,
-    orbitAngle: Math.random() * Math.PI * 2,
-    life: 26,
-    atkTimer: 0
+    type: player.starterId, x: player.x, y: player.y,
+    orbitAngle: Math.random() * Math.PI * 2, life: 26, atkTimer: 0
   });
 }
 
-// 引發九霄天劫（證道無極體前考驗）
 function startTribulation() {
   if (!player || player.tribulationActive || player.isSupreme) return;
+  currentMode = 'wild';
+  syncModeUI();
   player.tribulationActive = true;
   player.tribulationTimer = 12.0;
   document.getElementById('supremeAscendBtn').classList.add('hidden');
@@ -924,7 +1028,6 @@ function completeSupremeBreakthrough() {
   document.getElementById('abyssRiftBtn').classList.remove('hidden');
 }
 
-// 開啟崑崙星淵裂隙：召喚終極首領「域外混沌魔神」
 function summonAbyssDemon() {
   if (!player || !player.isSupreme) return;
   if (abyssDemon && abyssDemon.alive) {
@@ -935,18 +1038,10 @@ function summonAbyssDemon() {
   abyssDemon = {
     isAbyssBoss: true,
     name: abyssClearedCount > 0 ? `域外混沌魔神・羅睺(${abyssClearedCount + 1}階)` : '域外混沌魔神・羅睺',
-    x: 3800, y: 3800,
-    vx: 0, vy: 0, angle: 0,
-    radius: 96,
-    hp: Math.round(4800 * scale),
-    maxHp: Math.round(4800 * scale),
-    atk: Math.round(145 * scale),
-    color: '#c084fc',
-    alive: true,
-    shootTimer: 0,
-    stunTimer: 0,
-    poisonTimer: 0,
-    hitFlash: 0
+    x: 3800, y: 3800, vx: 0, vy: 0, angle: 0,
+    radius: 96, hp: Math.round(4800 * scale), maxHp: Math.round(4800 * scale),
+    atk: Math.round(145 * scale), color: '#c084fc', alive: true,
+    shootTimer: 0, stunTimer: 0, poisonTimer: 0, hitFlash: 0
   };
   playSound('thunder');
   showToast('🌀 崑崙星淵裂隙撕開！【域外混沌魔神・羅睺】降臨中央神墟！');
@@ -959,7 +1054,28 @@ function update(dt) {
   if (!gameRunning || gamePaused || !player) return;
   worldTime += dt;
 
-  // 1. 動態星象輪替（每 65 秒切換一次天象）
+  // 洞天福地模式：電子寵物自在游動與緩慢累積靈氣
+  if (currentMode === 'sanctuary') {
+    player.petIdleAngle += dt * 1.1;
+    player.angle = player.petIdleAngle + Math.PI / 2;
+    if (player.hp < player.maxHp) {
+      player.hp = Math.min(player.maxHp, player.hp + player.maxHp * 0.04 * dt);
+    }
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const pt = particles[i];
+      pt.life -= dt; pt.x += pt.vx * dt; pt.y += pt.vy * dt;
+      if (pt.life <= 0) particles.splice(i, 1);
+    }
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+      const ft = floatingTexts[i];
+      ft.life -= dt; ft.y -= 32 * dt;
+      if (ft.life <= 0) floatingTexts.splice(i, 1);
+    }
+    updateHudUI();
+    return;
+  }
+
+  // 外出星海狩獵模式
   celestial.timer -= dt;
   if (celestial.timer <= 0) {
     if (celestial.state === 'calm') {
@@ -978,7 +1094,6 @@ function update(dt) {
     }
   }
 
-  // 2. 九霄天劫洗禮邏輯
   if (player.tribulationActive) {
     player.tribulationTimer -= dt;
     player.lightningTick += dt;
@@ -994,7 +1109,6 @@ function update(dt) {
       lightningBolts.push({ x: strikeX, y: strikeY, life: 0.35 });
       spawnParticles(strikeX, strikeY, '#e879f9', 24, 220);
 
-      // 落雷對玩家造成真實考驗傷害（鼓勵移動閃避與開技回血）
       if (toroidalDist(player.x, player.y, strikeX, strikeY) < player.radius + 55) {
         player.hp -= player.maxHp * 0.08;
         player.hitFlash = 0.2;
@@ -1012,7 +1126,6 @@ function update(dt) {
     if (lightningBolts[i].life <= 0) lightningBolts.splice(i, 1);
   }
 
-  // 3. 玩家移動與屬性靈韻加成
   if (player.skillTimer > 0) player.skillTimer = Math.max(0, player.skillTimer - dt);
   if (player.stealthTimer > 0) player.stealthTimer = Math.max(0, player.stealthTimer - dt);
   if (player.dashTimer > 0) player.dashTimer = Math.max(0, player.dashTimer - dt);
@@ -1020,8 +1133,8 @@ function update(dt) {
   if (player.hitFlash > 0) player.hitFlash = Math.max(0, player.hitFlash - dt);
 
   const windSpeedBonus = 1 + Math.min(0.45, player.genes.wind * 0.012);
-  const fireAtkBonus = 1 + Math.min(0.65, player.genes.fire * 0.015);
-  const earthShieldReduce = Math.max(0.45, 1 - player.genes.earth * 0.012);
+  const fireAtkBonus = 1 + Math.min(0.65, player.genes.fire * 0.015) + (player.bond / 100) * 0.2;
+  const earthShieldReduce = Math.max(0.45, 1 - player.genes.earth * 0.012 - (player.bond / 100) * 0.12);
 
   let speedMult = (player.isSupreme ? 1.35 : 1) * windSpeedBonus;
   if (player.stealthTimer > 0) speedMult *= 1.4;
@@ -1064,7 +1177,6 @@ function update(dt) {
     player.hp = Math.min(player.maxHp, player.hp + player.maxHp * 0.015 * dt);
   }
 
-  // 4. 神格領域與資源牽引
   const orbCount = Object.values(player.divineOrbs).filter(Boolean).length;
   const pullR = (player.isSupreme ? 460 : (player.radius + 170 + orbCount * 22));
   resources.forEach(r => {
@@ -1091,7 +1203,6 @@ function update(dt) {
     });
   }
 
-  // 5. 三系伴生靈寵協戰更新
   for (let i = companions.length - 1; i >= 0; i--) {
     const c = companions[i];
     c.life -= dt;
@@ -1106,7 +1217,6 @@ function update(dt) {
     });
 
     if (c.type === 'xirang') {
-      // 玄黃土偶：環繞護主並自動幫吃周邊靈草礦石
       c.orbitAngle += dt * 2.4;
       c.x = wrapCoord(player.x + Math.cos(c.orbitAngle) * (player.radius + 36));
       c.y = wrapCoord(player.y + Math.sin(c.orbitAngle) * (player.radius + 36));
@@ -1119,7 +1229,6 @@ function update(dt) {
         }
       }
     } else if (target) {
-      // 噬魂子蜂 & 雷電龍魂：主動出擊獵殺強敵
       const dx = shortestDelta(c.x, target.x);
       const dy = shortestDelta(c.y, target.y);
       const d = Math.hypot(dx, dy) || 1;
@@ -1128,9 +1237,6 @@ function update(dt) {
       if (d <= target.radius + 14) {
         target.hp -= player.atk * fireAtkBonus * 0.55 * dt * 4;
         if (c.type === 'qinyuan') target.poisonTimer = 2.0;
-        if (c.type === 'huashe' && Math.random() < 0.08) {
-          spawnParticles(target.x, target.y, '#38bdf8', 4, 90);
-        }
       }
     } else {
       c.orbitAngle += dt * 3.4;
@@ -1141,7 +1247,6 @@ function update(dt) {
     }
   }
 
-  // 6. 上古秘境奇遇更新
   wonders.forEach(w => {
     w.pulse += dt * 2.5;
     if (!w.active) {
@@ -1163,16 +1268,16 @@ function update(dt) {
         player.wonderBuffTimer = 15.0; gainPlayerXp(50);
         showToast('⛩️ 共鳴【太古龍脈祭壇】！15秒極速神威加持！');
       } else if (w.id === 'chest') {
+        player.spiritFruits += 2;
         for (let k = 0; k < 10; k++) {
           const ang = (Math.PI * 2 * k) / 10;
           spawnResource(w.x + Math.cos(ang) * 55, w.y + Math.sin(ang) * 55, true);
         }
-        showToast('📦 開啟【封印上古寶匣】！噴湧大量稀世靈寶！');
+        showToast('📦 開啟【封印上古寶匣】！獲得靈果＋大量稀世靈寶！');
       }
     }
   });
 
-  // 7. 資源拾取
   for (let i = resources.length - 1; i >= 0; i--) {
     const r = resources[i];
     if (toroidalDist(player.x, player.y, r.x, r.y) <= player.radius + r.radius + 6) {
@@ -1185,7 +1290,6 @@ function update(dt) {
     }
   }
 
-  // 8. 玩家投射物
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
     p.life -= dt;
@@ -1204,7 +1308,6 @@ function update(dt) {
     if (hit || p.life <= 0) projectiles.splice(i, 1);
   }
 
-  // 9. 野生異獸 AI（含血月狂暴、究級體「萬獸朝拜」臣服供奉）
   const bloodMoonMult = celestial.state === 'bloodmoon' ? 1.25 : 1.0;
   for (let i = enemies.length - 1; i >= 0; i--) {
     const e = enemies[i];
@@ -1218,7 +1321,6 @@ function update(dt) {
 
     const distToPlayer = toroidalDist(e.x, e.y, player.x, player.y);
 
-    // 究級體/無極體威壓：弱小異獸靠近時觸發「萬獸朝拜」主動進貢靈氣
     if (player.stageIdx >= 3 && e.radius < player.radius * 0.55 && distToPlayer < 240) {
       e.vx = 0; e.vy = 0;
       e.worshipTimer += dt;
@@ -1273,6 +1375,7 @@ function update(dt) {
         const gainedXp = Math.round(e.xp * (player.starterId === 'huashe' && e.isAquatic ? 1.8 : 1.0));
         gainPlayerXp(gainedXp, e.geneType);
         player.kills++;
+        if (player.kills % 5 === 0) player.spiritFruits++;
         player.hp = Math.min(player.maxHp, player.hp + Math.round(e.maxHp * 0.25));
         spawnParticles(e.x, e.y, e.color, 14, 140);
         addFloatingText(e.x, e.y, `吞噬 ${e.name} +${gainedXp}靈氣`, '#4ade80');
@@ -1292,7 +1395,6 @@ function update(dt) {
     }
   }
 
-  // 10. 九大靈脈 BOSS 更新
   bosses.forEach(b => {
     if (!b.alive) {
       b.respawnTimer -= dt;
@@ -1340,6 +1442,7 @@ function update(dt) {
         b.alive = false;
         b.respawnTimer = 45;
         player.kills++;
+        player.spiritFruits += 2;
         gainPlayerXp(b.xp, b.geneType);
         player.hp = player.maxHp;
         player.maxHp = Math.round(player.maxHp * 1.08);
@@ -1367,7 +1470,6 @@ function update(dt) {
     }
   });
 
-  // 11. 域外混沌魔神（終極首領戰）
   if (abyssDemon && abyssDemon.alive) {
     const ad = abyssDemon;
     if (ad.hitFlash > 0) ad.hitFlash = Math.max(0, ad.hitFlash - dt);
@@ -1383,7 +1485,6 @@ function update(dt) {
       ad.y = wrapCoord(ad.y + (dy / d) * 145 * dt);
     }
 
-    // 魔神環形滅世彈幕
     ad.shootTimer += dt;
     if (ad.shootTimer >= 2.8 && d < 900) {
       ad.shootTimer = 0;
@@ -1416,7 +1517,6 @@ function update(dt) {
     }
   }
 
-  // 魔神彈幕更新
   for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
     const ep = enemyProjectiles[i];
     ep.life -= dt;
@@ -1452,23 +1552,83 @@ function update(dt) {
 }
 
 // ------------------------------------------
-// 渲染主畫面（含星象濾鏡、動態鏡頭、九霄落雷與魔神）
+// 渲染主畫面（支援洞天福地與星海大世界雙場景）
 // ------------------------------------------
 function render() {
-  // 星象背景色調變化
-  if (celestial.state === 'bloodmoon') {
-    ctx.fillStyle = '#14070a';
-  } else if (celestial.state === 'spiritrain') {
-    ctx.fillStyle = '#061214';
-  } else {
-    ctx.fillStyle = '#05090a';
-  }
-  ctx.fillRect(0, 0, width, height);
-
   if (!player) return;
-
   const cx = width / 2;
   const cy = height / 2;
+
+  // 洞天福地電子寵物場景
+  if (currentMode === 'sanctuary') {
+    const grad = ctx.createRadialGradient(cx, cy, 40, cx, cy, Math.max(width, height) * 0.7);
+    grad.addColorStop(0, '#132a26');
+    grad.addColorStop(0.6, '#091513');
+    grad.addColorStop(1, '#040808');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 洞天八卦靈陣與靈草點綴
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.25)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 175, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 120, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.font = 'bold 14px "Noto Serif TC", serif';
+    ctx.fillStyle = 'rgba(253, 230, 138, 0.55)';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏡 崑崙洞天福地・靈寵棲息處', 0, -205);
+    ctx.font = '12px "Noto Serif TC", serif';
+    ctx.fillStyle = 'rgba(167, 243, 208, 0.65)';
+    ctx.fillText('點擊下方按鈕撫摸、投餵或淨化，培養羈絆與修為', 0, 215);
+    ctx.restore();
+
+    // 繪製洞天內陪伴的靈寵
+    companions.forEach((c, idx) => {
+      const ang = worldTime * 1.2 + (Math.PI * 2 * idx) / Math.max(1, companions.length);
+      const px = cx + Math.cos(ang) * 115;
+      const py = cy + Math.sin(ang) * 115;
+      ctx.save();
+      ctx.fillStyle = c.type === 'xirang' ? '#fbbf24' : (c.type === 'qinyuan' ? '#34d399' : '#38bdf8');
+      ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+
+    const bobY = Math.sin(worldTime * 3) * 6;
+    const petX = cx + Math.cos(player.petIdleAngle) * 35;
+    const petY = cy + Math.sin(player.petIdleAngle) * 22 + bobY;
+    drawHeroBeast(ctx, petX, petY, Math.max(28, player.radius), player.angle, player.starterId, player.stageIdx, worldTime, player.divineOrbs, false, player.isSupreme, player.customColor);
+
+    particles.forEach(pt => {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+      ctx.fillStyle = pt.color;
+      ctx.beginPath(); ctx.arc(pt.x, pt.y, Math.max(1, pt.radius), 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+
+    floatingTexts.forEach(ft => {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, ft.life / ft.maxLife);
+      ctx.font = `bold ${ft.size}px "Noto Serif TC", serif`; ctx.textAlign = 'center';
+      ctx.fillStyle = ft.color;
+      ctx.fillText(ft.text, cx, cy - 55 - (1 - ft.life) * 35);
+      ctx.restore();
+    });
+
+    renderRadar();
+    return;
+  }
+
+  // 星海狩獵場景
+  if (celestial.state === 'bloodmoon') ctx.fillStyle = '#14070a';
+  else if (celestial.state === 'spiritrain') ctx.fillStyle = '#061214';
+  else ctx.fillStyle = '#05090a';
+  ctx.fillRect(0, 0, width, height);
+
   const targetZoom = Math.max(0.62, Math.min(1.2, 58 / player.radius));
 
   ctx.save();
@@ -1476,7 +1636,6 @@ function render() {
   ctx.scale(targetZoom, targetZoom);
   ctx.translate(-cx, -cy);
 
-  // 1. 星域微塵背景
   bgStars.forEach(s => {
     const dx = shortestDelta(player.x, s.x);
     const dy = shortestDelta(player.y, s.y);
@@ -1496,7 +1655,6 @@ function render() {
     ctx.restore();
   });
 
-  // 2. 九大屬性靈脈結界
   NINE_BIOMES.forEach(b => {
     const dx = shortestDelta(player.x, b.x);
     const dy = shortestDelta(player.y, b.y);
@@ -1522,7 +1680,6 @@ function render() {
     ctx.restore();
   });
 
-  // 3. 上古秘境奇遇
   wonders.forEach(w => {
     if (!w.active) return;
     const dx = shortestDelta(player.x, w.x);
@@ -1545,7 +1702,6 @@ function render() {
     ctx.restore();
   });
 
-  // 4. 資源
   resources.forEach(r => {
     const dx = shortestDelta(player.x, r.x);
     const dy = shortestDelta(player.y, r.y);
@@ -1558,7 +1714,6 @@ function render() {
     ctx.restore();
   });
 
-  // 5. 野生異獸（含萬獸朝拜金色光圈）
   enemies.forEach(e => {
     const dx = shortestDelta(player.x, e.x);
     const dy = shortestDelta(player.y, e.y);
@@ -1566,7 +1721,6 @@ function render() {
     drawDiverseWildBeast(cx + dx, cy + dy, e, false);
   });
 
-  // 6. 九大靈脈 BOSS
   bosses.forEach(b => {
     if (!b.alive) return;
     const dx = shortestDelta(player.x, b.x);
@@ -1575,7 +1729,6 @@ function render() {
     drawDiverseWildBeast(cx + dx, cy + dy, b, true);
   });
 
-  // 7. 域外混沌魔神
   if (abyssDemon && abyssDemon.alive) {
     const dx = shortestDelta(player.x, abyssDemon.x);
     const dy = shortestDelta(player.y, abyssDemon.y);
@@ -1584,7 +1737,6 @@ function render() {
     }
   }
 
-  // 8. 三系伴生靈寵（玄黃土偶 / 噬魂子蜂 / 雷電龍魂）
   companions.forEach(c => {
     const dx = shortestDelta(player.x, c.x);
     const dy = shortestDelta(player.y, c.y);
@@ -1604,7 +1756,6 @@ function render() {
     ctx.restore();
   });
 
-  // 9. 投射物與魔神彈幕
   projectiles.forEach(p => {
     const dx = shortestDelta(player.x, p.x);
     const dy = shortestDelta(player.y, p.y);
@@ -1625,36 +1776,24 @@ function render() {
     ctx.restore();
   });
 
-  // 10. 玩家本體
   ctx.save();
   if (player.stealthTimer > 0) ctx.globalAlpha = 0.46;
   drawHeroBeast(ctx, cx, cy, player.radius, player.angle, player.starterId, player.stageIdx, worldTime, player.divineOrbs, player.hitFlash > 0, player.isSupreme, player.customColor);
   ctx.restore();
 
-  // 11. 九霄天劫閃電光柱
   lightningBolts.forEach(lb => {
     const dx = shortestDelta(player.x, lb.x);
     const dy = shortestDelta(player.y, lb.y);
     const sx = cx + dx, sy = cy + dy;
     ctx.save();
-    ctx.strokeStyle = '#f0abfc';
-    ctx.lineWidth = 5;
-    ctx.shadowColor = '#d946ef';
-    ctx.shadowBlur = 20;
+    ctx.strokeStyle = '#f0abfc'; ctx.lineWidth = 5; ctx.shadowColor = '#d946ef'; ctx.shadowBlur = 20;
     ctx.beginPath();
-    ctx.moveTo(sx + 25, sy - 380);
-    ctx.lineTo(sx - 15, sy - 190);
-    ctx.lineTo(sx + 10, sy - 80);
-    ctx.lineTo(sx, sy);
+    ctx.moveTo(sx + 25, sy - 380); ctx.lineTo(sx - 15, sy - 190); ctx.lineTo(sx + 10, sy - 80); ctx.lineTo(sx, sy);
     ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(sx, sy, 55, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(sx, sy, 55, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
   });
 
-  // 12. 粒子與文字
   particles.forEach(pt => {
     const dx = shortestDelta(player.x, pt.x);
     const dy = shortestDelta(player.y, pt.y);
@@ -1689,20 +1828,16 @@ function drawAbyssDemon(sx, sy, demon) {
   ctx.save();
   ctx.translate(sx, sy);
 
-  // 混沌旋渦外環
   ctx.save();
   ctx.rotate(-worldTime * 1.5);
   ctx.strokeStyle = edible ? '#fde047' : '#e879f9';
-  ctx.lineWidth = 4;
-  ctx.setLineDash([18, 10]);
+  ctx.lineWidth = 4; ctx.setLineDash([18, 10]);
   ctx.beginPath(); ctx.arc(0, 0, r + 18, 0, Math.PI * 2); ctx.stroke();
   ctx.restore();
 
-  // 八臂觸手魔影
   for (let k = 0; k < 8; k++) {
     const a = worldTime * 0.8 + (Math.PI * 2 * k) / 8;
-    ctx.strokeStyle = '#a855f7';
-    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 6;
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.quadraticCurveTo(Math.cos(a + 0.4) * r * 1.1, Math.sin(a + 0.4) * r * 1.1, Math.cos(a) * r * 1.45, Math.sin(a) * r * 1.45);
@@ -1713,7 +1848,6 @@ function drawAbyssDemon(sx, sy, demon) {
   ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
   ctx.strokeStyle = '#f0abfc'; ctx.lineWidth = 3; ctx.stroke();
 
-  // 三隻混沌魔眼
   ctx.fillStyle = '#fde047';
   [[-22, -15], [22, -15], [0, 18]].forEach(([ex, ey]) => {
     ctx.beginPath(); ctx.arc(ex, ey, 9, 0, Math.PI * 2); ctx.fill();
@@ -1721,8 +1855,7 @@ function drawAbyssDemon(sx, sy, demon) {
   ctx.restore();
 
   ctx.save();
-  ctx.textAlign = 'center';
-  ctx.font = 'bold 15px "Noto Serif TC", serif';
+  ctx.textAlign = 'center'; ctx.font = 'bold 15px "Noto Serif TC", serif';
   ctx.fillStyle = edible ? '#fde047' : '#f0abfc';
   ctx.fillText(`🌀 ${demon.name}${edible ? '【破防可吞！】' : ''}`, sx, sy - r - 22);
 
@@ -2010,15 +2143,18 @@ function updateHudUI() {
     document.getElementById('hudXpBar').style.width = '100%';
   }
 
+  document.getElementById('hudBondText').textContent = `${player.bond} / 100`;
+  document.getElementById('hudBondBar').style.width = `${player.bond}%`;
+  document.getElementById('hudFruitText').textContent = player.spiritFruits;
+  document.getElementById('feedCountSpan').textContent = player.spiritFruits;
+
   document.getElementById('geneWindText').textContent = player.genes.wind;
   document.getElementById('geneFireText').textContent = player.genes.fire;
   document.getElementById('geneEarthText').textContent = player.genes.earth;
 
   document.getElementById('hudSizeText').textContent = Math.round(player.radius);
-  document.getElementById('hudCompanionText').textContent = companions.length;
   document.getElementById('hudLegacyText').textContent = `血脈 +${legacyAscensions * 15}%`;
 
-  // 更新星象狀態列
   const cIcon = document.getElementById('celestialIcon');
   const cName = document.getElementById('celestialName');
   const cTimer = document.getElementById('celestialTimer');
@@ -2031,14 +2167,18 @@ function updateHudUI() {
     cIcon.textContent = '✨'; cName.textContent = '星象：星海平靜'; cName.className = 'text-amber-200';
   }
 
-  let currentBiomeName = '星域荒野';
-  for (const b of NINE_BIOMES) {
-    if (toroidalDist(player.x, player.y, b.x, b.y) <= b.radius) {
-      currentBiomeName = `${b.attr}脈・${b.name}`;
-      break;
+  if (currentMode === 'sanctuary') {
+    document.getElementById('hudBiomeTag').textContent = '🏡 洞天福地';
+  } else {
+    let currentBiomeName = '星域荒野';
+    for (const b of NINE_BIOMES) {
+      if (toroidalDist(player.x, player.y, b.x, b.y) <= b.radius) {
+        currentBiomeName = `${b.attr}脈・${b.name}`;
+        break;
+      }
     }
+    document.getElementById('hudBiomeTag').textContent = currentBiomeName;
   }
-  document.getElementById('hudBiomeTag').textContent = currentBiomeName;
 
   if (player.stageIdx >= 3) {
     let count = 0;
@@ -2109,11 +2249,11 @@ function triggerAbyssVictoryModal() {
   gamePaused = true;
   document.getElementById('endIcon').textContent = '🌌';
   document.getElementById('endTitle').textContent = '無極證道・斬滅域外魔神！';
-  document.getElementById('endDesc').textContent = '你已渡過九霄天劫證道無極，並於崑崙星淵吞噬【域外混沌魔神・羅睺】，名垂萬古太古神話！永久血脈大幅提升 +30%！';
+  document.getElementById('endDesc').textContent = '你已渡過九霄天劫證道無極，並於崑崙星淵吞噬【域外混沌魔神・羅睺】，可選擇羽化孵新靈卵傳承血脈！';
   document.getElementById('continueWorldBtn').classList.remove('hidden');
   document.getElementById('endStats').innerHTML = `
     <div>斬滅域外魔神次數：<strong class="text-fuchsia-300">${abyssClearedCount} 次</strong></div>
-    <div>累計吞噬異獸：<strong class="text-emerald-300">${player.kills} 隻</strong></div>
+    <div>靈寵羈絆親密度：<strong class="text-rose-300">${player.bond} / 100</strong></div>
     <div>永久太古血脈加成：<strong class="text-amber-400">已提升至 +${legacyAscensions * 15}%</strong></div>
   `;
   const modal = document.getElementById('endModal');
@@ -2125,11 +2265,11 @@ function triggerDeathModal() {
   const st = player.isSupreme ? player.data.stages[4] : player.data.stages[player.stageIdx];
   document.getElementById('endIcon').textContent = '💀';
   document.getElementById('endTitle').textContent = '神魂消散・重入輪迴';
-  document.getElementById('endDesc').textContent = '弱肉強食乃山海鐵律，避開紅圈巨獸、善用伴生靈寵與技能破防再戰九脈！';
+  document.getElementById('endDesc').textContent = '可回洞天福地多培養羈絆與靈果，或羽化孵化下一顆上古靈獸蛋！';
   document.getElementById('continueWorldBtn').classList.add('hidden');
   document.getElementById('endStats').innerHTML = `
     <div>最終法相：<strong class="text-amber-300">${st.name}（${st.title}）</strong></div>
-    <div>累計吞噬異獸：<strong class="text-emerald-300">${player.kills} 隻</strong></div>
+    <div>靈寵羈絆親密度：<strong class="text-rose-300">${player.bond} / 100</strong></div>
     <div>當前太古血脈加成：<strong class="text-amber-400">+${legacyAscensions * 15}%</strong></div>
   `;
   const modal = document.getElementById('endModal');
@@ -2156,7 +2296,7 @@ function returnToTitle() {
 
   const legacyInfo = document.getElementById('startLegacyInfo');
   if (legacyAscensions > 0) {
-    legacyInfo.textContent = `✨ 已傳承【太古無極血脈】：所有初始異獸全屬性永久 +${legacyAscensions * 15}%`;
+    legacyInfo.textContent = `✨ 已傳承【太古無極血脈】：所有新孵靈獸全屬性永久 +${legacyAscensions * 15}%`;
     legacyInfo.classList.remove('hidden');
   }
   document.getElementById('startModal').classList.remove('hidden');
